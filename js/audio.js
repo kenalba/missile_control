@@ -84,6 +84,48 @@ class AudioSystem {
         oscillator.stop(this.audioContext.currentTime + 0.3);
     }
     
+    // Empty ammo sound - descending tone indicating depletion
+    playEmptyAmmo() {
+        if (!this.enabled) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(300, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(150, this.audioContext.currentTime + 0.2);
+        oscillator.type = 'triangle';
+        
+        gainNode.gain.setValueAtTime(0.04, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.2);
+    }
+    
+    // Cooldown sound - short blip indicating not ready
+    playCooldown() {
+        if (!this.enabled) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(500, this.audioContext.currentTime + 0.05);
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.03, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.1);
+    }
+    
     // Resume audio context (required for some browsers)
     resume() {
         if (this.audioContext && this.audioContext.state === 'suspended') {

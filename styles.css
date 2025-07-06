@@ -342,6 +342,101 @@ body {
     opacity: 0.6;
 }
 
+#splashScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.95);
+    color: #0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    font-family: 'Courier New', monospace;
+}
+
+.splash-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 20px;
+    border: 2px solid #0f0;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.8);
+}
+
+.game-title {
+    font-size: 48px;
+    color: #0ff;
+    margin: 0 0 10px 0;
+    text-shadow: 0 0 10px #0ff;
+    letter-spacing: 3px;
+}
+
+.game-subtitle {
+    font-size: 18px;
+    color: #888;
+    margin: 0 0 30px 0;
+    font-style: italic;
+}
+
+.instructions {
+    margin: 30px 0;
+    text-align: left;
+}
+
+.instructions h3 {
+    color: #0ff;
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+}
+
+.instruction-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background: rgba(0, 255, 0, 0.05);
+}
+
+.instruction-section h4 {
+    color: #0f0;
+    margin: 0 0 10px 0;
+    font-size: 16px;
+}
+
+.instruction-section p {
+    margin: 5px 0;
+    font-size: 14px;
+    color: #ccc;
+}
+
+.start-button {
+    background: #004400;
+    color: #0f0;
+    border: 2px solid #0f0;
+    padding: 15px 30px;
+    font-size: 20px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 20px 0 10px 0;
+    transition: all 0.2s ease;
+}
+
+.start-button:hover {
+    background: #006600;
+    box-shadow: 0 0 10px #0f0;
+}
+
+.cheat-hint {
+    color: #666;
+    font-size: 12px;
+    margin: 10px 0 0 0;
+}
+
 #gameOver {
     position: absolute;
     top: 50%;
@@ -589,5 +684,39 @@ body {
     
     .global-upgrades h4 {
         font-size: 16px;
+    }
+    
+    /* Mobile splash screen adjustments */
+    .splash-content {
+        max-width: 90vw;
+        padding: 15px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .game-title {
+        font-size: 32px;
+    }
+    
+    .game-subtitle {
+        font-size: 14px;
+    }
+    
+    .instruction-section {
+        padding: 10px;
+        margin: 10px 0;
+    }
+    
+    .instruction-section h4 {
+        font-size: 14px;
+    }
+    
+    .instruction-section p {
+        font-size: 12px;
+    }
+    
+    .start-button {
+        padding: 12px 24px;
+        font-size: 18px;
     }
 }

@@ -31,9 +31,17 @@ function initializeInput() {
         
         // Fire from selected launcher
         const launcher = launchers[selectedLauncher];
-        if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
-            !destroyedLaunchers.includes(selectedLauncher)) {
-            fireMissile(launcher, targetX, targetY);
+        if (!destroyedLaunchers.includes(selectedLauncher)) {
+            if (launcher.missiles <= 0) {
+                // No ammo
+                audioSystem.playEmptyAmmo();
+            } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+                // Still on cooldown
+                audioSystem.playCooldown();
+            } else {
+                // Fire successfully
+                fireMissile(launcher, targetX, targetY);
+            }
         }
     });
 
@@ -58,9 +66,17 @@ function handleTouchEnd(e) {
     
     // Fire from selected launcher
     const launcher = launchers[selectedLauncher];
-    if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
-        !destroyedLaunchers.includes(selectedLauncher)) {
-        fireMissile(launcher, mouseX, mouseY);
+    if (!destroyedLaunchers.includes(selectedLauncher)) {
+        if (launcher.missiles <= 0) {
+            // No ammo
+            audioSystem.playEmptyAmmo();
+        } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+            // Still on cooldown
+            audioSystem.playCooldown();
+        } else {
+            // Fire successfully
+            fireMissile(launcher, mouseX, mouseY);
+        }
     }
 }
 
@@ -85,9 +101,17 @@ function handleTouchEnd(e) {
             updateLauncherSelection();
             
             const launcher = launchers[launcherIndex];
-            if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
-                !destroyedLaunchers.includes(launcherIndex)) {
-                fireMissile(launcher, mouseX, mouseY);
+            if (!destroyedLaunchers.includes(launcherIndex)) {
+                if (launcher.missiles <= 0) {
+                    // No ammo
+                    audioSystem.playEmptyAmmo();
+                } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+                    // Still on cooldown
+                    audioSystem.playCooldown();
+                } else {
+                    // Fire successfully
+                    fireMissile(launcher, mouseX, mouseY);
+                }
             }
         }
     });

@@ -217,13 +217,30 @@ function initializeCityUpgrades() {
     }
 }
 
-// Initialize the game
+// Initialize the game systems (but don't start gameplay)
 function initGame() {
     initializeRenderer();
     initializeInput();
     initializeCityUpgrades();
+    // Show splash screen first, don't start gameplay yet
+    showSplashScreen();
+}
+
+// Show splash screen
+function showSplashScreen() {
+    document.getElementById('splashScreen').style.display = 'flex';
+    gameState.gameRunning = false;
+    
+    // Add start button event listener
+    document.getElementById('startBtn').addEventListener('click', startGame);
+}
+
+// Start the actual game
+function startGame() {
+    document.getElementById('splashScreen').style.display = 'none';
     // Initialize first wave
     gameState.enemiesToSpawn = 6; // Wave 1: 4 + 1.5 + 0.2 = ~6 enemies
+    gameState.gameRunning = true;
     requestAnimationFrame(gameLoop);
 }
 

@@ -68,11 +68,11 @@ function spawnEnemyMissile() {
         }
     }
     
-    // Check if final target position is actually near a valid target (within 80px)
+    // Check if final target position is actually near a valid target (within 25px)
     let isTargetingValid = false;
     const allValidTargets = [...cityPositions.filter((_, i) => !destroyedCities.includes(i)), ...launchers.map(l => l.x)];
     for (const validTarget of allValidTargets) {
-        if (Math.abs(targetX - validTarget) < 80) {
+        if (Math.abs(targetX - validTarget) < 25) {
             isTargetingValid = true;
             break;
         }

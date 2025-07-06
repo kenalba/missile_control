@@ -209,4 +209,7 @@ function restartGame() {
     
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('waveBreak').style.display = 'none';
+    
+    // Show splash screen instead of immediately restarting
+    showSplashScreen();
 }

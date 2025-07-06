@@ -15,14 +15,14 @@ function checkCollisions() {
     
     // Check enemy missiles hitting ground
     enemyMissiles.forEach((missile, i) => {
-        if (missile.y >= 780) {
+        if (missile.y >= 760) {
             createExplosion(missile.x, missile.y, false);
             enemyMissiles.splice(i, 1);
             
             // Check if city was hit (check against city height, not just ground)
             cityPositions.forEach((cityX, cityIndex) => {
                 if (!destroyedCities.includes(cityIndex) && 
-                    Math.abs(missile.x - cityX) < 50 && missile.y >= 725) {
+                    Math.abs(missile.x - cityX) < 50 && missile.y >= 730) {
                     destroyedCities.push(cityIndex);
                     gameState.cities--;
                     // Wipe city upgrade when destroyed
