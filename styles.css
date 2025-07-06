@@ -437,6 +437,15 @@ body {
     margin: 10px 0 0 0;
 }
 
+/* Smart instruction display */
+.mobile-instructions {
+    display: none;
+}
+
+.desktop-instructions {
+    display: block;
+}
+
 #gameOver {
     position: absolute;
     top: 50%;
@@ -718,5 +727,14 @@ body {
     .start-button {
         padding: 12px 24px;
         font-size: 18px;
+    }
+    
+    /* Show mobile instructions, hide desktop ones */
+    .mobile-instructions {
+        display: block;
+    }
+    
+    .desktop-instructions {
+        display: none;
     }
 }

@@ -17,31 +17,13 @@ function updateGame(deltaTime) {
         }
     }
     
-    // Check if any enemy missiles can damage live targets
+    // Check if any enemy missiles can damage live targets - use dynamic threat detection
     function anyMissilesCanDamage() {
         if (enemyMissiles.length === 0) return false;
         
         return enemyMissiles.some(missile => {
-            // Where will this missile hit when it reaches the ground?
-            const impactX = missile.targetX;
-            
-            // Check if impact can damage any live city (within blast radius)
-            for (let i = 0; i < cityPositions.length; i++) {
-                if (!destroyedCities.includes(i) && 
-                    Math.abs(impactX - cityPositions[i]) < 50) {
-                    return true;
-                }
-            }
-            
-            // Check if impact can damage any live launcher (within blast radius)
-            for (let i = 0; i < launchers.length; i++) {
-                if (!destroyedLaunchers.includes(i) && 
-                    Math.abs(impactX - launchers[i].x) < 40) {
-                    return true;
-                }
-            }
-            
-            return false;
+            // Use the dynamic threat detection from entities.js
+            return isMissileThreatening(missile);
         });
     }
     

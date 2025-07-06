@@ -83,59 +83,41 @@ function render() {
             
             const upgradeLevel = cityUpgrades[i];
             
-            // Draw city based on upgrade level
+            // Draw city based on upgrade level - cleaner design
             if (upgradeLevel === 0) {
-                // Basic city - bright yellow
+                // Basic city - simple blocks
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(x - 25, 750, 50, 10);
                 ctx.fillRect(x - 20, 740, 15, 10);
                 ctx.fillRect(x - 5, 740, 10, 10);
                 ctx.fillRect(x + 5, 740, 15, 10);
                 
-                // Taller buildings in orange
+                // Small buildings
                 ctx.fillStyle = '#f80';
                 ctx.fillRect(x - 15, 730, 8, 10);
                 ctx.fillRect(x + 7, 730, 8, 10);
-                ctx.fillRect(x - 3, 725, 6, 5);
+                ctx.fillRect(x - 3, 735, 6, 5);
             } else if (upgradeLevel === 1) {
-                // Level 1 - Add blue accents and height
-                ctx.fillStyle = '#ff0';
-                ctx.fillRect(x - 25, 750, 50, 10);
-                ctx.fillRect(x - 20, 740, 15, 10);
-                ctx.fillRect(x - 5, 740, 10, 10);
-                ctx.fillRect(x + 5, 740, 15, 10);
-                
-                // Taller buildings
-                ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 15, 725, 8, 15);
-                ctx.fillRect(x + 7, 725, 8, 15);
-                ctx.fillRect(x - 3, 720, 6, 10);
-                
-                // Blue upgrade indicators
-                ctx.fillStyle = '#0af';
-                ctx.fillRect(x - 12, 722, 2, 8);
-                ctx.fillRect(x + 10, 722, 2, 8);
-            } else if (upgradeLevel === 2) {
-                // Level 2 - More height and green accents
+                // Level 1 - Taller and wider
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(x - 28, 750, 56, 10);
                 ctx.fillRect(x - 22, 740, 18, 10);
                 ctx.fillRect(x - 8, 740, 16, 10);
                 ctx.fillRect(x + 8, 740, 18, 10);
                 
-                // Much taller buildings
+                // Taller buildings with blue lights
                 ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 18, 720, 12, 20);
-                ctx.fillRect(x + 6, 720, 12, 20);
-                ctx.fillRect(x - 4, 715, 8, 15);
+                ctx.fillRect(x - 18, 725, 12, 15);
+                ctx.fillRect(x + 6, 725, 12, 15);
+                ctx.fillRect(x - 4, 720, 8, 10);
                 
-                // Green upgrade indicators
-                ctx.fillStyle = '#0f0';
-                ctx.fillRect(x - 15, 717, 3, 13);
-                ctx.fillRect(x + 12, 717, 3, 13);
-                ctx.fillRect(x - 2, 712, 4, 8);
-            } else if (upgradeLevel === 3) {
-                // Level 3 - Massive city with cyan glow
+                // Blue upgrade lights
+                ctx.fillStyle = '#0af';
+                ctx.fillRect(x - 12, 722, 2, 2);
+                ctx.fillRect(x + 10, 722, 2, 2);
+                ctx.fillRect(x, 717, 2, 2);
+            } else if (upgradeLevel === 2) {
+                // Level 2 - Even taller with green energy
                 ctx.fillStyle = '#ff0';
                 ctx.fillRect(x - 30, 750, 60, 10);
                 ctx.fillRect(x - 25, 740, 20, 10);
@@ -148,25 +130,55 @@ function render() {
                 ctx.fillRect(x + 5, 715, 15, 25);
                 ctx.fillRect(x - 6, 710, 12, 20);
                 
-                // Cyan glow effect
-                ctx.fillStyle = '#0ff';
-                ctx.fillRect(x - 17, 712, 4, 18);
-                ctx.fillRect(x + 13, 712, 4, 18);
-                ctx.fillRect(x - 3, 707, 6, 13);
+                // Green energy cores
+                ctx.fillStyle = '#0f0';
+                ctx.fillRect(x - 13, 720, 2, 10);
+                ctx.fillRect(x + 11, 720, 2, 10);
+                ctx.fillRect(x - 1, 715, 2, 8);
+            } else if (upgradeLevel === 3) {
+                // Level 3 - Massive metropolis with energy dome
+                ctx.fillStyle = '#ff0';
+                ctx.fillRect(x - 32, 750, 64, 10);
+                ctx.fillRect(x - 28, 740, 24, 10);
+                ctx.fillRect(x - 12, 740, 24, 10);
+                ctx.fillRect(x + 12, 740, 24, 10);
                 
-                // Antenna/spires
+                // Mega towers
+                ctx.fillStyle = '#f80';
+                ctx.fillRect(x - 22, 710, 18, 30);
+                ctx.fillRect(x + 4, 710, 18, 30);
+                ctx.fillRect(x - 8, 705, 16, 25);
+                
+                // Energy dome effect
+                ctx.strokeStyle = '#0ff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(x, 730, 35, Math.PI, 0, false);
+                ctx.stroke();
+                
+                // Pulsing energy core
+                ctx.fillStyle = '#0ff';
+                ctx.fillRect(x - 2, 708, 4, 12);
+                
+                // Spires
                 ctx.fillStyle = '#fff';
-                ctx.fillRect(x - 13, 710, 1, 5);
-                ctx.fillRect(x + 12, 710, 1, 5);
-                ctx.fillRect(x, 705, 1, 5);
+                ctx.fillRect(x - 13, 705, 1, 5);
+                ctx.fillRect(x + 12, 705, 1, 5);
+                ctx.fillRect(x, 700, 1, 5);
             }
             
-            // Draw upgrade level indicator
+            // Draw upgrade level indicator - floating above city
             if (upgradeLevel > 0) {
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 10px monospace';
+                ctx.fillStyle = '#0ff';
+                ctx.font = 'bold 12px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText(`L${upgradeLevel}`, x, x < 600 ? 715 : 715);
+                ctx.fillText(`L${upgradeLevel}`, x, 700);
+                
+                // Draw small glow effect around the level indicator
+                ctx.shadowColor = '#0ff';
+                ctx.shadowBlur = 5;
+                ctx.fillText(`L${upgradeLevel}`, x, 700);
+                ctx.shadowBlur = 0;
             }
         }
     });
@@ -176,11 +188,12 @@ function render() {
     ctx.fillRect(0, 760, canvas.width, 40);
     
     // Draw city labels on the ground
-    ctx.fillStyle = '#0f0';
     ctx.font = '12px monospace';
     ctx.textAlign = 'center';
     cityPositions.forEach((x, i) => {
         const label = `C${i + 1}`;
+        // Red for destroyed cities, green for alive cities
+        ctx.fillStyle = destroyedCities.includes(i) ? '#f00' : '#0f0';
         ctx.fillText(label, x, 780);
     });
     
@@ -191,14 +204,46 @@ function render() {
             return;
         }
         
-        // Draw elevated launcher base
-        ctx.fillStyle = '#00f';
+        // Get upgrade levels for visual indicators
+        const upgrades = launcherUpgrades[index];
+        const totalUpgrades = (upgrades.speed.level - 1) + (upgrades.explosion.level - 1) + 
+                            (upgrades.rate.level - 1) + (upgrades.capacity.level - 1) + upgrades.autopilot.level;
+        
+        // Draw elevated launcher base with upgrade coloring
+        let baseColor = '#00f';
+        if (totalUpgrades >= 15) baseColor = '#f0f'; // Purple for heavily upgraded
+        else if (totalUpgrades >= 10) baseColor = '#0ff'; // Cyan for well upgraded
+        else if (totalUpgrades >= 5) baseColor = '#0f0'; // Green for moderately upgraded
+        
+        ctx.fillStyle = baseColor;
         ctx.fillRect(launcher.x - 20, launcher.y + 10, 40, 20);
         ctx.fillRect(launcher.x - 15, launcher.y, 30, 15);
         ctx.fillRect(launcher.x - 10, launcher.y - 10, 20, 10);
         
-        // Draw launcher turret
+        // Draw launcher turret with upgrade indicators
         ctx.fillRect(launcher.x - 3, launcher.y - 15, 6, 8);
+        
+        // Draw upgrade indicators on the turret
+        if (upgrades.speed.level > 1) {
+            ctx.fillStyle = '#ff0'; // Yellow for speed
+            ctx.fillRect(launcher.x - 8, launcher.y - 18, 2, 2);
+        }
+        if (upgrades.explosion.level > 1) {
+            ctx.fillStyle = '#f80'; // Orange for explosion
+            ctx.fillRect(launcher.x - 5, launcher.y - 18, 2, 2);
+        }
+        if (upgrades.rate.level > 1) {
+            ctx.fillStyle = '#0f0'; // Green for rate
+            ctx.fillRect(launcher.x - 2, launcher.y - 18, 2, 2);
+        }
+        if (upgrades.capacity.level > 1) {
+            ctx.fillStyle = '#0ff'; // Cyan for capacity
+            ctx.fillRect(launcher.x + 1, launcher.y - 18, 2, 2);
+        }
+        if (upgrades.autopilot.level > 0) {
+            ctx.fillStyle = '#f0f'; // Magenta for autopilot
+            ctx.fillRect(launcher.x + 4, launcher.y - 18, 2, 2);
+        }
         
         // Draw info panel background
         ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
