@@ -19,6 +19,9 @@ function checkCollisions() {
             createExplosion(missile.x, missile.y, false);
             enemyMissiles.splice(i, 1);
             
+            // Screen shake for ground impact
+            addScreenShake(4, 300);
+            
             // Check if city was hit (check against city height, not just ground)
             cityPositions.forEach((cityX, cityIndex) => {
                 if (!destroyedCities.includes(cityIndex) && 
@@ -27,6 +30,9 @@ function checkCollisions() {
                     gameState.cities--;
                     // Wipe city upgrade when destroyed
                     cityUpgrades[cityIndex] = 0;
+                    
+                    // Screen shake for city destruction
+                    addScreenShake(8, 800);
                     
                     // Stronger vibration for city destruction
                     if (navigator.vibrate) {
@@ -59,6 +65,9 @@ function checkCollisions() {
                     gameState.scrap += applyScrapBonus(2);
                     createExplosion(missile.x, missile.y, false);
                     enemyMissiles.splice(i, 1);
+                    
+                    // Small screen shake for missile destruction
+                    addScreenShake(2, 150);
                     
                     // Mobile vibration feedback
                     if (navigator.vibrate) {
@@ -93,6 +102,9 @@ function checkCollisions() {
                         
                         createExplosion(plane.x, plane.y, false);
                         planes.splice(i, 1);
+                        
+                        // Medium screen shake for plane destruction
+                        addScreenShake(5, 400);
                         
                         // Create visual effect
                         upgradeEffects.push({

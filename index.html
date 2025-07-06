@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Missile Command - Upgrade Edition</title>
+    <title>Missile Control</title>
     <meta name="description" content="Defend your cities from incoming missiles with strategic upgrades">
     <meta name="theme-color" content="#00ff00">
     <link rel="stylesheet" href="styles.css">
@@ -183,10 +183,6 @@
                 <span class="upgrade-name">Missile Highlight</span>
                 <button class="upgrade-btn" id="missileHighlight" onclick="upgradeGlobal('missileHighlight')">75</button>
             </div>
-            <div class="upgrade-row">
-                <span class="upgrade-name">City Repair</span>
-                <button class="upgrade-btn" id="repairCity" onclick="repairCity()">50</button>
-            </div>
         </div>
         
         <div style="margin-top: 15px; font-size: 11px; color: #888;">
@@ -232,6 +228,15 @@
         <h2>GAME OVER</h2>
         <p>Final Score: <span id="finalScore">0</span></p>
         <p>Wave Reached: <span id="finalWave">1</span></p>
+        
+        <!-- High Scores Display -->
+        <div class="high-scores-section">
+            <h4>HIGH SCORES</h4>
+            <div id="highScoresList" class="high-scores-list">
+                <div class="high-score-item">No scores yet</div>
+            </div>
+        </div>
+        
         <button id="restartBtn" onclick="restartGame()">RESTART</button>
     </div>
     

@@ -22,7 +22,14 @@ let gameState = {
     missileBonusPhase: false,
     missileBonusTimer: 0,
     missileBonusIndex: 0,
-    missileBonusTotal: 0
+    missileBonusTotal: 0,
+    // Screen shake system
+    screenShake: {
+        intensity: 0,
+        duration: 0,
+        x: 0,
+        y: 0
+    }
 };
 
 // Upgrade levels and costs (per-launcher)
@@ -65,9 +72,6 @@ function updateUI() {
     const planeText = gameState.planesToSpawn > 0 ? `, ${gameState.planesToSpawn} planes` : '';
     document.getElementById('wave').textContent = `${gameState.wave} (${gameState.enemiesToSpawn} missiles${planeText})`;
     
-    // Update repair button
-    const repairBtn = document.getElementById('repairCity');
-    repairBtn.disabled = gameState.scrap < 50 || destroyedCities.length === 0;
     
     // Update economic upgrade buttons
     const scrapMultiplierBtn = document.getElementById('scrapMultiplier');
@@ -196,7 +200,14 @@ function restartGame() {
         missileBonusPhase: false,
         missileBonusTimer: 0,
         missileBonusIndex: 0,
-        missileBonusTotal: 0
+        missileBonusTotal: 0,
+        // Screen shake system
+        screenShake: {
+            intensity: 0,
+            duration: 0,
+            x: 0,
+            y: 0
+        }
     };
     
     launcherUpgrades = [
@@ -236,4 +247,57 @@ function restartGame() {
     
     // Show splash screen instead of immediately restarting
     showSplashScreen();
+}
+
+// Update high scores display
+function updateHighScoresDisplay() {
+    const highScoresList = document.getElementById('highScoresList');
+    if (!highScoresList || !window.saveSystem) return;
+    
+    const highScores = window.saveSystem.saveData.highScores || [];
+    
+    if (highScores.length === 0) {
+        highScoresList.innerHTML = '<div class="high-score-item empty">No scores yet</div>';
+        return;
+    }
+    
+    // Show top 5 scores
+    const topScores = highScores.slice(0, 5);
+    highScoresList.innerHTML = topScores.map((score, index) => {
+        const date = new Date(score.date);
+        const dateStr = date.toLocaleDateString();
+        
+        return `
+            <div class="high-score-item">
+                <span class="high-score-rank">#${index + 1}</span>
+                <span class="high-score-details">
+                    <span class="high-score-score">${score.score.toLocaleString()}</span>
+                    <span class="high-score-wave">Wave ${score.wave} • ${dateStr}</span>
+                </span>
+            </div>
+        `;
+    }).join('');
+}
+
+// Screen shake functions
+function addScreenShake(intensity, duration) {
+    gameState.screenShake.intensity = Math.max(gameState.screenShake.intensity, intensity);
+    gameState.screenShake.duration = Math.max(gameState.screenShake.duration, duration);
+}
+
+function updateScreenShake(deltaTime) {
+    if (gameState.screenShake.duration > 0) {
+        gameState.screenShake.duration -= deltaTime;
+        
+        // Generate random shake offset
+        const shakeAmount = gameState.screenShake.intensity * (gameState.screenShake.duration / 1000);
+        gameState.screenShake.x = (Math.random() - 0.5) * shakeAmount;
+        gameState.screenShake.y = (Math.random() - 0.5) * shakeAmount;
+        
+        if (gameState.screenShake.duration <= 0) {
+            gameState.screenShake.intensity = 0;
+            gameState.screenShake.x = 0;
+            gameState.screenShake.y = 0;
+        }
+    }
 }

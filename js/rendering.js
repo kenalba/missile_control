@@ -63,6 +63,10 @@ function resizeCanvas() {
 function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // Apply screen shake
+    ctx.save();
+    ctx.translate(gameState.screenShake.x, gameState.screenShake.y);
+    
     // Draw stars
     ctx.fillStyle = '#fff';
     for (let i = 0; i < 100; i++) {
@@ -627,4 +631,7 @@ function render() {
         ctx.fillText('Press SPACEBAR to continue', canvas.width / 2, canvas.height / 2 + 30);
         ctx.textAlign = 'left';
     }
+    
+    // Restore transform after screen shake
+    ctx.restore();
 }

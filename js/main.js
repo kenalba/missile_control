@@ -5,6 +5,9 @@ function updateGame(deltaTime) {
         return;
     }
     
+    // Update screen shake
+    updateScreenShake(deltaTime);
+    
     // Update entities
     updateEntities(deltaTime);
     
@@ -197,6 +200,9 @@ function updateGame(deltaTime) {
         document.getElementById('gameOver').style.display = 'block';
         document.getElementById('finalScore').textContent = gameState.score;
         document.getElementById('finalWave').textContent = gameState.wave;
+        
+        // Update high scores display on game over
+        updateHighScoresDisplay();
     }
     
     checkCollisions();
