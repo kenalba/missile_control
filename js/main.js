@@ -154,6 +154,11 @@ function updateGame(deltaTime) {
             
             const baseScrap = applyScrapBonus(gameState.wave * 5);
             
+            // Save wave completion
+            if (window.saveSystem) {
+                saveSystem.saveWaveCompletion(gameState.wave, gameState.score);
+            }
+            
             // NOW refill launchers and respawn destroyed ones (after all counting is done)
             launchers.forEach(launcher => {
                 launcher.missiles = launcher.maxMissiles;
@@ -183,6 +188,12 @@ function updateGame(deltaTime) {
     // Check game over
     if (gameState.cities <= 0) {
         gameState.gameRunning = false;
+        
+        // Save game over data
+        if (window.saveSystem) {
+            saveSystem.saveGameOver(gameState.score, gameState.wave);
+        }
+        
         document.getElementById('gameOver').style.display = 'block';
         document.getElementById('finalScore').textContent = gameState.score;
         document.getElementById('finalWave').textContent = gameState.wave;
