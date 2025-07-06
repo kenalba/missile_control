@@ -18,16 +18,36 @@ function initializeInput() {
     canvas.addEventListener('touchmove', handleTouch, { passive: false });
     canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
 
-    // Click/tap to fire
+    // Click/tap to fire or interact with UI
     canvas.addEventListener('click', (e) => {
-        if (!gameState.gameRunning) return;
-        
         const rect = canvas.getBoundingClientRect();
         const targetX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
         const targetY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
         
+        // Check for city upgrade button clicks
+        for (let i = 0; i < cityPositions.length; i++) {
+            const cityX = cityPositions[i];
+            const buttonLeft = cityX - 24;
+            const buttonRight = cityX + 24;
+            const buttonTop = 836;
+            const buttonBottom = 854;
+            
+            if (targetX >= buttonLeft && targetX <= buttonRight && 
+                targetY >= buttonTop && targetY <= buttonBottom) {
+                // If city is destroyed, try to repair it
+                if (destroyedCities.includes(i)) {
+                    repairCity(i);
+                } else {
+                    upgradeCity(i);
+                }
+                return; // Don't fire missile
+            }
+        }
+        
+        if (!gameState.gameRunning || gameState.waveBreak) return;
+        
         // Don't fire below ground level
-        if (targetY >= 760) return;
+        if (targetY >= 800) return;
         
         // Fire from selected launcher
         const launcher = launchers[selectedLauncher];
@@ -47,13 +67,13 @@ function initializeInput() {
 
     // Keyboard controls for firing missiles
     document.addEventListener('keydown', (e) => {
-        if (!gameState.gameRunning) return;
-        
-        // Cheat code: P key gives 100 scrap
+        // Cheat code: P key gives 100 scrap (works anytime)
         if (e.key.toLowerCase() === 'p') {
             gameState.scrap += 100;
             return;
         }
+        
+        if (!gameState.gameRunning || gameState.waveBreak) return;
         
         let launcherIndex = -1;
         if (e.key.toLowerCase() === 'q') launcherIndex = 0;
@@ -96,10 +116,30 @@ function handleTouch(e) {
 function handleTouchEnd(e) {
     e.preventDefault();
     
-    if (!gameState.gameRunning) return;
+    // Check for city upgrade button touches
+    for (let i = 0; i < cityPositions.length; i++) {
+        const cityX = cityPositions[i];
+        const buttonLeft = cityX - 24;
+        const buttonRight = cityX + 24;
+        const buttonTop = 836;
+        const buttonBottom = 854;
+        
+        if (mouseX >= buttonLeft && mouseX <= buttonRight && 
+            mouseY >= buttonTop && mouseY <= buttonBottom) {
+            // If city is destroyed, try to repair it
+            if (destroyedCities.includes(i)) {
+                repairCity(i);
+            } else {
+                upgradeCity(i);
+            }
+            return; // Don't fire missile
+        }
+    }
+    
+    if (!gameState.gameRunning || gameState.waveBreak) return;
     
     // Don't fire below ground level
-    if (mouseY >= 760) return;
+    if (mouseY >= 800) return;
     
     // Fire from selected launcher
     const launcher = launchers[selectedLauncher];

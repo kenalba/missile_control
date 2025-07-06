@@ -32,8 +32,9 @@ function createUpgradeEffect(x, y, type) {
 
 function upgrade(type, launcherIndex) {
     const upgrade = launcherUpgrades[launcherIndex][type];
-    if (gameState.scrap >= upgrade.cost) {
-        gameState.scrap -= upgrade.cost;
+    const actualCost = getActualUpgradeCost(upgrade.cost);
+    if (gameState.scrap >= actualCost) {
+        gameState.scrap -= actualCost;
         upgrade.level++;
         upgrade.cost = Math.floor(upgrade.cost * 1.5);
         
@@ -68,7 +69,7 @@ function upgradeCity(cityIndex) {
         const cityX = cityPositions[cityIndex];
         upgradeEffects.push({
             x: cityX,
-            y: 700,
+            y: 740,
             text: `CITY ${cityIndex + 1} UPGRADED!`,
             alpha: 1,
             vy: -2,
@@ -79,7 +80,7 @@ function upgradeCity(cityIndex) {
         for (let i = 0; i < 10; i++) {
             particles.push({
                 x: cityX + (Math.random() - 0.5) * 60,
-                y: 720 + (Math.random() - 0.5) * 30,
+                y: 760 + (Math.random() - 0.5) * 30,
                 vx: (Math.random() - 0.5) * 4,
                 vy: (Math.random() - 0.5) * 4,
                 life: 1,
@@ -100,7 +101,10 @@ function upgradeGlobal(type) {
         const effectText = {
             'cityScrapBonus': 'CITY BONUS UP!',
             'missileHighlight': 'MISSILE HIGHLIGHT ON!',
-            'cityShield': 'CITY SHIELDS UP!'
+            'cityShield': 'CITY SHIELDS UP!',
+            'scrapMultiplier': 'SCRAP BONUS +25%!',
+            'salvage': 'SALVAGE UPGRADE!',
+            'efficiency': 'EFFICIENCY BOOST!'
         };
         
         upgradeEffects.push({
@@ -126,10 +130,19 @@ function upgradeGlobal(type) {
     }
 }
 
-function repairCity() {
-    if (gameState.scrap >= 50 && destroyedCities.length > 0) {
-        gameState.scrap -= 50;
-        destroyedCities.splice(0, 1);
-        gameState.cities++;
+function repairCity(cityIndex = null) {
+    if (gameState.scrap >= 50) {
+        if (cityIndex !== null && destroyedCities.includes(cityIndex)) {
+            // Repair specific city
+            gameState.scrap -= 50;
+            const indexInDestroyed = destroyedCities.indexOf(cityIndex);
+            destroyedCities.splice(indexInDestroyed, 1);
+            gameState.cities++;
+        } else if (cityIndex === null && destroyedCities.length > 0) {
+            // Repair first destroyed city (for backward compatibility)
+            gameState.scrap -= 50;
+            destroyedCities.splice(0, 1);
+            gameState.cities++;
+        }
     }
 }

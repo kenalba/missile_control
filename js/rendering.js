@@ -75,7 +75,7 @@ function render() {
             // Highlight city during bonus counting
             if (gameState.cityBonusPhase && i === gameState.cityBonusIndex) {
                 ctx.fillStyle = '#0f0';
-                ctx.fillRect(x - 30, 720, 60, 45);
+                ctx.fillRect(x - 30, 760, 60, 45);
                 ctx.globalAlpha = 0.3;
                 ctx.fill();
                 ctx.globalAlpha = 1;
@@ -87,84 +87,84 @@ function render() {
             if (upgradeLevel === 0) {
                 // Basic city - simple blocks
                 ctx.fillStyle = '#ff0';
-                ctx.fillRect(x - 25, 750, 50, 10);
-                ctx.fillRect(x - 20, 740, 15, 10);
-                ctx.fillRect(x - 5, 740, 10, 10);
-                ctx.fillRect(x + 5, 740, 15, 10);
+                ctx.fillRect(x - 25, 790, 50, 10);
+                ctx.fillRect(x - 20, 780, 15, 10);
+                ctx.fillRect(x - 5, 780, 10, 10);
+                ctx.fillRect(x + 5, 780, 15, 10);
                 
                 // Small buildings
                 ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 15, 730, 8, 10);
-                ctx.fillRect(x + 7, 730, 8, 10);
-                ctx.fillRect(x - 3, 735, 6, 5);
+                ctx.fillRect(x - 15, 770, 8, 10);
+                ctx.fillRect(x + 7, 770, 8, 10);
+                ctx.fillRect(x - 3, 775, 6, 5);
             } else if (upgradeLevel === 1) {
                 // Level 1 - Taller and wider
                 ctx.fillStyle = '#ff0';
-                ctx.fillRect(x - 28, 750, 56, 10);
-                ctx.fillRect(x - 22, 740, 18, 10);
-                ctx.fillRect(x - 8, 740, 16, 10);
-                ctx.fillRect(x + 8, 740, 18, 10);
+                ctx.fillRect(x - 28, 790, 56, 10);
+                ctx.fillRect(x - 22, 780, 18, 10);
+                ctx.fillRect(x - 8, 780, 16, 10);
+                ctx.fillRect(x + 8, 780, 18, 10);
                 
                 // Taller buildings with blue lights
                 ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 18, 725, 12, 15);
-                ctx.fillRect(x + 6, 725, 12, 15);
-                ctx.fillRect(x - 4, 720, 8, 10);
+                ctx.fillRect(x - 18, 765, 12, 15);
+                ctx.fillRect(x + 6, 765, 12, 15);
+                ctx.fillRect(x - 4, 760, 8, 10);
                 
                 // Blue upgrade lights
                 ctx.fillStyle = '#0af';
-                ctx.fillRect(x - 12, 722, 2, 2);
-                ctx.fillRect(x + 10, 722, 2, 2);
-                ctx.fillRect(x, 717, 2, 2);
+                ctx.fillRect(x - 12, 762, 2, 2);
+                ctx.fillRect(x + 10, 762, 2, 2);
+                ctx.fillRect(x, 757, 2, 2);
             } else if (upgradeLevel === 2) {
                 // Level 2 - Even taller with green energy
                 ctx.fillStyle = '#ff0';
-                ctx.fillRect(x - 30, 750, 60, 10);
-                ctx.fillRect(x - 25, 740, 20, 10);
-                ctx.fillRect(x - 10, 740, 20, 10);
-                ctx.fillRect(x + 10, 740, 20, 10);
+                ctx.fillRect(x - 30, 790, 60, 10);
+                ctx.fillRect(x - 25, 780, 20, 10);
+                ctx.fillRect(x - 10, 780, 20, 10);
+                ctx.fillRect(x + 10, 780, 20, 10);
                 
                 // Skyscrapers
                 ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 20, 715, 15, 25);
-                ctx.fillRect(x + 5, 715, 15, 25);
-                ctx.fillRect(x - 6, 710, 12, 20);
+                ctx.fillRect(x - 20, 755, 15, 25);
+                ctx.fillRect(x + 5, 755, 15, 25);
+                ctx.fillRect(x - 6, 750, 12, 20);
                 
                 // Green energy cores
                 ctx.fillStyle = '#0f0';
-                ctx.fillRect(x - 13, 720, 2, 10);
-                ctx.fillRect(x + 11, 720, 2, 10);
-                ctx.fillRect(x - 1, 715, 2, 8);
+                ctx.fillRect(x - 13, 760, 2, 10);
+                ctx.fillRect(x + 11, 760, 2, 10);
+                ctx.fillRect(x - 1, 755, 2, 8);
             } else if (upgradeLevel === 3) {
                 // Level 3 - Massive metropolis with energy dome
                 ctx.fillStyle = '#ff0';
-                ctx.fillRect(x - 32, 750, 64, 10);
-                ctx.fillRect(x - 28, 740, 24, 10);
-                ctx.fillRect(x - 12, 740, 24, 10);
-                ctx.fillRect(x + 12, 740, 24, 10);
+                ctx.fillRect(x - 32, 790, 64, 10);
+                ctx.fillRect(x - 28, 780, 24, 10);
+                ctx.fillRect(x - 12, 780, 24, 10);
+                ctx.fillRect(x + 12, 780, 24, 10);
                 
                 // Mega towers
                 ctx.fillStyle = '#f80';
-                ctx.fillRect(x - 22, 710, 18, 30);
-                ctx.fillRect(x + 4, 710, 18, 30);
-                ctx.fillRect(x - 8, 705, 16, 25);
+                ctx.fillRect(x - 22, 750, 18, 30);
+                ctx.fillRect(x + 4, 750, 18, 30);
+                ctx.fillRect(x - 8, 745, 16, 25);
                 
                 // Energy dome effect
                 ctx.strokeStyle = '#0ff';
                 ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.arc(x, 730, 35, Math.PI, 0, false);
+                ctx.arc(x, 770, 35, Math.PI, 0, false);
                 ctx.stroke();
                 
                 // Pulsing energy core
                 ctx.fillStyle = '#0ff';
-                ctx.fillRect(x - 2, 708, 4, 12);
+                ctx.fillRect(x - 2, 748, 4, 12);
                 
                 // Spires
                 ctx.fillStyle = '#fff';
-                ctx.fillRect(x - 13, 705, 1, 5);
-                ctx.fillRect(x + 12, 705, 1, 5);
-                ctx.fillRect(x, 700, 1, 5);
+                ctx.fillRect(x - 13, 745, 1, 5);
+                ctx.fillRect(x + 12, 745, 1, 5);
+                ctx.fillRect(x, 740, 1, 5);
             }
             
             // Draw upgrade level indicator - floating above city
@@ -172,29 +172,119 @@ function render() {
                 ctx.fillStyle = '#0ff';
                 ctx.font = 'bold 12px monospace';
                 ctx.textAlign = 'center';
-                ctx.fillText(`L${upgradeLevel}`, x, 700);
+                ctx.fillText(`L${upgradeLevel}`, x, 740);
                 
                 // Draw small glow effect around the level indicator
                 ctx.shadowColor = '#0ff';
                 ctx.shadowBlur = 5;
-                ctx.fillText(`L${upgradeLevel}`, x, 700);
+                ctx.fillText(`L${upgradeLevel}`, x, 740);
                 ctx.shadowBlur = 0;
             }
         }
     });
     
-    // Draw ground
-    ctx.fillStyle = '#444';
-    ctx.fillRect(0, 760, canvas.width, 40);
+    // Draw ground with fun retro colors
+    ctx.fillStyle = '#8B4513'; // Solid brown ground
+    ctx.fillRect(0, 800, canvas.width, 100);
     
-    // Draw city labels on the ground
+    // Add surface detail line
+    ctx.strokeStyle = '#DAA520';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, 800);
+    ctx.lineTo(canvas.width, 800);
+    ctx.stroke();
+    
+    // Add simple geometric pattern for texture
+    ctx.fillStyle = '#A0522D';
+    for (let i = 0; i < canvas.width; i += 40) {
+        for (let j = 0; j < 4; j++) {
+            const y = 810 + (j * 20);
+            ctx.fillRect(i + (j % 2 * 20), y, 10, 5);
+        }
+    }
+    
+    // Draw city labels and upgrade buttons on the ground
     ctx.font = '12px monospace';
     ctx.textAlign = 'center';
     cityPositions.forEach((x, i) => {
         const label = `C${i + 1}`;
         // Red for destroyed cities, green for alive cities
         ctx.fillStyle = destroyedCities.includes(i) ? '#f00' : '#0f0';
-        ctx.fillText(label, x, 780);
+        ctx.fillText(label, x, 820);
+        
+        // Draw city upgrade button below label - improved appearance
+        const currentLevel = cityUpgrades[i];
+        const cost = 20 + (currentLevel * 15);
+        const isDestroyed = destroyedCities.includes(i);
+        const isMaxLevel = currentLevel >= 3;
+        const canAfford = gameState.scrap >= cost;
+        
+        // Button with rounded corners effect and better colors
+        let bgColor, borderColor, textColor;
+        if (isDestroyed) {
+            const canRepair = gameState.scrap >= 50;
+            bgColor = canRepair ? '#440' : '#400';
+            borderColor = canRepair ? '#ff0' : '#f00';
+            textColor = canRepair ? '#ff8' : '#f88';
+        } else if (isMaxLevel) {
+            bgColor = '#440';
+            borderColor = '#ff0';
+            textColor = '#ff8';
+        } else if (canAfford) {
+            bgColor = '#040';
+            borderColor = '#0f0';
+            textColor = '#8f8';
+        } else {
+            bgColor = '#222';
+            borderColor = '#666';
+            textColor = '#999';
+        }
+        
+        // Draw button with pixel-perfect positioning
+        const buttonX = Math.round(x - 24);
+        const buttonY = Math.round(836);
+        const buttonWidth = 48;
+        const buttonHeight = 18;
+        
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+        
+        // Top highlight for 3D effect
+        ctx.fillStyle = 'rgba(255,255,255,0.1)';
+        ctx.fillRect(buttonX, buttonY, buttonWidth, 2);
+        
+        // Border with pixel-perfect positioning
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.strokeRect(buttonX + 0.5, buttonY + 0.5, buttonWidth - 1, buttonHeight - 1);
+        
+        // Corner dots for rounded effect
+        ctx.fillStyle = borderColor;
+        ctx.fillRect(buttonX, buttonY, 1, 1);
+        ctx.fillRect(buttonX + buttonWidth - 1, buttonY, 1, 1);
+        ctx.fillRect(buttonX, buttonY + buttonHeight - 1, 1, 1);
+        ctx.fillRect(buttonX + buttonWidth - 1, buttonY + buttonHeight - 1, 1, 1);
+        
+        // Button text with better contrast and crisp rendering
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 14px monospace';
+        ctx.textBaseline = 'middle';
+        
+        // Ensure pixel-perfect text rendering
+        const textX = Math.round(x);
+        const textY = Math.round(845);
+        
+        if (isDestroyed) {
+            ctx.fillText('REPAIR 50', textX, textY);
+        } else if (isMaxLevel) {
+            ctx.fillText('MAX', textX, textY);
+        } else {
+            ctx.fillText(`${cost}`, textX, textY);
+        }
+        
+        // Reset text baseline
+        ctx.textBaseline = 'alphabetic';
     });
     
     // Draw launchers
@@ -220,45 +310,105 @@ function render() {
         ctx.fillRect(launcher.x - 15, launcher.y, 30, 15);
         ctx.fillRect(launcher.x - 10, launcher.y - 10, 20, 10);
         
-        // Draw launcher turret with upgrade indicators
-        ctx.fillRect(launcher.x - 3, launcher.y - 15, 6, 8);
+        // Draw launcher turret with creative upgrade indicators
         
-        // Draw upgrade indicators on the turret
+        // Speed upgrades - Exhaust flames behind turret
         if (upgrades.speed.level > 1) {
-            ctx.fillStyle = '#ff0'; // Yellow for speed
-            ctx.fillRect(launcher.x - 8, launcher.y - 18, 2, 2);
+            const flameIntensity = Math.min(upgrades.speed.level - 1, 5) / 5;
+            ctx.fillStyle = `rgba(255, 165, 0, ${0.3 + flameIntensity * 0.4})`;
+            for (let i = 0; i < upgrades.speed.level - 1; i++) {
+                const flameY = launcher.y - 10 + i * 2;
+                ctx.fillRect(launcher.x - 6 - i, flameY, 3, 4);
+                ctx.fillRect(launcher.x + 3 + i, flameY, 3, 4);
+            }
         }
+        
+        // Explosion upgrades - Larger barrel with reinforcement rings
+        let barrelWidth = 6;
         if (upgrades.explosion.level > 1) {
-            ctx.fillStyle = '#f80'; // Orange for explosion
-            ctx.fillRect(launcher.x - 5, launcher.y - 18, 2, 2);
+            barrelWidth = 6 + (upgrades.explosion.level - 1) * 2;
+            ctx.fillStyle = '#f80';
+            // Draw reinforcement rings on barrel
+            for (let i = 1; i < upgrades.explosion.level; i++) {
+                ctx.strokeStyle = '#ff0';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(launcher.x - barrelWidth/2, launcher.y - 17 + i * 2, barrelWidth, 1);
+            }
         }
+        
+        // Main turret barrel
+        ctx.fillStyle = baseColor;
+        ctx.fillRect(launcher.x - barrelWidth/2, launcher.y - 15, barrelWidth, 8);
+        
+        // Rate upgrades - Cooling vents on sides
         if (upgrades.rate.level > 1) {
-            ctx.fillStyle = '#0f0'; // Green for rate
-            ctx.fillRect(launcher.x - 2, launcher.y - 18, 2, 2);
+            ctx.fillStyle = '#0f0';
+            for (let i = 1; i < upgrades.rate.level; i++) {
+                const ventY = launcher.y - 12 - i * 2;
+                // Left vents
+                ctx.fillRect(launcher.x - barrelWidth/2 - 2, ventY, 1, 3);
+                ctx.fillRect(launcher.x - barrelWidth/2 - 4, ventY + 1, 1, 1);
+                // Right vents
+                ctx.fillRect(launcher.x + barrelWidth/2 + 1, ventY, 1, 3);
+                ctx.fillRect(launcher.x + barrelWidth/2 + 3, ventY + 1, 1, 1);
+            }
         }
+        
+        // Capacity upgrades - Ammo drums on sides
         if (upgrades.capacity.level > 1) {
-            ctx.fillStyle = '#0ff'; // Cyan for capacity
-            ctx.fillRect(launcher.x + 1, launcher.y - 18, 2, 2);
+            ctx.fillStyle = '#0ff';
+            const drumSize = 2 + upgrades.capacity.level;
+            ctx.fillRect(launcher.x - 12, launcher.y - 8, drumSize, drumSize);
+            ctx.fillRect(launcher.x + 12 - drumSize, launcher.y - 8, drumSize, drumSize);
+            
+            // Ammo belts
+            ctx.strokeStyle = '#088';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(launcher.x - 12 + drumSize, launcher.y - 6);
+            ctx.lineTo(launcher.x - barrelWidth/2, launcher.y - 10);
+            ctx.moveTo(launcher.x + 12 - drumSize, launcher.y - 6);
+            ctx.lineTo(launcher.x + barrelWidth/2, launcher.y - 10);
+            ctx.stroke();
         }
+        
+        // Autopilot upgrades - Radar dish and scanning beam
         if (upgrades.autopilot.level > 0) {
-            ctx.fillStyle = '#f0f'; // Magenta for autopilot
-            ctx.fillRect(launcher.x + 4, launcher.y - 18, 2, 2);
+            ctx.fillStyle = '#f0f';
+            // Radar dish
+            ctx.fillRect(launcher.x - 3, launcher.y - 25, 6, 3);
+            ctx.fillRect(launcher.x - 1, launcher.y - 28, 2, 3);
+            
+            // Animated scanning beam
+            const time = Date.now() * 0.003;
+            const beamAngle = time % (Math.PI * 2);
+            const beamLength = 30;
+            
+            ctx.strokeStyle = `rgba(255, 0, 255, 0.5)`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(launcher.x, launcher.y - 23);
+            ctx.lineTo(
+                launcher.x + Math.cos(beamAngle) * beamLength,
+                launcher.y - 23 + Math.sin(beamAngle) * beamLength
+            );
+            ctx.stroke();
         }
         
         // Draw info panel background
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.fillRect(launcher.x - 35, launcher.y + 35, 70, 45);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+        ctx.fillRect(launcher.x - 35, launcher.y + 25, 70, 45);
         
         // Draw info panel border
-        ctx.strokeStyle = '#666';
+        ctx.strokeStyle = '#888';
         ctx.lineWidth = 1;
-        ctx.strokeRect(launcher.x - 35, launcher.y + 35, 70, 45);
+        ctx.strokeRect(launcher.x - 35, launcher.y + 25, 70, 45);
         
         // Draw missile count with large, visible numbers
         ctx.fillStyle = launcher.missiles > 0 ? '#0f0' : '#f00';
         ctx.font = 'bold 16px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(`${launcher.missiles}/${launcher.maxMissiles}`, launcher.x, launcher.y + 52);
+        ctx.fillText(`${launcher.missiles}/${launcher.maxMissiles}`, launcher.x, launcher.y + 42);
         
         // Draw missile icons (scaled for higher counts)
         ctx.fillStyle = '#0f0';
@@ -280,7 +430,7 @@ function render() {
                 const row = Math.floor(i / maxIconsPerRow);
                 const col = i % maxIconsPerRow;
                 const iconX = launcher.x - 30 + (col * iconSpacingX);
-                const iconY = launcher.y + 58 + (row * iconSpacingY);
+                const iconY = launcher.y + 48 + (row * iconSpacingY);
                 ctx.fillRect(iconX, iconY, iconWidth, iconHeight);
             }
             
@@ -290,7 +440,7 @@ function render() {
                 const row = Math.floor(i / maxIconsPerRow);
                 const col = i % maxIconsPerRow;
                 const iconX = launcher.x - 30 + (col * iconSpacingX);
-                const iconY = launcher.y + 58 + (row * iconSpacingY);
+                const iconY = launcher.y + 48 + (row * iconSpacingY);
                 ctx.fillRect(iconX, iconY, iconWidth, iconHeight);
             }
         } else {
@@ -303,7 +453,7 @@ function render() {
             
             for (let i = 0; i < segments; i++) {
                 const segmentX = launcher.x - 30 + (i * (segmentWidth + 1));
-                const segmentY = launcher.y + 58;
+                const segmentY = launcher.y + 48;
                 
                 // Calculate how full this segment should be
                 const segmentStartMissile = i * missilesPerSegment;
@@ -335,15 +485,15 @@ function render() {
         
         // Background bar - larger and more visible
         ctx.fillStyle = '#333';
-        ctx.fillRect(launcher.x - 30, launcher.y + 75, 60, 6);
+        ctx.fillRect(launcher.x - 30, launcher.y + 65, 60, 6);
         
         // Progress bar
         if (cooldownProgress < 1) {
             ctx.fillStyle = '#f80';
-            ctx.fillRect(launcher.x - 30, launcher.y + 75, 60 * cooldownProgress, 6);
+            ctx.fillRect(launcher.x - 30, launcher.y + 65, 60 * cooldownProgress, 6);
         } else {
             ctx.fillStyle = '#0f0';
-            ctx.fillRect(launcher.x - 30, launcher.y + 75, 60, 6);
+            ctx.fillRect(launcher.x - 30, launcher.y + 65, 60, 6);
         }
         
         // Launcher number - removed to reduce visual clutter

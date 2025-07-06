@@ -70,7 +70,7 @@ function updateGame(deltaTime) {
             // Only count if launcher wasn't destroyed
             if (!destroyedLaunchers.includes(launcherIndex) && launcher.missiles > 0) {
                 const scrapPerMissile = 1; // 1 scrap per remaining missile
-                const totalMissileScrap = launcher.missiles * scrapPerMissile;
+                const totalMissileScrap = applyScrapBonus(launcher.missiles * scrapPerMissile);
                 
                 gameState.scrap += totalMissileScrap;
                 gameState.missileBonusTotal += totalMissileScrap;
@@ -116,7 +116,7 @@ function updateGame(deltaTime) {
                 const pointsPerCity = 100 * gameState.wave; // Points still scale with wave
                 const baseScrapPerCity = 5; // Fixed base scrap, no wave scaling
                 const cityMultiplier = 1 + (cityUpgrades[cityIndex] * 0.5); // 50% per city level
-                const scrapPerCity = Math.floor(baseScrapPerCity * cityMultiplier);
+                const scrapPerCity = applyScrapBonus(Math.floor(baseScrapPerCity * cityMultiplier));
                 
                 gameState.score += pointsPerCity;
                 gameState.scrap += scrapPerCity;
@@ -126,7 +126,7 @@ function updateGame(deltaTime) {
                 const cityX = cityPositions[cityIndex];
                 upgradeEffects.push({
                     x: cityX,
-                    y: 700,
+                    y: 740,
                     text: `+${pointsPerCity}pts +${scrapPerCity}scrap`,
                     alpha: 1,
                     vy: -1,
@@ -147,7 +147,7 @@ function updateGame(deltaTime) {
             gameState.waveBreak = true;
             gameState.waveBreakTimer = 0;
             
-            const baseScrap = gameState.wave * 5;
+            const baseScrap = applyScrapBonus(gameState.wave * 5);
             
             // NOW refill launchers and respawn destroyed ones (after all counting is done)
             launchers.forEach(launcher => {
@@ -200,21 +200,12 @@ function gameLoop(currentTime) {
     requestAnimationFrame(gameLoop);
 }
 
-// Initialize city upgrade event listeners
-function initializeCityUpgrades() {
-    for (let i = 0; i < 6; i++) {
-        const cityBtn = document.getElementById(`city-btn-${i}`);
-        if (cityBtn) {
-            cityBtn.addEventListener('click', () => upgradeCity(i));
-        }
-    }
-}
+// City upgrades are now handled via canvas click detection in input.js
 
 // Initialize the game systems (but don't start gameplay)
 function initGame() {
     initializeRenderer();
     initializeInput();
-    initializeCityUpgrades();
     // Show splash screen first, don't start gameplay yet
     showSplashScreen();
 }

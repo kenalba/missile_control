@@ -1,8 +1,8 @@
 // Game entities
 let launchers = [
-    { x: 150, y: 730, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-    { x: 600, y: 730, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-    { x: 1050, y: 730, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+    { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
+    { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 }, // Middle turret starts upgraded
+    { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
 ];
 
 let playerMissiles = [];
@@ -20,8 +20,8 @@ let cityUpgrades = [0, 0, 0, 0, 0, 0]; // Upgrade level for each city (0-3)
 function calculateMissileImpact(missile) {
     if (missile.vy <= 0) return null; // Missile going up or horizontal
     
-    // Calculate time to reach ground (y = 760)
-    const timeToGround = (760 - missile.y) / missile.vy;
+    // Calculate time to reach ground (y = 800)
+    const timeToGround = (800 - missile.y) / missile.vy;
     if (timeToGround <= 0) return null; // Already past ground
     
     // Calculate x position when it hits ground

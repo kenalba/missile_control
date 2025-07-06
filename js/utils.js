@@ -15,14 +15,14 @@ function checkCollisions() {
     
     // Check enemy missiles hitting ground
     enemyMissiles.forEach((missile, i) => {
-        if (missile.y >= 760) {
+        if (missile.y >= 800) {
             createExplosion(missile.x, missile.y, false);
             enemyMissiles.splice(i, 1);
             
             // Check if city was hit (check against city height, not just ground)
             cityPositions.forEach((cityX, cityIndex) => {
                 if (!destroyedCities.includes(cityIndex) && 
-                    Math.abs(missile.x - cityX) < 50 && missile.y >= 730) {
+                    Math.abs(missile.x - cityX) < 50 && missile.y >= 770) {
                     destroyedCities.push(cityIndex);
                     gameState.cities--;
                     // Wipe city upgrade when destroyed
@@ -56,7 +56,7 @@ function checkCollisions() {
                 
                 if (dist < explosion.radius) {
                     gameState.score += 10;
-                    gameState.scrap += 2;
+                    gameState.scrap += applyScrapBonus(2);
                     createExplosion(missile.x, missile.y, false);
                     enemyMissiles.splice(i, 1);
                     
@@ -80,7 +80,11 @@ function checkCollisions() {
                     plane.hp--;
                     if (plane.hp <= 0) {
                         gameState.score += 50; // More points for destroying plane
-                        gameState.scrap += 5; // More scrap for destroying plane
+                        let planeScrap = 5;
+                        if (globalUpgrades.salvage.level > 0) {
+                            planeScrap += 3; // Salvage upgrade adds +3 scrap from planes
+                        }
+                        gameState.scrap += applyScrapBonus(planeScrap);
                         
                         // Stop engine sound
                         if (plane.engineSoundId && audioSystem && audioSystem.stopSound) {
@@ -94,7 +98,7 @@ function checkCollisions() {
                         upgradeEffects.push({
                             x: plane.x,
                             y: plane.y - 30,
-                            text: '+50pts +5scrap',
+                            text: `+50pts +${applyScrapBonus(planeScrap)}scrap`,
                             alpha: 1,
                             vy: -2,
                             life: 80

@@ -37,6 +37,20 @@
                 <span class="scrap-display">💰 <span id="mobile-scrap">0</span></span>
                 <span class="upgrade-icon">⚙️</span>
             </div>
+            
+            <!-- Wave Break Modal -->
+            <div id="waveBreak" style="display: none;">
+                <h2>WAVE <span id="waveNumber">1</span> COMPLETE</h2>
+                <p>All launchers reloaded!</p>
+                <div style="margin: 15px 0; padding: 10px; background: rgba(0,255,0,0.1); border: 1px solid #0f0;">
+                    <p>Base scrap earned: <span id="scrapEarned">0</span></p>
+                    <p>Missile bonus: <span id="missileBonus">0</span> scrap</p>
+                    <p>City survival bonus: <span id="cityBonus">0</span> scrap</p>
+                    <p><strong>Total scrap this wave: <span id="totalScrap">0</span></strong></p>
+                </div>
+                <p>Use the upgrade panel to improve your defenses</p>
+                <button id="continueBtn" onclick="continueGame()">CONTINUE</button>
+            </div>
         </div>
         
         <div id="upgradePanel">
@@ -144,24 +158,27 @@
             </tbody>
         </table>
         
-        <!-- City Individual Upgrades -->
+        
+        <!-- Economic Upgrades -->
         <div class="global-upgrades">
-            <h4>CITIES</h4>
-            <div class="city-compact-row">
-                <button class="city-compact-btn" id="city-btn-0" onclick="upgradeCity(0)">C1 L<span id="city-level-0">0</span></button>
-                <button class="city-compact-btn" id="city-btn-1" onclick="upgradeCity(1)">C2 L<span id="city-level-1">0</span></button>
-                <button class="city-compact-btn" id="city-btn-2" onclick="upgradeCity(2)">C3 L<span id="city-level-2">0</span></button>
+            <h4>ECONOMIC</h4>
+            <div class="upgrade-row">
+                <span class="upgrade-name">Scrap Multiplier (+25%)</span>
+                <button class="upgrade-btn" id="scrapMultiplier" onclick="upgradeGlobal('scrapMultiplier')">80</button>
             </div>
-            <div class="city-compact-row">
-                <button class="city-compact-btn" id="city-btn-3" onclick="upgradeCity(3)">C4 L<span id="city-level-3">0</span></button>
-                <button class="city-compact-btn" id="city-btn-4" onclick="upgradeCity(4)">C5 L<span id="city-level-4">0</span></button>
-                <button class="city-compact-btn" id="city-btn-5" onclick="upgradeCity(5)">C6 L<span id="city-level-5">0</span></button>
+            <div class="upgrade-row">
+                <span class="upgrade-name">Salvage (+3 from planes)</span>
+                <button class="upgrade-btn" id="salvage" onclick="upgradeGlobal('salvage')">60</button>
+            </div>
+            <div class="upgrade-row">
+                <span class="upgrade-name">Efficiency (-15% costs)</span>
+                <button class="upgrade-btn" id="efficiency" onclick="upgradeGlobal('efficiency')">90</button>
             </div>
         </div>
         
         <!-- Global Upgrades -->
         <div class="global-upgrades">
-            <h4>GLOBAL</h4>
+            <h4>TACTICAL</h4>
             <div class="upgrade-row">
                 <span class="upgrade-name">Missile Highlight</span>
                 <button class="upgrade-btn" id="missileHighlight" onclick="upgradeGlobal('missileHighlight')">75</button>
@@ -218,18 +235,6 @@
         <button id="restartBtn" onclick="restartGame()">RESTART</button>
     </div>
     
-    <div id="waveBreak" style="display: none;">
-        <h2>WAVE <span id="waveNumber">1</span> COMPLETE</h2>
-        <p>All launchers reloaded!</p>
-        <div style="margin: 15px 0; padding: 10px; background: rgba(0,255,0,0.1); border: 1px solid #0f0;">
-            <p>Base scrap earned: <span id="scrapEarned">0</span></p>
-            <p>Missile bonus: <span id="missileBonus">0</span> scrap</p>
-            <p>City survival bonus: <span id="cityBonus">0</span> scrap</p>
-            <p><strong>Total scrap this wave: <span id="totalScrap">0</span></strong></p>
-        </div>
-        <p>Use the upgrade panel to improve your defenses</p>
-        <button id="continueBtn" onclick="continueGame()">CONTINUE</button>
-    </div>
 
     <script src="js/audio.js"></script>
     <script src="js/gameState.js"></script>
