@@ -2,9 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Missile Command - Upgrade Edition</title>
+    <meta name="description" content="Defend your cities from incoming missiles with strategic upgrades">
+    <meta name="theme-color" content="#00ff00">
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
     <div id="gameArea">
@@ -16,8 +22,21 @@
                 <div>Scrap: <span id="scrap">0</span></div>
                 <div>Wave: <span id="wave">1</span></div>
                 <div>Cities: <span id="cities">6</span></div>
-                <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                <div style="margin-top: 10px; font-size: 12px; color: #888;" class="desktop-controls">
                     Q/W/E to fire missiles
+                </div>
+            </div>
+            
+            <!-- Mobile Launcher Selection -->
+            <div id="mobileControls" class="mobile-controls">
+                <div class="launcher-selection">
+                    <button class="launcher-btn active" id="launcher-btn-0" onclick="selectLauncher(0)">T1</button>
+                    <button class="launcher-btn" id="launcher-btn-1" onclick="selectLauncher(1)">T2</button>
+                    <button class="launcher-btn" id="launcher-btn-2" onclick="selectLauncher(2)">T3</button>
+                    <button class="launcher-btn fullscreen-btn" id="fullscreen-btn" onclick="toggleFullscreen()">⛶</button>
+                </div>
+                <div class="mobile-instructions">
+                    Tap to fire from selected turret
                 </div>
             </div>
         </div>
@@ -161,9 +180,6 @@
         </div>
         <p>Use the upgrade panel to improve your defenses</p>
         <button id="continueBtn" onclick="continueGame()">CONTINUE</button>
-        <div style="margin-top: 10px; font-size: 12px; color: #888;">
-            Auto-continues in <span id="autoTimer">15</span> seconds
-        </div>
     </div>
 
     <script src="js/audio.js"></script>

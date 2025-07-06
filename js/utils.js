@@ -27,6 +27,11 @@ function checkCollisions() {
                     gameState.cities--;
                     // Wipe city upgrade when destroyed
                     cityUpgrades[cityIndex] = 0;
+                    
+                    // Stronger vibration for city destruction
+                    if (navigator.vibrate) {
+                        navigator.vibrate([100, 50, 100]); // Pattern: vibrate-pause-vibrate
+                    }
                 }
             });
             
@@ -54,6 +59,11 @@ function checkCollisions() {
                     gameState.scrap += 2;
                     createExplosion(missile.x, missile.y, false);
                     enemyMissiles.splice(i, 1);
+                    
+                    // Mobile vibration feedback
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50); // Short vibration for hit
+                    }
                 }
             });
         }

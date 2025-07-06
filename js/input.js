@@ -1,20 +1,68 @@
 // Input handling
 let mouseX = 0;
 let mouseY = 0;
+let selectedLauncher = 0; // Default to left launcher for mobile
 
 function initializeInput() {
     const canvas = document.getElementById('gameCanvas');
     
+    // Mouse events for desktop
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        mouseX = e.clientX - rect.left * (canvas.width / canvas.offsetWidth);
+        mouseY = e.clientY - rect.top * (canvas.height / canvas.offsetHeight);
     });
 
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', handleTouch, { passive: false });
+    canvas.addEventListener('touchmove', handleTouch, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+    // Click/tap to fire
     canvas.addEventListener('click', (e) => {
-        // Click-to-fire disabled - use Q/W/E keys to fire missiles
-        // This allows clicking to be used for targeting or other interactions
+        if (!gameState.gameRunning) return;
+        
+        const rect = canvas.getBoundingClientRect();
+        const targetX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
+        const targetY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
+        
+        // Don't fire below ground level
+        if (targetY >= 760) return;
+        
+        // Fire from selected launcher
+        const launcher = launchers[selectedLauncher];
+        if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
+            !destroyedLaunchers.includes(selectedLauncher)) {
+            fireMissile(launcher, targetX, targetY);
+        }
     });
+
+function handleTouch(e) {
+    e.preventDefault(); // Prevent scrolling
+    
+    if (e.touches.length > 0) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        mouseX = (touch.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
+        mouseY = (touch.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
+    }
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    
+    if (!gameState.gameRunning) return;
+    
+    // Don't fire below ground level
+    if (mouseY >= 760) return;
+    
+    // Fire from selected launcher
+    const launcher = launchers[selectedLauncher];
+    if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
+        !destroyedLaunchers.includes(selectedLauncher)) {
+        fireMissile(launcher, mouseX, mouseY);
+    }
+}
 
     // Keyboard controls for firing missiles
     document.addEventListener('keydown', (e) => {
@@ -32,6 +80,10 @@ function initializeInput() {
         else if (e.key.toLowerCase() === 'e') launcherIndex = 2;
         
         if (launcherIndex >= 0) {
+            // Update selected launcher for mobile UI
+            selectedLauncher = launcherIndex;
+            updateLauncherSelection();
+            
             const launcher = launchers[launcherIndex];
             if (launcher.missiles > 0 && Date.now() - launcher.lastFire > launcher.fireRate && 
                 !destroyedLaunchers.includes(launcherIndex)) {
@@ -39,4 +91,31 @@ function initializeInput() {
             }
         }
     });
+}
+
+// Mobile launcher selection
+function selectLauncher(index) {
+    selectedLauncher = index;
+    updateLauncherSelection();
+}
+
+function updateLauncherSelection() {
+    // Update launcher button states
+    for (let i = 0; i < 3; i++) {
+        const btn = document.getElementById(`launcher-btn-${i}`);
+        if (btn) {
+            btn.classList.toggle('active', i === selectedLauncher);
+        }
+    }
+}
+
+// Mobile fullscreen toggle
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error attempting to enable fullscreen: ${err.message}`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
 }

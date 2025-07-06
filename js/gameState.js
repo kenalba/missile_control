@@ -50,14 +50,7 @@ function updateUI() {
     // Update upgrade UI
     updateUpgradeUI();
     
-    // Update wave break timer
-    if (gameState.waveBreak) {
-        const timeLeft = Math.ceil((15000 - gameState.waveBreakTimer) / 1000);
-        const timerElement = document.getElementById('autoTimer');
-        if (timerElement) {
-            timerElement.textContent = Math.max(0, timeLeft);
-        }
-    }
+    // Auto-continue timer removed - manual continue only
 }
 
 function updateUpgradeUI() {

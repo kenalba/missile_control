@@ -179,10 +179,7 @@ function updateGame(deltaTime) {
     // Handle wave break
     if (gameState.waveBreak) {
         gameState.waveBreakTimer += deltaTime;
-        // Auto-advance after 15 seconds
-        if (gameState.waveBreakTimer >= 15000) {
-            continueGame();
-        }
+        // Auto-continue disabled - players must manually click continue
     }
     
     // Check game over
@@ -228,6 +225,19 @@ function initGame() {
     // Initialize first wave
     gameState.enemiesToSpawn = 6; // Wave 1: 4 + 1.5 + 0.2 = ~6 enemies
     requestAnimationFrame(gameLoop);
+}
+
+// Register service worker for PWA functionality
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('SW registered: ', registration);
+            })
+            .catch((registrationError) => {
+                console.log('SW registration failed: ', registrationError);
+            });
+    });
 }
 
 // Start the game when the page loads

@@ -16,13 +16,22 @@ function resizeCanvas() {
     const gameHeight = 900;
     const aspectRatio = gameWidth / gameHeight;
     
-    // Account for upgrade panel width (320px) and margins/gaps
-    const upgradePanelWidth = 320;
-    const totalMargin = 60; // margins and gaps
+    // Detect mobile devices
+    const isMobile = window.innerWidth <= 768;
     
-    // Calculate maximum size that fits in viewport alongside upgrade panel
-    const maxWidth = window.innerWidth - upgradePanelWidth - totalMargin;
-    const maxHeight = window.innerHeight - 20;
+    let maxWidth, maxHeight;
+    
+    if (isMobile) {
+        // Mobile: use full viewport width, account for mobile controls and UI
+        maxWidth = window.innerWidth - 20; // Small margin
+        maxHeight = window.innerHeight - 200; // Account for mobile controls, UI, and upgrade panel
+    } else {
+        // Desktop: account for upgrade panel width and margins
+        const upgradePanelWidth = 320;
+        const totalMargin = 60;
+        maxWidth = window.innerWidth - upgradePanelWidth - totalMargin;
+        maxHeight = window.innerHeight - 20;
+    }
     
     let canvasWidth = Math.min(maxWidth, gameWidth);
     let canvasHeight = canvasWidth / aspectRatio;
@@ -31,6 +40,16 @@ function resizeCanvas() {
     if (canvasHeight > maxHeight) {
         canvasHeight = maxHeight;
         canvasWidth = canvasHeight * aspectRatio;
+    }
+    
+    // Ensure minimum playable size on mobile
+    if (isMobile) {
+        const minWidth = 300;
+        const minHeight = minWidth / aspectRatio;
+        if (canvasWidth < minWidth) {
+            canvasWidth = minWidth;
+            canvasHeight = minHeight;
+        }
     }
     
     canvas.style.width = canvasWidth + 'px';
