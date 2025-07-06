@@ -1,0 +1,236 @@
+body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    color: #0f0;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+#gameContainer {
+    position: relative;
+    display: inline-block;
+}
+
+#gameArea {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+#gameCanvas {
+    display: block;
+    background: linear-gradient(to bottom, #001122 0%, #000033 100%);
+    cursor: crosshair;
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#ui {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #0f0;
+}
+
+#upgradePanel {
+    background: rgba(0, 0, 0, 0.9);
+    padding: 15px;
+    border-radius: 5px;
+    border: 1px solid #0f0;
+    min-width: 280px;
+    max-height: 85vh;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.upgrade-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 11px;
+}
+
+.upgrade-table th {
+    background: rgba(0, 255, 255, 0.1);
+    color: #0ff;
+    padding: 8px 4px;
+    border: 1px solid #333;
+    text-align: center;
+    font-size: 12px;
+}
+
+.upgrade-table td {
+    border: 1px solid #333;
+    padding: 6px 4px;
+    text-align: center;
+}
+
+.upgrade-type {
+    background: rgba(0, 255, 0, 0.1);
+    color: #0f0;
+    font-weight: bold;
+    text-align: left;
+    padding-left: 8px;
+    min-width: 80px;
+}
+
+.upgrade-cell {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.upgrade-info {
+    color: #0f0;
+    margin-bottom: 4px;
+    font-size: 10px;
+}
+
+.upgrade-type-row:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.global-upgrades {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #333;
+}
+
+.global-upgrades h4 {
+    margin: 0 0 10px 0;
+    color: #0ff;
+    font-size: 14px;
+    text-align: center;
+}
+
+.city-compact-row {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.city-compact-btn {
+    background: #004400;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 4px 6px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    flex: 1;
+    text-align: center;
+}
+
+.city-compact-btn:hover {
+    background: #006600;
+}
+
+.city-compact-btn:disabled {
+    background: #002200;
+    color: #666;
+    border-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.upgrade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 6px 0;
+    padding: 4px 0;
+}
+
+.upgrade-name {
+    font-size: 11px;
+    color: #0f0;
+    flex: 1;
+}
+
+.upgrade-btn {
+    background: #004400;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    min-width: 40px;
+    text-align: center;
+}
+
+.upgrade-btn:hover {
+    background: #006600;
+}
+
+.upgrade-btn:disabled {
+    background: #002200;
+    color: #666;
+    border-color: #555;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border: 2px solid #f00;
+    border-radius: 10px;
+    text-align: center;
+    color: #f00;
+    display: none;
+}
+
+#restartBtn {
+    background: #440000;
+    color: #f00;
+    border: 1px solid #f00;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+}
+
+#restartBtn:hover {
+    background: #660000;
+}
+
+#waveBreak {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border: 2px solid #0f0;
+    border-radius: 10px;
+    text-align: center;
+    color: #0f0;
+    display: none;
+    z-index: 20;
+}
+
+#continueBtn {
+    background: #004400;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 10px;
+}
+
+#continueBtn:hover {
+    background: #006600;
+}

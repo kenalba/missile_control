@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missile Command - Upgrade Edition</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="gameArea">
+        <div id="gameContainer">
+            <canvas id="gameCanvas" width="1200" height="900"></canvas>
+            
+            <div id="ui">
+                <div>Score: <span id="score">0</span></div>
+                <div>Scrap: <span id="scrap">0</span></div>
+                <div>Wave: <span id="wave">1</span></div>
+                <div>Cities: <span id="cities">6</span></div>
+                <div style="margin-top: 10px; font-size: 12px; color: #888;">
+                    Q/W/E to fire missiles
+                </div>
+            </div>
+        </div>
+        
+        <div id="upgradePanel">
+        <h3>UPGRADES</h3>
+        
+        <table class="upgrade-table">
+            <thead>
+                <tr>
+                    <th>Upgrade</th>
+                    <th>T1</th>
+                    <th>T2</th>
+                    <th>T3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="upgrade-type-row" id="speed-row">
+                    <td class="upgrade-type">Speed</td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="speed-level-0">1</span></div>
+                        <button class="upgrade-btn" id="speed-btn-0" onclick="upgrade('speed', 0)">10</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="speed-level-1">1</span></div>
+                        <button class="upgrade-btn" id="speed-btn-1" onclick="upgrade('speed', 1)">10</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="speed-level-2">1</span></div>
+                        <button class="upgrade-btn" id="speed-btn-2" onclick="upgrade('speed', 2)">10</button>
+                    </td>
+                </tr>
+                <tr class="upgrade-type-row" id="explosion-row">
+                    <td class="upgrade-type">Explosion</td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="explosion-level-0">1</span></div>
+                        <button class="upgrade-btn" id="explosion-btn-0" onclick="upgrade('explosion', 0)">15</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="explosion-level-1">1</span></div>
+                        <button class="upgrade-btn" id="explosion-btn-1" onclick="upgrade('explosion', 1)">15</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="explosion-level-2">1</span></div>
+                        <button class="upgrade-btn" id="explosion-btn-2" onclick="upgrade('explosion', 2)">15</button>
+                    </td>
+                </tr>
+                <tr class="upgrade-type-row" id="rate-row">
+                    <td class="upgrade-type">Fire Rate</td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="rate-level-0">1</span></div>
+                        <button class="upgrade-btn" id="rate-btn-0" onclick="upgrade('rate', 0)">20</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="rate-level-1">1</span></div>
+                        <button class="upgrade-btn" id="rate-btn-1" onclick="upgrade('rate', 1)">20</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="rate-level-2">1</span></div>
+                        <button class="upgrade-btn" id="rate-btn-2" onclick="upgrade('rate', 2)">20</button>
+                    </td>
+                </tr>
+                <tr class="upgrade-type-row" id="capacity-row">
+                    <td class="upgrade-type">Capacity</td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="capacity-level-0">1</span></div>
+                        <button class="upgrade-btn" id="capacity-btn-0" onclick="upgrade('capacity', 0)">25</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="capacity-level-1">1</span></div>
+                        <button class="upgrade-btn" id="capacity-btn-1" onclick="upgrade('capacity', 1)">25</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="capacity-level-2">1</span></div>
+                        <button class="upgrade-btn" id="capacity-btn-2" onclick="upgrade('capacity', 2)">25</button>
+                    </td>
+                </tr>
+                <tr class="upgrade-type-row" id="autopilot-row">
+                    <td class="upgrade-type">Autopilot</td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="autopilot-level-0">0</span></div>
+                        <button class="upgrade-btn" id="autopilot-btn-0" onclick="upgrade('autopilot', 0)">40</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="autopilot-level-1">0</span></div>
+                        <button class="upgrade-btn" id="autopilot-btn-1" onclick="upgrade('autopilot', 1)">40</button>
+                    </td>
+                    <td class="upgrade-cell">
+                        <div class="upgrade-info">Lv.<span id="autopilot-level-2">0</span></div>
+                        <button class="upgrade-btn" id="autopilot-btn-2" onclick="upgrade('autopilot', 2)">40</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <!-- City Individual Upgrades -->
+        <div class="global-upgrades">
+            <h4>CITIES</h4>
+            <div class="city-compact-row">
+                <button class="city-compact-btn" id="city-btn-0" onclick="upgradeCity(0)">C1 L<span id="city-level-0">0</span></button>
+                <button class="city-compact-btn" id="city-btn-1" onclick="upgradeCity(1)">C2 L<span id="city-level-1">0</span></button>
+                <button class="city-compact-btn" id="city-btn-2" onclick="upgradeCity(2)">C3 L<span id="city-level-2">0</span></button>
+            </div>
+            <div class="city-compact-row">
+                <button class="city-compact-btn" id="city-btn-3" onclick="upgradeCity(3)">C4 L<span id="city-level-3">0</span></button>
+                <button class="city-compact-btn" id="city-btn-4" onclick="upgradeCity(4)">C5 L<span id="city-level-4">0</span></button>
+                <button class="city-compact-btn" id="city-btn-5" onclick="upgradeCity(5)">C6 L<span id="city-level-5">0</span></button>
+            </div>
+        </div>
+        
+        <!-- Global Upgrades -->
+        <div class="global-upgrades">
+            <h4>GLOBAL</h4>
+            <div class="upgrade-row">
+                <span class="upgrade-name">City Repair</span>
+                <button class="upgrade-btn" id="repairCity" onclick="repairCity()">50</button>
+            </div>
+        </div>
+        
+        <div style="margin-top: 15px; font-size: 11px; color: #888;">
+            Press P for 100 scrap (cheat)
+        </div>
+        </div>
+    </div>
+    
+    <div id="gameOver">
+        <h2>GAME OVER</h2>
+        <p>Final Score: <span id="finalScore">0</span></p>
+        <p>Wave Reached: <span id="finalWave">1</span></p>
+        <button id="restartBtn" onclick="restartGame()">RESTART</button>
+    </div>
+    
+    <div id="waveBreak" style="display: none;">
+        <h2>WAVE <span id="waveNumber">1</span> COMPLETE</h2>
+        <p>All launchers reloaded!</p>
+        <div style="margin: 15px 0; padding: 10px; background: rgba(0,255,0,0.1); border: 1px solid #0f0;">
+            <p>Base scrap earned: <span id="scrapEarned">0</span></p>
+            <p>Missile bonus: <span id="missileBonus">0</span> scrap</p>
+            <p>City survival bonus: <span id="cityBonus">0</span> scrap</p>
+            <p><strong>Total scrap this wave: <span id="totalScrap">0</span></strong></p>
+        </div>
+        <p>Use the upgrade panel to improve your defenses</p>
+        <button id="continueBtn" onclick="continueGame()">CONTINUE</button>
+        <div style="margin-top: 10px; font-size: 12px; color: #888;">
+            Auto-continues in <span id="autoTimer">15</span> seconds
+        </div>
+    </div>
+
+    <script src="js/audio.js"></script>
+    <script src="js/gameState.js"></script>
+    <script src="js/entities.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/upgrades.js"></script>
+    <script src="js/rendering.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
