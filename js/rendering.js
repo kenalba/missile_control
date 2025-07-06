@@ -433,9 +433,6 @@ function render() {
             ctx.fillRect(plane.x - 20, plane.y - 1, 5, 2);
         }
         
-        // Draw health indicator (simple green bar for 1 HP)
-        ctx.fillStyle = '#0f0';
-        ctx.fillRect(plane.x - 8, plane.y - 12, 16, 2);
     });
     
     // Draw explosions
