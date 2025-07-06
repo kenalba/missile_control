@@ -44,7 +44,7 @@ function initializeInput() {
             }
         }
         
-        if (!gameState.gameRunning || gameState.waveBreak) return;
+        if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
         
         // Don't fire below ground level
         if (targetY >= 800) return;
@@ -73,7 +73,16 @@ function initializeInput() {
             return;
         }
         
-        if (!gameState.gameRunning || gameState.waveBreak) return;
+        // Pause functionality: Spacebar to pause/unpause
+        if (e.code === 'Space') {
+            e.preventDefault(); // Prevent page scroll
+            if (gameState.gameRunning && !gameState.waveBreak) {
+                gameState.paused = !gameState.paused;
+            }
+            return;
+        }
+        
+        if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
         
         let launcherIndex = -1;
         if (e.key.toLowerCase() === 'q') launcherIndex = 0;
@@ -136,7 +145,7 @@ function handleTouchEnd(e) {
         }
     }
     
-    if (!gameState.gameRunning || gameState.waveBreak) return;
+    if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
     
     // Don't fire below ground level
     if (mouseY >= 800) return;

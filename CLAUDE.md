@@ -32,8 +32,15 @@ Defend your cities from incoming missiles using three missile launchers. Each de
 ### File Structure
 - `index.html` - Main HTML structure and game layout
 - `styles.css` - All CSS styling and visual design
-- `game.js` - Core game logic and JavaScript functionality
-- Canvas-based rendering (1200x800)
+- `js/main.js` - Core game loop and initialization
+- `js/gameState.js` - Game state management and UI updates
+- `js/entities.js` - Game entities (missiles, launchers, planes)
+- `js/input.js` - Input handling and canvas click detection
+- `js/rendering.js` - Canvas rendering system
+- `js/upgrades.js` - Upgrade system and effects
+- `js/utils.js` - Utility functions and collision detection
+- `js/audio.js` - Audio system (placeholder)
+- Canvas-based rendering (1200x900)
 - Retro terminal aesthetic (green on black)
 
 ### Key Functions
@@ -48,15 +55,54 @@ Defend your cities from incoming missiles using three missile launchers. Each de
 - Upgrade levels and costs in `upgrades` object
 - All game entities stored in arrays: `playerMissiles`, `enemyMissiles`, `explosions`, `particles`
 
-## Current Issues & Improvements Needed
+## Recent Improvements (Latest Session)
 
-1. **Performance**: Stars redraw randomly each frame instead of being static
-2. **Game Balance**: Upgrade costs may need tuning
-3. **Visual Effects**: Could use more particle effects and animations
-4. **Audio**: No sound effects or music
-5. **Responsive Design**: Fixed canvas size may not work well on all screens
-6. **Save System**: No persistence of upgrades between sessions
-7. **Additional Features**: Could add more upgrade types, different enemy types, boss fights
+### Visual Overhaul
+- **Ground Redesign**: Moved ground higher to eliminate empty space, replaced boring gray with textured brown design
+- **City Upgrade UI**: Moved upgrade buttons from HTML panel directly to canvas below cities for better UX
+- **Canvas Click Detection**: Implemented sophisticated click detection for city upgrades and repairs
+- **Turret Visualizations**: Created detailed visual representations for upgrades:
+  - Speed: Exhaust flames behind turret
+  - Explosion: Wider barrel with reinforcement rings
+  - Fire Rate: Cooling vents on sides
+  - Capacity: Ammo drums with belt connections
+  - Autopilot: Radar dish with animated scanning beam
+- **Button Polish**: Pixel-perfect positioning with 3D effects and proper contrast
+
+### Gameplay Improvements
+- **Wave Break Control**: Disabled missile launching between rounds for smoother gameplay
+- **Modal Centering**: Wave break modal now centers on game canvas instead of full viewport
+- **Middle Turret Balance**: Starts with level 2 in all stats except autopilot (matches original Missile Command)
+- **Economic System**: Added scrap multiplier, salvage bonus, and efficiency discount upgrades
+- **Targeted Repairs**: City repair buttons now repair the specific clicked city
+
+### Technical Enhancements
+- **Canvas-based UI**: City upgrades now rendered directly on canvas for consistent visuals
+- **Coordinate Mapping**: Proper click detection accounting for canvas scaling
+- **Scrap Bonus System**: Economic upgrades properly applied throughout reward calculations
+
+## Priority Todo List
+
+### High Priority
+1. **Pause Functionality**: Spacebar to pause/unpause game
+2. **Save System**: Persist upgrades and high scores between sessions  
+3. **Achievement System**: Milestones like "reach wave 10", "destroy 500 missiles"
+4. **High Score Tracking**: Local leaderboard with top 5 scores
+
+### Medium Priority
+5. **Screenshake Effects**: Subtle screen shake for explosions and impacts
+6. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
+7. **Seekers**: Enemy missiles that actively track and follow player missiles
+8. **Smart Bomb Improvements**: Make them evade nearby explosions, require direct hits
+
+### Low Priority
+9. **Celebration Effects**: Visual rewards for wave milestones and achievements
+10. **Mobile Haptics**: Haptic feedback on explosions and firing
+
+## Completed Issues
+- ✅ **Audio**: Sound effects implemented and working well
+- ✅ **Visual Layout**: Ground redesign and UI improvements completed
+- ✅ **Game Balance**: Difficulty curve and upgrade progression refined
 
 ## Browser Compatibility
 - Requires modern browser with HTML5 Canvas support

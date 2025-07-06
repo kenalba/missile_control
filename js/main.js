@@ -1,5 +1,10 @@
 // Main game loop and initialization
 function updateGame(deltaTime) {
+    // Skip updates if paused
+    if (gameState.paused) {
+        return;
+    }
+    
     // Update entities
     updateEntities(deltaTime);
     

@@ -613,4 +613,18 @@ function render() {
         ctx.globalAlpha = 1;
         ctx.textAlign = 'left';
     });
+    
+    // Draw pause indicator
+    if (gameState.paused) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.fillStyle = '#0f0';
+        ctx.font = 'bold 48px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2 - 20);
+        ctx.font = 'bold 24px monospace';
+        ctx.fillText('Press SPACEBAR to continue', canvas.width / 2, canvas.height / 2 + 30);
+        ctx.textAlign = 'left';
+    }
 }
