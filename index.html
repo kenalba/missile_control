@@ -39,10 +39,19 @@
                     Tap to fire from selected turret
                 </div>
             </div>
+            
+            <!-- Mobile Upgrade Toggle -->
+            <div id="mobileUpgradeToggle" class="mobile-upgrade-toggle" onclick="toggleMobileUpgrades()">
+                <span class="scrap-display">💰 <span id="mobile-scrap">0</span></span>
+                <span class="upgrade-icon">⚙️</span>
+            </div>
         </div>
         
         <div id="upgradePanel">
-        <h3>UPGRADES</h3>
+        <div class="mobile-panel-header">
+            <h3>UPGRADES</h3>
+            <button class="mobile-close-btn" onclick="toggleMobileUpgrades()">✕</button>
+        </div>
         
         <table class="upgrade-table">
             <thead>

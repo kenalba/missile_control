@@ -50,6 +50,9 @@ function updateUI() {
     // Update upgrade UI
     updateUpgradeUI();
     
+    // Update mobile upgrade toggle
+    updateMobileUpgradeToggle();
+    
     // Auto-continue timer removed - manual continue only
 }
 

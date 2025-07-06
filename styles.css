@@ -28,26 +28,43 @@ body {
         flex-direction: column;
         align-items: stretch;
         padding: 10px;
-        overflow-y: auto;
+        overflow: hidden; /* Prevent body scroll */
     }
     
     #gameArea {
         flex-direction: column;
         align-items: center;
         gap: 15px;
+        height: 100vh;
     }
     
     #gameContainer {
         width: 100%;
         max-width: 100vw;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
     
     #upgradePanel {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         max-width: none;
         margin: 0;
-        max-height: 40vh;
+        max-height: 80vh;
         overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 1000;
+        border-radius: 15px 15px 0 0;
+        box-shadow: 0 -5px 20px rgba(0, 255, 0, 0.3);
+    }
+    
+    #upgradePanel.open {
+        transform: translateY(0);
     }
 }
 
@@ -275,6 +292,63 @@ body {
     z-index: 15;
 }
 
+.mobile-upgrade-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(0, 68, 0, 0.9);
+    color: #0f0;
+    border: 2px solid #0f0;
+    border-radius: 50px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 16px;
+    z-index: 20;
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.3);
+    transition: all 0.2s ease;
+}
+
+.mobile-upgrade-toggle:hover {
+    background: rgba(0, 102, 0, 0.9);
+    transform: scale(1.05);
+}
+
+.mobile-upgrade-toggle .scrap-display {
+    margin-right: 8px;
+}
+
+.mobile-upgrade-toggle.show {
+    display: block;
+}
+
+.mobile-panel-header {
+    display: none;
+}
+
+.mobile-close-btn {
+    background: #004400;
+    color: #f00;
+    border: 1px solid #f00;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mobile-close-btn:hover {
+    background: #660000;
+    transform: scale(1.1);
+}
+
 .launcher-selection {
     display: flex;
     gap: 10px;
@@ -329,6 +403,25 @@ body {
     
     .desktop-controls {
         display: none;
+    }
+    
+    .mobile-upgrade-toggle.show {
+        display: block;
+    }
+    
+    /* Mobile upgrade panel header */
+    .mobile-panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0 10px 0;
+        border-bottom: 1px solid #333;
+        margin-bottom: 15px;
+    }
+    
+    .mobile-panel-header h3 {
+        margin: 0;
+        color: #0ff;
     }
     
     /* Make all buttons touch-friendly on mobile */

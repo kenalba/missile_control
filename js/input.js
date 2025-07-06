@@ -119,3 +119,36 @@ function toggleFullscreen() {
         document.exitFullscreen();
     }
 }
+
+// Mobile upgrade panel toggle
+function toggleMobileUpgrades() {
+    const upgradePanel = document.getElementById('upgradePanel');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        upgradePanel.classList.toggle('open');
+    }
+}
+
+// Update mobile upgrade toggle visibility and scrap display
+function updateMobileUpgradeToggle() {
+    const upgradeToggle = document.getElementById('mobileUpgradeToggle');
+    const mobileScrap = document.getElementById('mobile-scrap');
+    const isMobile = window.innerWidth <= 768;
+    
+    if (upgradeToggle && mobileScrap) {
+        // Update scrap display
+        mobileScrap.textContent = gameState.scrap;
+        
+        // Only show during wave breaks on mobile
+        if (isMobile && gameState.waveBreak) {
+            upgradeToggle.classList.add('show');
+        } else {
+            upgradeToggle.classList.remove('show');
+            // Close panel if it's open when hiding toggle
+            if (isMobile) {
+                document.getElementById('upgradePanel').classList.remove('open');
+            }
+        }
+    }
+}
