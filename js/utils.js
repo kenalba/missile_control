@@ -67,5 +67,46 @@ function checkCollisions() {
                 }
             });
         }
+        
+        // Check explosions destroying planes
+        if (explosion.isPlayer) {
+            planes.forEach((plane, i) => {
+                const dist = Math.sqrt(
+                    Math.pow(plane.x - explosion.x, 2) + 
+                    Math.pow(plane.y - explosion.y, 2)
+                );
+                
+                if (dist < explosion.radius) {
+                    plane.hp--;
+                    if (plane.hp <= 0) {
+                        gameState.score += 50; // More points for destroying plane
+                        gameState.scrap += 5; // More scrap for destroying plane
+                        
+                        // Stop engine sound
+                        if (plane.engineSoundId && audioSystem && audioSystem.stopSound) {
+                            audioSystem.stopSound(plane.engineSoundId);
+                        }
+                        
+                        createExplosion(plane.x, plane.y, false);
+                        planes.splice(i, 1);
+                        
+                        // Create visual effect
+                        upgradeEffects.push({
+                            x: plane.x,
+                            y: plane.y - 30,
+                            text: '+50pts +5scrap',
+                            alpha: 1,
+                            vy: -2,
+                            life: 80
+                        });
+                        
+                        // Mobile vibration feedback
+                        if (navigator.vibrate) {
+                            navigator.vibrate([50, 20, 50]); // Pattern for plane destruction
+                        }
+                    }
+                }
+            });
+        }
     });
 }

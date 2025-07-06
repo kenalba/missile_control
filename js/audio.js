@@ -126,6 +126,72 @@ class AudioSystem {
         oscillator.stop(this.audioContext.currentTime + 0.1);
     }
     
+    // Plane engine sound - continuous low rumble
+    playPlaneEngine() {
+        if (!this.enabled) return null;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        const filterNode = this.audioContext.createBiquadFilter();
+        
+        oscillator.connect(filterNode);
+        filterNode.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(80, this.audioContext.currentTime);
+        oscillator.type = 'sawtooth';
+        
+        filterNode.type = 'lowpass';
+        filterNode.frequency.setValueAtTime(200, this.audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0.02, this.audioContext.currentTime);
+        
+        oscillator.start(this.audioContext.currentTime);
+        
+        // Return object with references to stop the sound
+        return {
+            oscillator: oscillator,
+            gainNode: gainNode
+        };
+    }
+    
+    // Plane firing sound - sharp downward sweep
+    playPlaneFire() {
+        if (!this.enabled) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.15);
+        oscillator.type = 'square';
+        
+        gainNode.gain.setValueAtTime(0.06, this.audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.15);
+    }
+    
+    // Stop a sound (for continuous sounds like plane engines)
+    stopSound(soundRef) {
+        if (!this.enabled || !soundRef) return;
+        
+        try {
+            if (soundRef.gainNode) {
+                soundRef.gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);
+            }
+            if (soundRef.oscillator) {
+                soundRef.oscillator.stop(this.audioContext.currentTime + 0.1);
+            }
+        } catch (e) {
+            // Sound might already be stopped
+        }
+    }
+    
     // Resume audio context (required for some browsers)
     resume() {
         if (this.audioContext && this.audioContext.state === 'suspended') {

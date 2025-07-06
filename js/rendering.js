@@ -403,6 +403,41 @@ function render() {
         ctx.fillRect(missile.x - size/2, missile.y - size/2, size, size);
     });
     
+    // Draw planes
+    ctx.lineWidth = 2;
+    planes.forEach(plane => {
+        // Draw plane trail
+        ctx.strokeStyle = '#0af';
+        ctx.beginPath();
+        plane.trail.forEach((point, i) => {
+            ctx.globalAlpha = i / plane.trail.length * 0.5;
+            if (i === 0) ctx.moveTo(point.x, point.y);
+            else ctx.lineTo(point.x, point.y);
+        });
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        
+        // Draw plane body
+        ctx.fillStyle = '#0af';
+        ctx.fillRect(plane.x - 15, plane.y - 3, 30, 6);
+        
+        // Draw plane wings
+        ctx.fillStyle = '#08d';
+        ctx.fillRect(plane.x - 10, plane.y - 8, 20, 3);
+        ctx.fillRect(plane.x - 10, plane.y + 5, 20, 3);
+        
+        // Draw plane nose (different for left/right direction)
+        if (plane.fromLeft) {
+            ctx.fillRect(plane.x + 15, plane.y - 1, 5, 2);
+        } else {
+            ctx.fillRect(plane.x - 20, plane.y - 1, 5, 2);
+        }
+        
+        // Draw health indicator (simple green bar for 1 HP)
+        ctx.fillStyle = '#0f0';
+        ctx.fillRect(plane.x - 8, plane.y - 12, 16, 2);
+    });
+    
     // Draw explosions
     explosions.forEach(explosion => {
         ctx.globalAlpha = explosion.alpha;

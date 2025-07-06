@@ -5,15 +5,24 @@ function updateGame(deltaTime) {
     
     // Spawn enemy missiles (only during active gameplay, not wave breaks)
     if (!gameState.waveBreak && gameState.enemiesToSpawn > 0) {
-        // Much faster spawn rate that increases with wave
-        const baseSpawnRate = 0.015; // Base 1.5% chance per frame
-        const waveMultiplier = gameState.wave * 0.005; // +0.5% per wave
+        // Rebalanced spawn rate for smoother difficulty progression
+        const baseSpawnRate = 0.012; // Base 1.2% chance per frame
+        const waveMultiplier = Math.min(gameState.wave * 0.003, 0.025); // +0.3% per wave, capped at +2.5%
         const spawnChance = baseSpawnRate + waveMultiplier;
         
         if (Math.random() < spawnChance) {
             spawnEnemyMissile();
             gameState.enemiesSpawned++;
             gameState.enemiesToSpawn--;
+        }
+    }
+    
+    // Spawn planes starting at wave 5
+    if (!gameState.waveBreak && gameState.wave >= 5) {
+        // Lower spawn rate for planes - they're more powerful
+        const planeSpawnChance = 0.0008 + (gameState.wave - 5) * 0.0002; // 0.08% base, +0.02% per wave
+        if (Math.random() < planeSpawnChance) {
+            spawnPlane();
         }
     }
     
@@ -27,11 +36,11 @@ function updateGame(deltaTime) {
         });
     }
     
-    // Check wave completion (all enemies spawned and no enemies/missiles/explosions remaining)
+    // Check wave completion (all enemies spawned and no enemies/missiles/explosions/planes remaining)
     // OR no remaining missiles can damage live targets
     const shouldEndWave = gameState.enemiesToSpawn === 0 && 
         (enemyMissiles.length === 0 || !anyMissilesCanDamage()) && 
-        playerMissiles.length === 0 && explosions.length === 0;
+        playerMissiles.length === 0 && explosions.length === 0 && planes.length === 0;
         
     if (shouldEndWave) {
         if (!gameState.waveBreak && !gameState.cityBonusPhase && !gameState.missileBonusPhase) {

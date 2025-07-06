@@ -10,6 +10,7 @@ let enemyMissiles = [];
 let explosions = [];
 let particles = [];
 let upgradeEffects = [];
+let planes = [];
 let cityPositions = [270, 390, 510, 690, 810, 930];
 let destroyedCities = [];
 let destroyedLaunchers = [];
@@ -120,8 +121,8 @@ function spawnEnemyMissile() {
     // For now, set targeting as false - will be calculated dynamically during update
     let isTargetingValid = false;
     
-    // Slower speed scaling to keep game manageable
-    const speed = 0.8 + (gameState.wave * 0.08) + (gameState.wave * gameState.wave * 0.005);
+    // Rebalanced speed scaling for smoother difficulty progression
+    const speed = 0.7 + (gameState.wave * 0.04) + (Math.min(gameState.wave, 15) * 0.01);
     
     // Smart bombs: start at wave 3, increase frequency gradually
     const smartBombChance = gameState.wave >= 3 ? Math.min(0.25, 0.05 + (gameState.wave - 3) * 0.03) : 0;
@@ -143,6 +144,42 @@ function spawnEnemyMissile() {
     };
     
     enemyMissiles.push(newMissile);
+}
+
+function spawnPlane() {
+    // Planes spawn from sides of screen starting at wave 5
+    if (gameState.wave < 5) return;
+    
+    // 50% chance to spawn from left, 50% from right
+    const fromLeft = Math.random() < 0.5;
+    const startX = fromLeft ? -50 : canvas.width + 50;
+    const targetX = fromLeft ? canvas.width + 50 : -50;
+    
+    // Random height between 100-300 pixels from top
+    const y = 100 + Math.random() * 200;
+    
+    // Speed increases slightly with wave
+    const speed = 1.5 + (gameState.wave - 5) * 0.1;
+    
+    const newPlane = {
+        x: startX,
+        y: y,
+        vx: fromLeft ? speed : -speed,
+        vy: 0,
+        lastFire: 0,
+        fireRate: 2000 + Math.random() * 1000, // Fire every 2-3 seconds
+        trail: [],
+        hp: 1, // Takes 1 hit to destroy
+        fromLeft: fromLeft,
+        engineSoundId: null // Will store audio ID for engine sound
+    };
+    
+    planes.push(newPlane);
+    
+    // Play engine sound
+    if (audioSystem && audioSystem.playPlaneEngine) {
+        newPlane.engineSoundId = audioSystem.playPlaneEngine();
+    }
 }
 
 function createExplosion(x, y, isPlayer = false, launcherIndex = 0) {
@@ -327,6 +364,57 @@ function updateEntities(deltaTime) {
         
         missile.x += missile.vx;
         missile.y += missile.vy;
+    });
+    
+    // Update planes
+    planes.forEach((plane, i) => {
+        plane.trail.push({x: plane.x, y: plane.y});
+        
+        // Remove planes that go off screen
+        if (plane.x < -100 || plane.x > canvas.width + 100) {
+            // Stop engine sound if it exists
+            if (plane.engineSoundId && audioSystem && audioSystem.stopSound) {
+                audioSystem.stopSound(plane.engineSoundId);
+            }
+            planes.splice(i, 1);
+            return;
+        }
+        
+        // Plane firing logic
+        if (Date.now() - plane.lastFire > plane.fireRate) {
+            // Fire missile downward from plane
+            const missileSpeed = 1.2;
+            enemyMissiles.push({
+                x: plane.x,
+                y: plane.y + 10,
+                targetX: plane.x,
+                targetY: 780,
+                vx: 0,
+                vy: missileSpeed,
+                trail: [],
+                isSmartBomb: false,
+                splitAt: null,
+                isTargetingValid: false,
+                sparkleTimer: 0,
+                lastThreatCheck: 0,
+                fromPlane: true // Mark as plane-fired missile
+            });
+            
+            plane.lastFire = Date.now();
+            
+            // Play plane firing sound
+            if (audioSystem && audioSystem.playPlaneFire) {
+                audioSystem.playPlaneFire();
+            }
+        }
+        
+        // Keep trail length reasonable
+        if (plane.trail.length > 20) {
+            plane.trail.shift();
+        }
+        
+        plane.x += plane.vx;
+        plane.y += plane.vy;
     });
     
     // Update explosions
