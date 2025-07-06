@@ -158,8 +158,8 @@ function spawnPlane() {
     // Random height between 100-300 pixels from top
     const y = 100 + Math.random() * 200;
     
-    // Speed increases slightly with wave
-    const speed = 1.5 + (gameState.wave - 5) * 0.1;
+    // Speed scales with wave like missiles
+    const speed = 1.2 + (gameState.wave * 0.08) + (Math.min(gameState.wave, 15) * 0.02);
     
     const newPlane = {
         x: startX,

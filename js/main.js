@@ -17,12 +17,14 @@ function updateGame(deltaTime) {
         }
     }
     
-    // Spawn planes starting at wave 5
-    if (!gameState.waveBreak && gameState.wave >= 5) {
-        // Lower spawn rate for planes - they're more powerful
-        const planeSpawnChance = 0.0008 + (gameState.wave - 5) * 0.0002; // 0.08% base, +0.02% per wave
+    // Spawn planes (set number per wave)
+    if (!gameState.waveBreak && gameState.planesToSpawn > 0) {
+        // Lower spawn rate for planes since they're more impactful
+        const planeSpawnChance = 0.001; // 0.1% chance per frame
         if (Math.random() < planeSpawnChance) {
             spawnPlane();
+            gameState.planesSpawned++;
+            gameState.planesToSpawn--;
         }
     }
     
@@ -231,6 +233,7 @@ function startGame() {
     document.getElementById('splashScreen').style.display = 'none';
     // Initialize first wave
     gameState.enemiesToSpawn = 6; // Wave 1: 4 + 1.5 + 0.2 = ~6 enemies
+    gameState.planesToSpawn = 0; // No planes on wave 1
     gameState.gameRunning = true;
     requestAnimationFrame(gameLoop);
 }

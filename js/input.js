@@ -45,41 +45,6 @@ function initializeInput() {
         }
     });
 
-function handleTouch(e) {
-    e.preventDefault(); // Prevent scrolling
-    
-    if (e.touches.length > 0) {
-        const rect = canvas.getBoundingClientRect();
-        const touch = e.touches[0];
-        mouseX = (touch.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
-        mouseY = (touch.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
-    }
-}
-
-function handleTouchEnd(e) {
-    e.preventDefault();
-    
-    if (!gameState.gameRunning) return;
-    
-    // Don't fire below ground level
-    if (mouseY >= 760) return;
-    
-    // Fire from selected launcher
-    const launcher = launchers[selectedLauncher];
-    if (!destroyedLaunchers.includes(selectedLauncher)) {
-        if (launcher.missiles <= 0) {
-            // No ammo
-            audioSystem.playEmptyAmmo();
-        } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
-            // Still on cooldown
-            audioSystem.playCooldown();
-        } else {
-            // Fire successfully
-            fireMissile(launcher, mouseX, mouseY);
-        }
-    }
-}
-
     // Keyboard controls for firing missiles
     document.addEventListener('keydown', (e) => {
         if (!gameState.gameRunning) return;
@@ -115,6 +80,41 @@ function handleTouchEnd(e) {
             }
         }
     });
+}
+
+function handleTouch(e) {
+    e.preventDefault(); // Prevent scrolling
+    
+    if (e.touches.length > 0) {
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        mouseX = (touch.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
+        mouseY = (touch.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
+    }
+}
+
+function handleTouchEnd(e) {
+    e.preventDefault();
+    
+    if (!gameState.gameRunning) return;
+    
+    // Don't fire below ground level
+    if (mouseY >= 760) return;
+    
+    // Fire from selected launcher
+    const launcher = launchers[selectedLauncher];
+    if (!destroyedLaunchers.includes(selectedLauncher)) {
+        if (launcher.missiles <= 0) {
+            // No ammo
+            audioSystem.playEmptyAmmo();
+        } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+            // Still on cooldown
+            audioSystem.playCooldown();
+        } else {
+            // Fire successfully
+            fireMissile(launcher, mouseX, mouseY);
+        }
+    }
 }
 
 // Mobile launcher selection

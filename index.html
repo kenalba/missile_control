@@ -18,15 +18,6 @@
         <div id="gameContainer">
             <canvas id="gameCanvas" width="1200" height="900"></canvas>
             
-            <div id="ui">
-                <div>Score: <span id="score">0</span></div>
-                <div>Scrap: <span id="scrap">0</span></div>
-                <div>Wave: <span id="wave">1</span></div>
-                <div>Cities: <span id="cities">6</span></div>
-                <div style="margin-top: 10px; font-size: 12px; color: #888;" class="desktop-controls">
-                    Q/W/E to fire missiles
-                </div>
-            </div>
             
             <!-- Mobile Launcher Selection -->
             <div id="mobileControls" class="mobile-controls">
@@ -52,6 +43,17 @@
         <div class="mobile-panel-header">
             <h3>UPGRADES</h3>
             <button class="mobile-close-btn" onclick="toggleMobileUpgrades()">✕</button>
+        </div>
+        
+        <!-- Game Status Info -->
+        <div class="game-status">
+            <div class="status-row">
+                <div>Score: <span id="score">0</span></div>
+                <div>Scrap: <span id="scrap">0</span></div>
+            </div>
+            <div class="status-row">
+                <div>Wave: <span id="wave">1</span></div>
+            </div>
         </div>
         
         <table class="upgrade-table">

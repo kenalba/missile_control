@@ -12,6 +12,8 @@ let gameState = {
     waveBreakTimer: 0,
     enemiesSpawned: 0,
     enemiesToSpawn: 0,
+    planesSpawned: 0,
+    planesToSpawn: 0,
     cityBonusPhase: false,
     cityBonusTimer: 0,
     cityBonusIndex: 0,
@@ -40,8 +42,8 @@ let globalUpgrades = {
 function updateUI() {
     document.getElementById('score').textContent = gameState.score;
     document.getElementById('scrap').textContent = gameState.scrap;
-    document.getElementById('wave').textContent = `${gameState.wave} (${gameState.enemiesToSpawn} left)`;
-    document.getElementById('cities').textContent = gameState.cities;
+    const planeText = gameState.planesToSpawn > 0 ? `, ${gameState.planesToSpawn} planes` : '';
+    document.getElementById('wave').textContent = `${gameState.wave} (${gameState.enemiesToSpawn} missiles${planeText})`;
     
     // Update repair button
     const repairBtn = document.getElementById('repairCity');
@@ -147,8 +149,11 @@ function continueGame() {
     gameState.waveBreak = false;
     gameState.waveBreakTimer = 0;
     gameState.enemiesSpawned = 0;
+    gameState.planesSpawned = 0;
     // Better difficulty curve: starts easier, ramps up more gradually
     gameState.enemiesToSpawn = Math.floor(4 + (gameState.wave * 1.5) + (gameState.wave * gameState.wave * 0.2));
+    // Set number of planes per wave (starting at wave 5)
+    gameState.planesToSpawn = gameState.wave >= 5 ? Math.floor(1 + (gameState.wave - 5) * 0.5) : 0;
     document.getElementById('waveBreak').style.display = 'none';
     
     // Respawn destroyed launchers
@@ -169,6 +174,8 @@ function restartGame() {
         waveBreakTimer: 0,
         enemiesSpawned: 0,
         enemiesToSpawn: 6,  // Wave 1: 4 + 1.5 + 0.2 = ~6 enemies
+        planesSpawned: 0,
+        planesToSpawn: 0,  // No planes on wave 1
         cityBonusPhase: false,
         cityBonusTimer: 0,
         cityBonusIndex: 0,
@@ -203,6 +210,7 @@ function restartGame() {
     explosions = [];
     particles = [];
     upgradeEffects = [];
+    planes = [];
     destroyedCities = [];
     destroyedLaunchers = [];
     cityUpgrades = [0, 0, 0, 0, 0, 0];
