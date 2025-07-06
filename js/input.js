@@ -9,8 +9,8 @@ function initializeInput() {
     // Mouse events for desktop
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
-        mouseX = e.clientX - rect.left * (canvas.width / canvas.offsetWidth);
-        mouseY = e.clientY - rect.top * (canvas.height / canvas.offsetHeight);
+        mouseX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
+        mouseY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
     });
 
     // Touch events for mobile

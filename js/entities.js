@@ -68,6 +68,16 @@ function spawnEnemyMissile() {
         }
     }
     
+    // Check if final target position is actually near a valid target (within 80px)
+    let isTargetingValid = false;
+    const allValidTargets = [...cityPositions.filter((_, i) => !destroyedCities.includes(i)), ...launchers.map(l => l.x)];
+    for (const validTarget of allValidTargets) {
+        if (Math.abs(targetX - validTarget) < 80) {
+            isTargetingValid = true;
+            break;
+        }
+    }
+    
     // Slower speed scaling to keep game manageable
     const speed = 0.8 + (gameState.wave * 0.08) + (gameState.wave * gameState.wave * 0.005);
     
@@ -84,7 +94,9 @@ function spawnEnemyMissile() {
         vy: speed,
         trail: [],
         isSmartBomb: isSmartBomb,
-        splitAt: isSmartBomb ? 200 + Math.random() * 200 : null // Split between y=200-400
+        splitAt: isSmartBomb ? 200 + Math.random() * 200 : null, // Split between y=200-400
+        isTargetingValid: isTargetingValid,
+        sparkleTimer: 0
     });
 }
 
@@ -92,7 +104,7 @@ function createExplosion(x, y, isPlayer = false, launcherIndex = 0) {
     let size = 40;
     if (isPlayer && launcherIndex !== undefined) {
         const explosionLevel = launcherUpgrades[launcherIndex].explosion.level;
-        size = 60 * Math.pow(1.4, explosionLevel - 1);
+        size = 60 * Math.pow(1.2, explosionLevel - 1);
     }
     
     explosions.push({
@@ -180,6 +192,22 @@ function updateEntities(deltaTime) {
     enemyMissiles.forEach((missile, i) => {
         missile.trail.push({x: missile.x, y: missile.y});
         
+        // Add sparkle effects for highlighted missiles if upgrade is purchased
+        if (missile.isTargetingValid && globalUpgrades.missileHighlight.level > 0) {
+            missile.sparkleTimer += deltaTime;
+            if (missile.sparkleTimer > 100) { // Create sparkle every 100ms
+                missile.sparkleTimer = 0;
+                particles.push({
+                    x: missile.x + (Math.random() - 0.5) * 20,
+                    y: missile.y + (Math.random() - 0.5) * 20,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    life: 1,
+                    color: '#f44'
+                });
+            }
+        }
+        
         // Remove enemy missiles that go way off screen
         if (missile.x < -100 || missile.x > canvas.width + 100 || 
             missile.y > canvas.height + 100) {
@@ -204,7 +232,9 @@ function updateEntities(deltaTime) {
                     vy: Math.cos(spreadAngle) * speed + missile.vy * 0.8,
                     trail: [],
                     isSmartBomb: false,
-                    splitAt: null
+                    splitAt: null,
+                    isTargetingValid: missile.isTargetingValid,
+                    sparkleTimer: 0
                 });
             }
             

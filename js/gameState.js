@@ -47,6 +47,14 @@ function updateUI() {
     const repairBtn = document.getElementById('repairCity');
     repairBtn.disabled = gameState.scrap < 50 || destroyedCities.length === 0;
     
+    // Update missile highlight button
+    const missileHighlightBtn = document.getElementById('missileHighlight');
+    if (missileHighlightBtn) {
+        missileHighlightBtn.textContent = globalUpgrades.missileHighlight.cost;
+        missileHighlightBtn.disabled = gameState.scrap < globalUpgrades.missileHighlight.cost || globalUpgrades.missileHighlight.level > 0;
+        missileHighlightBtn.style.opacity = (gameState.scrap < globalUpgrades.missileHighlight.cost || globalUpgrades.missileHighlight.level > 0) ? '0.6' : '1';
+    }
+    
     // Update upgrade UI
     updateUpgradeUI();
     

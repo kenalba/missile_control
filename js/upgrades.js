@@ -97,10 +97,16 @@ function upgradeGlobal(type) {
         upgrade.cost = Math.floor(upgrade.cost * 1.4);
         
         // Create visual effect in center of screen
+        const effectText = {
+            'cityScrapBonus': 'CITY BONUS UP!',
+            'missileHighlight': 'MISSILE HIGHLIGHT ON!',
+            'cityShield': 'CITY SHIELDS UP!'
+        };
+        
         upgradeEffects.push({
             x: 600,
             y: 400,
-            text: type === 'cityScrapBonus' ? 'CITY BONUS UP!' : 'GLOBAL UPGRADE!',
+            text: effectText[type] || 'GLOBAL UPGRADE!',
             alpha: 1,
             vy: -2,
             life: 80
