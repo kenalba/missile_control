@@ -61,7 +61,7 @@ function fireMissile(launcher, targetX, targetY) {
     const launcherIndex = launchers.indexOf(launcher);
     const speedLevel = launcherUpgrades[launcherIndex].speed.level;
     const autopilotLevel = launcherUpgrades[launcherIndex].autopilot.level;
-    const speed = 3 * Math.pow(1.3, speedLevel - 1);
+    const speed = 4.5 * Math.pow(1.3, speedLevel - 1);
     const dx = targetX - launcher.x;
     const dy = targetY - launcher.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -121,12 +121,26 @@ function spawnEnemyMissile() {
     // For now, set targeting as false - will be calculated dynamically during update
     let isTargetingValid = false;
     
-    // Rebalanced speed scaling for smoother difficulty progression
-    const speed = 0.7 + (gameState.wave * 0.04) + (Math.min(gameState.wave, 15) * 0.01);
+    // Missile Command style speed curve: fast ramp to wave 6, then plateau
+    // Based on original game's speed progression curve
+    function calculateMissileSpeed(wave) {
+        const baseSpeed = 0.5;
+        const maxSpeed = 3.5; // Maximum speed reached around wave 15 - much more challenging!
+        
+        if (wave <= 1) return baseSpeed;
+        if (wave >= 15) return maxSpeed; // Reaches max by wave 15
+        
+        // Exponential curve that reaches ~80% of max by wave 6, then continues climbing
+        const progress = Math.min(wave - 1, 14) / 14;
+        const curve = 1 - Math.pow(1 - progress, 2.2); // Steep early curve with continued growth
+        return baseSpeed + (maxSpeed - baseSpeed) * curve;
+    }
     
-    // Smart bombs: start at wave 3, increase frequency gradually
-    const smartBombChance = gameState.wave >= 3 ? Math.min(0.25, 0.05 + (gameState.wave - 3) * 0.03) : 0;
-    const isSmartBomb = Math.random() < smartBombChance;
+    const speed = calculateMissileSpeed(gameState.wave);
+    
+    // Splitters: start at wave 3, increase frequency gradually
+    const splitterChance = gameState.wave >= 3 ? Math.min(0.25, 0.05 + (gameState.wave - 3) * 0.03) : 0;
+    const isSplitter = Math.random() < splitterChance;
     
     const newMissile = {
         x: startX,
@@ -136,8 +150,8 @@ function spawnEnemyMissile() {
         vx: (targetX - startX) * speed / 400,
         vy: speed,
         trail: [],
-        isSmartBomb: isSmartBomb,
-        splitAt: isSmartBomb ? 200 + Math.random() * 200 : null, // Split between y=200-400
+        isSplitter: isSplitter,
+        splitAt: isSplitter ? 200 + Math.random() * 200 : null, // Split between y=200-400
         isTargetingValid: isTargetingValid,
         sparkleTimer: 0,
         lastThreatCheck: 0 // Will force immediate check on first update
@@ -334,8 +348,8 @@ function updateEntities(deltaTime) {
             return;
         }
         
-        // Check if smart bomb should split
-        if (missile.isSmartBomb && missile.splitAt && missile.y >= missile.splitAt) {
+        // Check if splitter should split
+        if (missile.isSplitter && missile.splitAt && missile.y >= missile.splitAt) {
             // Create 3 warheads
             for (let j = 0; j < 3; j++) {
                 const spreadAngle = (j - 1) * 0.3; // -0.3, 0, 0.3 radians
@@ -350,7 +364,7 @@ function updateEntities(deltaTime) {
                     vx: Math.sin(spreadAngle) * speed + missile.vx * 0.8,
                     vy: Math.cos(spreadAngle) * speed + missile.vy * 0.8,
                     trail: [],
-                    isSmartBomb: false,
+                    isSplitter: false,
                     splitAt: null,
                     isTargetingValid: missile.isTargetingValid,
                     sparkleTimer: 0

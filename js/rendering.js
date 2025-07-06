@@ -539,7 +539,7 @@ function render() {
     ctx.lineWidth = 2;
     enemyMissiles.forEach(missile => {
         // Use different color for smart bombs
-        ctx.strokeStyle = missile.isSmartBomb ? '#f0f' : '#f80';
+        ctx.strokeStyle = missile.isSplitter ? '#f0f' : '#f80';
         
         // Draw trail
         ctx.beginPath();
@@ -552,8 +552,8 @@ function render() {
         ctx.globalAlpha = 1;
         
         // Draw missile head (larger for smart bombs)
-        ctx.fillStyle = missile.isSmartBomb ? '#f0f' : '#f80';
-        const size = missile.isSmartBomb ? 6 : 4;
+        ctx.fillStyle = missile.isSplitter ? '#f0f' : '#f80';
+        const size = missile.isSplitter ? 6 : 4;
         ctx.fillRect(missile.x - size/2, missile.y - size/2, size, size);
     });
     

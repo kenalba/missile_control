@@ -68,6 +68,8 @@ Defend your cities from incoming missiles using three missile launchers. Each de
   - Capacity: Ammo drums with belt connections
   - Autopilot: Radar dish with animated scanning beam
 - **Button Polish**: Pixel-perfect positioning with 3D effects and proper contrast
+- **High Score Display**: Top 5 scores shown on game over screen with dates
+- **Screenshake Effects**: Subtle screen shake for explosions and impacts
 
 ### Gameplay Improvements
 - **Wave Break Control**: Disabled missile launching between rounds for smoother gameplay
@@ -75,34 +77,38 @@ Defend your cities from incoming missiles using three missile launchers. Each de
 - **Middle Turret Balance**: Starts with level 2 in all stats except autopilot (matches original Missile Command)
 - **Economic System**: Added scrap multiplier, salvage bonus, and efficiency discount upgrades
 - **Targeted Repairs**: City repair buttons now repair the specific clicked city
+- **Difficulty Curve**: Enemy missile speed follows original Missile Command curve - rapid acceleration to wave 6, then plateau
+- **Guaranteed Planes**: Planes now spawn at fixed intervals (25%, 50%, 75% through wave) for consistent difficulty
 
 ### Technical Enhancements
 - **Canvas-based UI**: City upgrades now rendered directly on canvas for consistent visuals
 - **Coordinate Mapping**: Proper click detection accounting for canvas scaling
 - **Scrap Bonus System**: Economic upgrades properly applied throughout reward calculations
+- **Save System**: Comprehensive localStorage-based persistence with achievements and stats
+- **Pause Functionality**: Spacebar to pause/unpause with visual overlay
 
 ## Priority Todo List
 
-### High Priority
-1. **Pause Functionality**: Spacebar to pause/unpause game
-2. **Save System**: Persist upgrades and high scores between sessions  
-3. **Achievement System**: Milestones like "reach wave 10", "destroy 500 missiles"
-4. **High Score Tracking**: Local leaderboard with top 5 scores
-
 ### Medium Priority
-5. **Screenshake Effects**: Subtle screen shake for explosions and impacts
-6. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
-7. **Seekers**: Enemy missiles that actively track and follow player missiles
-8. **Smart Bomb Improvements**: Make them evade nearby explosions, require direct hits
+1. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
+2. **Seekers**: Enemy missiles that actively track and follow player missiles
+3. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
 
 ### Low Priority
-9. **Celebration Effects**: Visual rewards for wave milestones and achievements
-10. **Mobile Haptics**: Haptic feedback on explosions and firing
+4. **Celebration Effects**: Visual rewards for wave milestones and achievements
+5. **Mobile Haptics**: Haptic feedback on explosions and firing
 
 ## Completed Issues
 - ✅ **Audio**: Sound effects implemented and working well
 - ✅ **Visual Layout**: Ground redesign and UI improvements completed
 - ✅ **Game Balance**: Difficulty curve and upgrade progression refined
+- ✅ **Pause Functionality**: Spacebar to pause/unpause game
+- ✅ **Save System**: Persist upgrades and high scores between sessions
+- ✅ **Achievement System**: Milestones like "reach wave 10", "destroy 500 missiles"
+- ✅ **High Score Tracking**: Local leaderboard with top 5 scores
+- ✅ **Screenshake Effects**: Subtle screen shake for explosions and impacts
+- ✅ **Difficulty Curve**: Authentic Missile Command speed progression
+- ✅ **Plane Spawning**: Guaranteed consistent plane timing per wave
 
 ## Browser Compatibility
 - Requires modern browser with HTML5 Canvas support

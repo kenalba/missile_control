@@ -25,11 +25,20 @@ function updateGame(deltaTime) {
         }
     }
     
-    // Spawn planes (set number per wave)
+    // Spawn planes (guaranteed timing per wave)
     if (!gameState.waveBreak && gameState.planesToSpawn > 0) {
-        // Lower spawn rate for planes since they're more impactful
-        const planeSpawnChance = 0.001; // 0.1% chance per frame
-        if (Math.random() < planeSpawnChance) {
+        // Calculate when planes should spawn based on wave progress
+        const totalEnemiesThisWave = Math.floor(4 + (gameState.wave * 1.5) + (gameState.wave * gameState.wave * 0.2));
+        const enemiesSpawned = gameState.enemiesSpawned;
+        const waveProgress = enemiesSpawned / totalEnemiesThisWave;
+        
+        // Spawn planes at specific intervals: 25%, 50%, 75% through the wave
+        const planeSpawnPoints = [0.25, 0.50, 0.75];
+        const nextPlaneIndex = gameState.planesSpawned;
+        
+        if (nextPlaneIndex < planeSpawnPoints.length && 
+            nextPlaneIndex < gameState.planesToSpawn && 
+            waveProgress >= planeSpawnPoints[nextPlaneIndex]) {
             spawnPlane();
             gameState.planesSpawned++;
             gameState.planesToSpawn--;
