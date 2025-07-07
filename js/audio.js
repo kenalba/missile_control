@@ -176,6 +176,33 @@ class AudioSystem {
         oscillator.stop(this.audioContext.currentTime + 0.15);
     }
     
+    // Seeker warning sound - distinctive "bloo-bloo-bloo" pattern
+    playSeekerWarning() {
+        if (!this.enabled) return;
+        
+        const oscillator = this.audioContext.createOscillator();
+        const gainNode = this.audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(this.audioContext.destination);
+        
+        oscillator.type = 'square'; // Square wave for more distinctive sound
+        oscillator.frequency.setValueAtTime(350, this.audioContext.currentTime);
+        oscillator.frequency.setValueAtTime(280, this.audioContext.currentTime + 0.05);
+        oscillator.frequency.setValueAtTime(350, this.audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.04, this.audioContext.currentTime + 0.01);
+        gainNode.gain.setValueAtTime(0.04, this.audioContext.currentTime + 0.05);
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime + 0.06);
+        gainNode.gain.setValueAtTime(0.04, this.audioContext.currentTime + 0.07);
+        gainNode.gain.setValueAtTime(0.04, this.audioContext.currentTime + 0.11);
+        gainNode.gain.setValueAtTime(0, this.audioContext.currentTime + 0.12);
+        
+        oscillator.start(this.audioContext.currentTime);
+        oscillator.stop(this.audioContext.currentTime + 0.15);
+    }
+    
     // Stop a sound (for continuous sounds like plane engines)
     stopSound(soundRef) {
         if (!this.enabled || !soundRef) return;

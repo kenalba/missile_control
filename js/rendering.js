@@ -538,23 +538,56 @@ function render() {
     // Draw enemy missiles
     ctx.lineWidth = 2;
     enemyMissiles.forEach(missile => {
-        // Use different color for smart bombs
-        ctx.strokeStyle = missile.isSplitter ? '#f0f' : '#f80';
+        // Different colors for different missile types
+        let missileColor = '#f80'; // Default orange
+        if (missile.isSplitter) missileColor = '#f0f'; // Magenta for splitters
+        if (missile.isSeeker) missileColor = '#0af'; // Cyan for seekers
         
-        // Draw trail
+        ctx.strokeStyle = missileColor;
+        
+        // Draw trail with special effects for seekers
         ctx.beginPath();
+        if (missile.isSeeker) {
+            // Dotted trail for seekers
+            ctx.setLineDash([4, 4]);
+        }
         missile.trail.forEach((point, i) => {
             ctx.globalAlpha = i / missile.trail.length;
             if (i === 0) ctx.moveTo(point.x, point.y);
             else ctx.lineTo(point.x, point.y);
         });
         ctx.stroke();
+        ctx.setLineDash([]); // Reset line dash
         ctx.globalAlpha = 1;
         
-        // Draw missile head (larger for smart bombs)
-        ctx.fillStyle = missile.isSplitter ? '#f0f' : '#f80';
-        const size = missile.isSplitter ? 6 : 4;
-        ctx.fillRect(missile.x - size/2, missile.y - size/2, size, size);
+        // Draw missile head with different shapes
+        if (missile.isSeeker) {
+            // Diamond shape for seekers with blinking effect
+            const blinkOn = (missile.seekerBlinkTimer % 1000) < 500; // Blink every 500ms
+            ctx.fillStyle = blinkOn ? '#0ff' : '#0af'; // Bright cyan when blinking
+            
+            const size = 5;
+            ctx.beginPath();
+            ctx.moveTo(missile.x, missile.y - size);      // Top
+            ctx.lineTo(missile.x + size, missile.y);      // Right
+            ctx.lineTo(missile.x, missile.y + size);      // Bottom
+            ctx.lineTo(missile.x - size, missile.y);      // Left
+            ctx.closePath();
+            ctx.fill();
+            
+            // Add glow effect when blinking
+            if (blinkOn) {
+                ctx.shadowColor = '#0ff';
+                ctx.shadowBlur = 10;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        } else {
+            // Square shape for normal missiles and splitters
+            ctx.fillStyle = missileColor;
+            const size = missile.isSplitter ? 6 : 4;
+            ctx.fillRect(missile.x - size/2, missile.y - size/2, size, size);
+        }
     });
     
     // Draw planes
@@ -589,21 +622,103 @@ function render() {
         
     });
     
-    // Draw explosions
+    // Draw explosions with enhanced visuals
     explosions.forEach(explosion => {
+        // Draw main explosion
         ctx.globalAlpha = explosion.alpha;
-        ctx.fillStyle = explosion.isPlayer ? '#0f0' : '#f80';
+        
+        // Different colors for different explosion types
+        let explosionColor = explosion.isPlayer ? '#0f0' : '#f80';
+        if (explosion.type === 'plane') explosionColor = '#0af';
+        if (explosion.type === 'city') explosionColor = '#ff0';
+        
+        ctx.fillStyle = explosionColor;
         ctx.beginPath();
         ctx.arc(explosion.x, explosion.y, explosion.radius, 0, Math.PI * 2);
         ctx.fill();
+        
+        // Draw core bright center for larger explosions
+        if (explosion.radius > 40) {
+            ctx.globalAlpha = explosion.alpha * 0.8;
+            ctx.fillStyle = '#fff';
+            ctx.beginPath();
+            ctx.arc(explosion.x, explosion.y, explosion.radius * 0.3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        // Draw shockwave if present
+        if (explosion.shockwave && explosion.shockwaveAlpha > 0) {
+            ctx.globalAlpha = explosion.shockwaveAlpha;
+            ctx.strokeStyle = explosionColor;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(explosion.x, explosion.y, explosion.shockwaveRadius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Inner shockwave ring
+            ctx.globalAlpha = explosion.shockwaveAlpha * 0.5;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(explosion.x, explosion.y, explosion.shockwaveRadius * 0.7, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
         ctx.globalAlpha = 1;
     });
     
-    // Draw particles
+    // Draw particles with enhanced visuals
     particles.forEach(particle => {
-        ctx.globalAlpha = particle.life;
+        ctx.globalAlpha = particle.life / (particle.maxLife || 1);
         ctx.fillStyle = particle.color;
-        ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+        
+        if (particle.isText) {
+            // Draw celebration text
+            ctx.font = `bold ${particle.size}px monospace`;
+            ctx.textAlign = 'center';
+            ctx.fillText(particle.text, particle.x, particle.y);
+            ctx.textAlign = 'left';
+        } else if (particle.isFlash) {
+            // Draw impact flash as large fading circle
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size * (particle.life / particle.maxLife), 0, Math.PI * 2);
+            ctx.fill();
+        } else if (particle.sparkle) {
+            // Draw sparkle particles with star shape
+            ctx.save();
+            ctx.translate(particle.x, particle.y);
+            ctx.rotate(Date.now() * 0.01); // Rotate sparkles
+            
+            const size = particle.size || 2;
+            // Star shape
+            ctx.beginPath();
+            for (let i = 0; i < 4; i++) {
+                const angle = (i * Math.PI) / 2;
+                const x = Math.cos(angle) * size;
+                const y = Math.sin(angle) * size;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            ctx.restore();
+        } else if (particle.firework) {
+            // Draw firework particles with glow effect
+            const size = particle.size || 2;
+            
+            // Glow effect
+            ctx.shadowColor = particle.color;
+            ctx.shadowBlur = 8;
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, size, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        } else {
+            // Draw normal particles with variable sizes
+            const size = particle.size || 2;
+            ctx.fillRect(particle.x - size/2, particle.y - size/2, size, size);
+        }
+        
         ctx.globalAlpha = 1;
     });
     

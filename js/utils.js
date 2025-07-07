@@ -22,14 +22,18 @@ function checkCollisions() {
             // Screen shake for ground impact
             addScreenShake(4, 300);
             
-            // Check if city was hit (check against city height, not just ground)
+            // Check if city was hit (match visual city boundaries)
             cityPositions.forEach((cityX, cityIndex) => {
                 if (!destroyedCities.includes(cityIndex) && 
-                    Math.abs(missile.x - cityX) < 50 && missile.y >= 770) {
+                    Math.abs(missile.x - cityX) < 50 && missile.y >= 790) {
                     destroyedCities.push(cityIndex);
                     gameState.cities--;
+                    gameState.achievements.citiesLost++;
                     // Wipe city upgrade when destroyed
                     cityUpgrades[cityIndex] = 0;
+                    
+                    // Create massive city destruction explosion
+                    createExplosion(cityX, 780, false, 0, 'city');
                     
                     // Screen shake for city destruction
                     addScreenShake(8, 800);
@@ -61,10 +65,23 @@ function checkCollisions() {
                 );
                 
                 if (dist < explosion.radius) {
-                    gameState.score += 10;
-                    gameState.scrap += applyScrapBonus(2);
+                    // Higher rewards for destroying seekers
+                    if (missile.isSeeker) {
+                        gameState.score += 25; // 2.5x points for seekers
+                        gameState.scrap += applyScrapBonus(5); // 2.5x scrap for seekers
+                        gameState.achievements.seekersDestroyed++;
+                    } else {
+                        gameState.score += 10;
+                        gameState.scrap += applyScrapBonus(2);
+                    }
+                    gameState.achievements.missilesDestroyed++;
+                    gameState.achievements.totalScrapEarned += applyScrapBonus(missile.isSeeker ? 5 : 2);
+                    
                     createExplosion(missile.x, missile.y, false);
                     enemyMissiles.splice(i, 1);
+                    
+                    // Check for achievements
+                    checkAchievements();
                     
                     // Small screen shake for missile destruction
                     addScreenShake(2, 150);
@@ -94,14 +111,19 @@ function checkCollisions() {
                             planeScrap += 3; // Salvage upgrade adds +3 scrap from planes
                         }
                         gameState.scrap += applyScrapBonus(planeScrap);
+                        gameState.achievements.planesDestroyed++;
+                        gameState.achievements.totalScrapEarned += applyScrapBonus(planeScrap);
                         
                         // Stop engine sound
                         if (plane.engineSoundId && audioSystem && audioSystem.stopSound) {
                             audioSystem.stopSound(plane.engineSoundId);
                         }
                         
-                        createExplosion(plane.x, plane.y, false);
+                        createExplosion(plane.x, plane.y, false, 0, 'plane');
                         planes.splice(i, 1);
+                        
+                        // Check for achievements
+                        checkAchievements();
                         
                         // Medium screen shake for plane destruction
                         addScreenShake(5, 400);

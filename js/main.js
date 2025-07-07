@@ -13,10 +13,11 @@ function updateGame(deltaTime) {
     
     // Spawn enemy missiles (only during active gameplay, not wave breaks)
     if (!gameState.waveBreak && gameState.enemiesToSpawn > 0) {
-        // Rebalanced spawn rate for smoother difficulty progression
-        const baseSpawnRate = 0.012; // Base 1.2% chance per frame
+        // Time-based spawn rate (normalized to 60 FPS)
+        const frameMultiplier = deltaTime / 16.67;
+        const baseSpawnRate = 0.012; // Base 1.2% chance per frame at 60 FPS
         const waveMultiplier = Math.min(gameState.wave * 0.003, 0.025); // +0.3% per wave, capped at +2.5%
-        const spawnChance = baseSpawnRate + waveMultiplier;
+        const spawnChance = (baseSpawnRate + waveMultiplier) * frameMultiplier;
         
         if (Math.random() < spawnChance) {
             spawnEnemyMissile();
@@ -181,11 +182,21 @@ function updateGame(deltaTime) {
             document.getElementById('waveBreak').style.display = 'block';
             document.getElementById('waveNumber').textContent = gameState.wave;
             document.getElementById('scrapEarned').textContent = baseScrap;
-            const baseCityScrap = gameState.cities * 5 * gameState.wave;
-            const totalCityScrap = baseCityScrap;
-            document.getElementById('cityBonus').textContent = totalCityScrap;
+            
+            // Calculate city bonus accurately (matching the actual calculation logic)
+            let actualCityScrap = 0;
+            for (let i = 0; i < cityPositions.length; i++) {
+                if (!destroyedCities.includes(i)) {
+                    const baseScrapPerCity = 5; // Fixed base scrap, no wave scaling
+                    const cityMultiplier = 1 + (cityUpgrades[i] * 0.5); // 50% per city level
+                    const scrapPerCity = applyScrapBonus(Math.floor(baseScrapPerCity * cityMultiplier));
+                    actualCityScrap += scrapPerCity;
+                }
+            }
+            
+            document.getElementById('cityBonus').textContent = actualCityScrap;
             document.getElementById('missileBonus').textContent = gameState.missileBonusTotal;
-            document.getElementById('totalScrap').textContent = baseScrap + totalCityScrap;
+            document.getElementById('totalScrap').textContent = baseScrap + actualCityScrap + gameState.missileBonusTotal;
             
             gameState.scrap += baseScrap; // Add base scrap (other bonuses already added during counting)
         }

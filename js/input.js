@@ -73,6 +73,20 @@ function initializeInput() {
             return;
         }
         
+        // Debug controls (work anytime during game)
+        if (gameState.gameRunning && !gameState.waveBreak) {
+            if (e.key === '0') {
+                // Spawn a test plane
+                spawnTestPlane();
+                return;
+            }
+            if (e.key === '9') {
+                // Spawn a test seeker
+                spawnTestSeeker();
+                return;
+            }
+        }
+        
         // Pause functionality: Spacebar to pause/unpause
         if (e.code === 'Space') {
             e.preventDefault(); // Prevent page scroll
