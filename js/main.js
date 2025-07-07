@@ -278,19 +278,48 @@ function showSplashScreen() {
     document.getElementById('splashScreen').style.display = 'flex';
     gameState.gameRunning = false;
     
-    // Add start button event listener
-    document.getElementById('startBtn').addEventListener('click', startGame);
+    // Highlight the last selected mode
+    highlightLastSelectedMode();
+}
+
+// Highlight the last selected mode on the splash screen
+function highlightLastSelectedMode() {
+    if (window.saveSystem) {
+        const lastMode = saveSystem.getLastSelectedMode();
+        
+        // Remove previous highlights
+        document.getElementById('arcadeModeBtn').classList.remove('recommended');
+        document.getElementById('commandModeBtn').classList.remove('recommended');
+        
+        // Add highlight to last selected mode
+        if (lastMode === 'command') {
+            document.getElementById('commandModeBtn').classList.add('recommended');
+        } else {
+            document.getElementById('arcadeModeBtn').classList.add('recommended');
+        }
+    }
 }
 
 // Start the actual game
-function startGame() {
+function startGame(mode = 'arcade') {
     document.getElementById('splashScreen').style.display = 'none';
-    // Initialize first wave
-    gameState.enemiesToSpawn = 6; // Wave 1: 4 + 1.5 + 0.2 = ~6 enemies
-    gameState.planesToSpawn = 0; // No planes on wave 1
-    gameState.gameRunning = true;
-    requestAnimationFrame(gameLoop);
+    
+    // Save the selected mode preference
+    if (window.saveSystem) {
+        saveSystem.saveMode(mode);
+    }
+    
+    // Initialize game using ModeManager
+    if (ModeManager.initializeMode(mode)) {
+        gameState.gameRunning = true;
+        requestAnimationFrame(gameLoop);
+    } else {
+        console.error('Failed to initialize game mode:', mode);
+        // Fall back to splash screen
+        document.getElementById('splashScreen').style.display = 'flex';
+    }
 }
+
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {

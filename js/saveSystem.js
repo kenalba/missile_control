@@ -47,7 +47,8 @@ function getDefaultSaveData() {
         },
         preferences: {
             soundEnabled: true,
-            showTutorial: true
+            showTutorial: true,
+            lastSelectedMode: 'arcade' // Track the last selected game mode
         }
     };
 }
@@ -290,6 +291,17 @@ function clearSaveData() {
     saveData = getDefaultSaveData();
 }
 
+// Save mode preference
+function saveMode(mode) {
+    saveData.preferences.lastSelectedMode = mode;
+    saveGame();
+}
+
+// Get last selected mode
+function getLastSelectedMode() {
+    return saveData.preferences.lastSelectedMode || 'arcade';
+}
+
 // Export functions for use in other files
 window.saveSystem = {
     saveData,
@@ -300,5 +312,7 @@ window.saveSystem = {
     updateStats,
     checkAchievements,
     showAchievementNotification,
-    clearSaveData
+    clearSaveData,
+    saveMode,
+    getLastSelectedMode
 };

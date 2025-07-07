@@ -520,6 +520,118 @@ body {
     margin: 10px 0 0 0;
 }
 
+/* Mode Selection Styles */
+.mode-selection {
+    margin: 30px 0 20px 0;
+}
+
+.mode-selection h3 {
+    color: #0ff;
+    text-align: center;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+}
+
+.mode-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.mode-button {
+    background: #002200;
+    color: #0f0;
+    border: 2px solid #0f0;
+    padding: 20px;
+    font-family: inherit;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    min-width: 280px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.mode-button:hover {
+    background: #004400;
+    box-shadow: 0 0 15px #0f0;
+    transform: translateY(-2px);
+}
+
+.mode-button.command-mode {
+    border-color: #ff0;
+    color: #ff0;
+    background: #220200;
+}
+
+.mode-button.command-mode:hover {
+    background: #440400;
+    box-shadow: 0 0 15px #ff0;
+}
+
+.mode-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0 0 8px 0;
+    letter-spacing: 1px;
+}
+
+.mode-subtitle {
+    font-size: 14px;
+    color: #aaa;
+    margin: 0 0 12px 0;
+    font-style: italic;
+}
+
+.mode-description {
+    font-size: 12px;
+    line-height: 1.4;
+    color: #ccc;
+}
+
+.arcade-mode .mode-description {
+    color: #9f9;
+}
+
+.command-mode .mode-description {
+    color: #ff9;
+}
+
+/* Recommended mode styling (last selected) */
+.mode-button.recommended {
+    box-shadow: 0 0 20px currentColor;
+    border-width: 3px;
+}
+
+.mode-button.recommended::before {
+    content: "LAST PLAYED";
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: currentColor;
+    color: #000;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.5px;
+}
+
+/* Mobile mode selection adjustments */
+@media (max-width: 768px) {
+    .mode-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .mode-button {
+        min-width: 250px;
+        max-width: 90vw;
+    }
+}
+
 /* Smart instruction display */
 .mobile-instructions {
     display: none;

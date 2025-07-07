@@ -220,7 +220,22 @@
                 </div>
             </div>
             
-            <button id="startBtn" class="start-button">START GAME</button>
+            <!-- Mode Selection -->
+            <div class="mode-selection">
+                <h3>SELECT MODE</h3>
+                <div class="mode-buttons">
+                    <button id="arcadeModeBtn" class="mode-button arcade-mode" onclick="startGame('arcade')">
+                        <div class="mode-title">ARCADE MODE</div>
+                        <div class="mode-subtitle">Classic Missile Command</div>
+                        <div class="mode-description">Defend 6 cities with 3 turrets<br>Fast-paced action gameplay</div>
+                    </button>
+                    <button id="commandModeBtn" class="mode-button command-mode" onclick="startGame('command')">
+                        <div class="mode-title">COMMAND MODE</div>
+                        <div class="mode-subtitle">Strategic Base Building</div>
+                        <div class="mode-description">Start with 1 turret, 2 cities<br>Build and expand your defenses</div>
+                    </button>
+                </div>
+            </div>
             <p class="cheat-hint">Press P during game for 100 scrap<br>Debug: 0=Spawn Plane, 9=Spawn Seeker</p>
         </div>
     </div>
@@ -244,6 +259,7 @@
 
     <script src="js/audio.js"></script>
     <script src="js/saveSystem.js"></script>
+    <script src="js/modeManager.js"></script>
     <script src="js/gameState.js"></script>
     <script src="js/entities.js"></script>
     <script src="js/input.js"></script>

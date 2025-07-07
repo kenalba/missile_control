@@ -187,11 +187,29 @@ function selectLauncher(index) {
 }
 
 function updateLauncherSelection() {
-    // Update launcher button states
-    for (let i = 0; i < 3; i++) {
+    // Update launcher button states (dynamic based on available launchers)
+    for (let i = 0; i < launchers.length; i++) {
         const btn = document.getElementById(`launcher-btn-${i}`);
         if (btn) {
             btn.classList.toggle('active', i === selectedLauncher);
+        }
+    }
+    
+    // Hide unused launcher buttons in Command Mode
+    if (gameState.currentMode === 'command') {
+        for (let i = launchers.length; i < 3; i++) {
+            const btn = document.getElementById(`launcher-btn-${i}`);
+            if (btn) {
+                btn.style.display = 'none';
+            }
+        }
+    } else {
+        // Show all launcher buttons in Arcade Mode
+        for (let i = 0; i < 3; i++) {
+            const btn = document.getElementById(`launcher-btn-${i}`);
+            if (btn) {
+                btn.style.display = '';
+            }
         }
     }
 }

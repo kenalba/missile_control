@@ -23,6 +23,7 @@ let gameState = {
     missileBonusTimer: 0,
     missileBonusIndex: 0,
     missileBonusTotal: 0,
+    currentMode: 'arcade', // Current game mode: 'arcade' or 'command'
     // Screen shake system
     screenShake: {
         intensity: 0,
@@ -123,46 +124,93 @@ function updateUI() {
 }
 
 function updateUpgradeUI() {
-    for (let i = 0; i < 3; i++) {
+    // Update UI for all available launchers (dynamic based on current mode)
+    for (let i = 0; i < launcherUpgrades.length; i++) {
         const upgrades = launcherUpgrades[i];
         
         // Update levels
-        document.getElementById(`speed-level-${i}`).textContent = upgrades.speed.level;
-        document.getElementById(`explosion-level-${i}`).textContent = upgrades.explosion.level;
-        document.getElementById(`rate-level-${i}`).textContent = upgrades.rate.level;
-        document.getElementById(`capacity-level-${i}`).textContent = upgrades.capacity.level;
-        document.getElementById(`autopilot-level-${i}`).textContent = upgrades.autopilot.level;
+        const speedLevel = document.getElementById(`speed-level-${i}`);
+        const explosionLevel = document.getElementById(`explosion-level-${i}`);
+        const rateLevel = document.getElementById(`rate-level-${i}`);
+        const capacityLevel = document.getElementById(`capacity-level-${i}`);
+        const autopilotLevel = document.getElementById(`autopilot-level-${i}`);
+        
+        if (speedLevel) speedLevel.textContent = upgrades.speed.level;
+        if (explosionLevel) explosionLevel.textContent = upgrades.explosion.level;
+        if (rateLevel) rateLevel.textContent = upgrades.rate.level;
+        if (capacityLevel) capacityLevel.textContent = upgrades.capacity.level;
+        if (autopilotLevel) autopilotLevel.textContent = upgrades.autopilot.level;
         
         // Update costs and button states
         const speedBtn = document.getElementById(`speed-btn-${i}`);
-        const speedCost = getActualUpgradeCost(upgrades.speed.cost);
-        speedBtn.textContent = speedCost;
-        speedBtn.disabled = gameState.scrap < speedCost;
-        speedBtn.parentElement.style.opacity = gameState.scrap < speedCost ? '0.7' : '1';
+        if (speedBtn) {
+            const speedCost = getActualUpgradeCost(upgrades.speed.cost);
+            speedBtn.textContent = speedCost;
+            speedBtn.disabled = gameState.scrap < speedCost;
+            speedBtn.parentElement.style.opacity = gameState.scrap < speedCost ? '0.7' : '1';
+        }
         
         const explosionBtn = document.getElementById(`explosion-btn-${i}`);
-        const explosionCost = getActualUpgradeCost(upgrades.explosion.cost);
-        explosionBtn.textContent = explosionCost;
-        explosionBtn.disabled = gameState.scrap < explosionCost;
-        explosionBtn.parentElement.style.opacity = gameState.scrap < explosionCost ? '0.7' : '1';
+        if (explosionBtn) {
+            const explosionCost = getActualUpgradeCost(upgrades.explosion.cost);
+            explosionBtn.textContent = explosionCost;
+            explosionBtn.disabled = gameState.scrap < explosionCost;
+            explosionBtn.parentElement.style.opacity = gameState.scrap < explosionCost ? '0.7' : '1';
+        }
         
         const rateBtn = document.getElementById(`rate-btn-${i}`);
-        const rateCost = getActualUpgradeCost(upgrades.rate.cost);
-        rateBtn.textContent = rateCost;
-        rateBtn.disabled = gameState.scrap < rateCost;
-        rateBtn.parentElement.style.opacity = gameState.scrap < rateCost ? '0.7' : '1';
+        if (rateBtn) {
+            const rateCost = getActualUpgradeCost(upgrades.rate.cost);
+            rateBtn.textContent = rateCost;
+            rateBtn.disabled = gameState.scrap < rateCost;
+            rateBtn.parentElement.style.opacity = gameState.scrap < rateCost ? '0.7' : '1';
+        }
         
         const capacityBtn = document.getElementById(`capacity-btn-${i}`);
-        const capacityCost = getActualUpgradeCost(upgrades.capacity.cost);
-        capacityBtn.textContent = capacityCost;
-        capacityBtn.disabled = gameState.scrap < capacityCost;
-        capacityBtn.parentElement.style.opacity = gameState.scrap < capacityCost ? '0.7' : '1';
+        if (capacityBtn) {
+            const capacityCost = getActualUpgradeCost(upgrades.capacity.cost);
+            capacityBtn.textContent = capacityCost;
+            capacityBtn.disabled = gameState.scrap < capacityCost;
+            capacityBtn.parentElement.style.opacity = gameState.scrap < capacityCost ? '0.7' : '1';
+        }
         
         const autopilotBtn = document.getElementById(`autopilot-btn-${i}`);
-        const autopilotCost = getActualUpgradeCost(upgrades.autopilot.cost);
-        autopilotBtn.textContent = autopilotCost;
-        autopilotBtn.disabled = gameState.scrap < autopilotCost;
-        autopilotBtn.parentElement.style.opacity = gameState.scrap < autopilotCost ? '0.7' : '1';
+        if (autopilotBtn) {
+            const autopilotCost = getActualUpgradeCost(upgrades.autopilot.cost);
+            autopilotBtn.textContent = autopilotCost;
+            autopilotBtn.disabled = gameState.scrap < autopilotCost;
+            autopilotBtn.parentElement.style.opacity = gameState.scrap < autopilotCost ? '0.7' : '1';
+        }
+    }
+    
+    // Hide unused launcher columns in Command Mode
+    if (gameState.currentMode === 'command') {
+        // Hide columns for launchers 1 and 2 (T2 and T3)
+        const table = document.querySelector('.upgrade-table');
+        if (table) {
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                if (cells.length >= 4) {
+                    // Hide T2 and T3 columns (indices 2 and 3)
+                    if (cells[2]) cells[2].style.display = 'none';
+                    if (cells[3]) cells[3].style.display = 'none';
+                }
+            });
+        }
+    } else {
+        // Show all columns in Arcade Mode
+        const table = document.querySelector('.upgrade-table');
+        if (table) {
+            const rows = table.querySelectorAll('tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('th, td');
+                if (cells.length >= 4) {
+                    if (cells[2]) cells[2].style.display = '';
+                    if (cells[3]) cells[3].style.display = '';
+                }
+            });
+        }
     }
     
     // Global upgrades removed - only individual city upgrades remain
