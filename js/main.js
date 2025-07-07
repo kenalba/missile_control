@@ -5,12 +5,170 @@ function updateGame(deltaTime) {
         return;
     }
     
+    
     // Update screen shake
     updateScreenShake(deltaTime);
     
     // Update entities
     updateEntities(deltaTime);
     
+    // Mode-specific gameplay updates
+    if (gameState.currentMode === 'command') {
+        updateCommandMode(deltaTime);
+    } else {
+        updateArcadeMode(deltaTime);
+    }
+    
+    // Check game over
+    if (gameState.cities <= 0) {
+        gameState.gameRunning = false;
+        
+        // Save game over data
+        if (window.saveSystem) {
+            saveSystem.saveGameOver(gameState.score, gameState.wave);
+        }
+        
+        document.getElementById('gameOver').style.display = 'block';
+        document.getElementById('finalScore').textContent = gameState.score;
+        document.getElementById('finalWave').textContent = gameState.wave;
+        
+        // Update high scores display on game over
+        updateHighScoresDisplay();
+    }
+    
+    checkCollisions();
+}
+
+// Command Mode continuous gameplay updates
+function updateCommandMode(deltaTime) {
+    // Update game time and difficulty
+    gameState.commandMode.gameTime += deltaTime;
+    
+    // Gradually increase difficulty over time (every 30 seconds)
+    const difficultyIncreaseInterval = 30000; // 30 seconds
+    gameState.commandMode.difficulty = 1 + Math.floor(gameState.commandMode.gameTime / difficultyIncreaseInterval) * 0.2;
+    
+    // Generate resources periodically
+    gameState.commandMode.lastResourceTick += deltaTime;
+    if (gameState.commandMode.lastResourceTick >= gameState.commandMode.resourceTickInterval) {
+        generateCityResources();
+        gameState.commandMode.lastResourceTick = 0;
+    }
+    
+    // Continuous enemy spawning
+    gameState.commandMode.lastEnemySpawn += deltaTime;
+    const adjustedSpawnInterval = gameState.commandMode.enemySpawnInterval / gameState.commandMode.difficulty;
+    
+    if (gameState.commandMode.lastEnemySpawn >= adjustedSpawnInterval) {
+        spawnEnemyMissile();
+        gameState.commandMode.lastEnemySpawn = 0;
+        
+        // Occasionally spawn planes (10% chance)
+        if (Math.random() < 0.1) {
+            spawnPlane();
+        }
+    }
+    
+    // Update city population (gradual growth)
+    updateCityPopulation(deltaTime);
+}
+
+// Generate resources from cities based on population and production mode
+function generateCityResources() {
+    for (let i = 0; i < cityData.length; i++) {
+        // Skip destroyed cities
+        if (destroyedCities.includes(i)) continue;
+        
+        const city = cityData[i];
+        if (city.population <= 0) continue;
+        
+        // Calculate production based on population percentage and base production
+        const populationMultiplier = city.population / city.maxPopulation;
+        const production = Math.floor(city.baseProduction * populationMultiplier);
+        
+        if (city.productionMode === 'scrap') {
+            gameState.scrap += production;
+        } else if (city.productionMode === 'science' && globalUpgrades.research && globalUpgrades.research.level > 0) {
+            gameState.science += production;
+        } else if (city.productionMode === 'ammo') {
+            // Distribute ammo to launchers that need it
+            distributeAmmo(production);
+        }
+        
+        // Visual feedback for resource generation
+        if (production > 0) {
+            const cityX = cityPositions[i];
+            let color = '#0f0'; // Default green for scrap
+            if (city.productionMode === 'science') color = '#00f'; // Blue for science
+            else if (city.productionMode === 'ammo') color = '#ff0'; // Yellow for ammo
+            
+            upgradeEffects.push({
+                x: cityX,
+                y: 750,
+                text: `+${production} ${city.productionMode}`,
+                alpha: 0.8,
+                vy: -0.5,
+                life: 60,
+                color: color
+            });
+        }
+    }
+}
+
+// Distribute ammo to launchers that need it most
+function distributeAmmo(ammoToDistribute) {
+    let remainingAmmo = ammoToDistribute;
+    
+    // Find launchers that need ammo (not destroyed and below max)
+    const launchersNeedingAmmo = [];
+    for (let i = 0; i < launchers.length; i++) {
+        if (!destroyedLaunchers.includes(i) && launchers[i].missiles < launchers[i].maxMissiles) {
+            launchersNeedingAmmo.push({
+                index: i,
+                launcher: launchers[i],
+                needed: launchers[i].maxMissiles - launchers[i].missiles
+            });
+        }
+    }
+    
+    // Distribute ammo evenly among launchers that need it
+    while (remainingAmmo > 0 && launchersNeedingAmmo.length > 0) {
+        // Remove launchers that are now full
+        for (let i = launchersNeedingAmmo.length - 1; i >= 0; i--) {
+            if (launchersNeedingAmmo[i].launcher.missiles >= launchersNeedingAmmo[i].launcher.maxMissiles) {
+                launchersNeedingAmmo.splice(i, 1);
+            }
+        }
+        
+        if (launchersNeedingAmmo.length === 0) break;
+        
+        // Give 1 ammo to each launcher that needs it
+        launchersNeedingAmmo.forEach(entry => {
+            if (remainingAmmo > 0) {
+                entry.launcher.missiles++;
+                remainingAmmo--;
+            }
+        });
+    }
+}
+
+// Update city population (gradual growth and recovery)
+function updateCityPopulation(deltaTime) {
+    const growthRate = 0.1; // Population grows by 0.1 per second
+    
+    for (let i = 0; i < cityData.length; i++) {
+        if (destroyedCities.includes(i)) continue;
+        
+        const city = cityData[i];
+        if (city.population < city.maxPopulation) {
+            city.population += (growthRate * deltaTime) / 1000;
+            city.population = Math.min(city.population, city.maxPopulation);
+        }
+    }
+}
+
+// Arcade Mode wave-based gameplay updates
+function updateArcadeMode(deltaTime) {
     // Spawn enemy missiles (only during active gameplay, not wave breaks)
     if (!gameState.waveBreak && gameState.enemiesToSpawn > 0) {
         // Time-based spawn rate (normalized to 60 FPS)
@@ -246,7 +404,9 @@ function updateGame(deltaTime) {
         updateHighScoresDisplay();
     }
     
+    console.log("About to call checkCollisions()");
     checkCollisions();
+    console.log("checkCollisions() completed");
 }
 
 function gameLoop(currentTime) {

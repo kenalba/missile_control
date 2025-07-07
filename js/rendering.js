@@ -85,6 +85,7 @@ function render() {
                 ctx.globalAlpha = 1;
             }
             
+            
             const upgradeLevel = cityUpgrades[i];
             
             // Draw city based on upgrade level - cleaner design
@@ -184,6 +185,7 @@ function render() {
                 ctx.fillText(`L${upgradeLevel}`, x, 740);
                 ctx.shadowBlur = 0;
             }
+            
         }
     });
     
@@ -208,16 +210,66 @@ function render() {
         }
     }
     
-    // Draw city labels and upgrade buttons on the ground
-    ctx.font = '12px monospace';
-    ctx.textAlign = 'center';
-    cityPositions.forEach((x, i) => {
-        const label = `C${i + 1}`;
-        // Red for destroyed cities, green for alive cities
-        ctx.fillStyle = destroyedCities.includes(i) ? '#f00' : '#0f0';
-        ctx.fillText(label, x, 820);
-        
-        // Draw city upgrade button below label - improved appearance
+    // Command Mode: Draw population info below cities
+    if (gameState.currentMode === 'command') {
+        ctx.font = '12px monospace';
+        ctx.textAlign = 'center';
+        cityPositions.forEach((x, i) => {
+            if (!destroyedCities.includes(i) && cityData[i]) {
+                const city = cityData[i];
+                const populationPercent = Math.floor((city.population / city.maxPopulation) * 100);
+                
+                // Resource production indicator above population
+                const resourceColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
+                const resourceNames = { scrap: 'SCRAP', science: 'RESEARCH', ammo: 'AMMO' };
+                
+                ctx.fillStyle = resourceColors[city.productionMode] || '#fff';
+                ctx.font = 'bold 10px monospace';
+                ctx.textAlign = 'center';
+                ctx.fillText(resourceNames[city.productionMode], x, 815);
+                
+                // Add glow effect to resource text
+                ctx.shadowColor = resourceColors[city.productionMode];
+                ctx.shadowBlur = 5;
+                ctx.fillText(resourceNames[city.productionMode], x, 815);
+                ctx.shadowBlur = 0;
+                
+                // Population display
+                ctx.fillStyle = populationPercent > 75 ? '#0f0' : populationPercent > 50 ? '#ff0' : '#f80';
+                ctx.font = 'bold 12px monospace';
+                ctx.fillText(`${Math.floor(city.population)}/${city.maxPopulation}`, x, 830);
+                
+                // Population bar
+                const barWidth = 40;
+                const barHeight = 4;
+                const barX = x - barWidth/2;
+                const barY = 832;
+                
+                // Background
+                ctx.fillStyle = '#333';
+                ctx.fillRect(barX, barY, barWidth, barHeight);
+                
+                // Foreground
+                const fillWidth = (city.population / city.maxPopulation) * barWidth;
+                ctx.fillStyle = populationPercent > 75 ? '#0f0' : populationPercent > 50 ? '#ff0' : '#f80';
+                ctx.fillRect(barX, barY, fillWidth, barHeight);
+            } else if (destroyedCities.includes(i)) {
+                // Show "ABANDONED" for destroyed cities
+                ctx.fillStyle = '#f00';
+                ctx.fillText('ABANDONED', x, 820);
+            }
+        });
+    } else {
+        // Arcade Mode: Draw city labels and upgrade buttons on the ground
+        ctx.font = '12px monospace';
+        ctx.textAlign = 'center';
+        cityPositions.forEach((x, i) => {
+            const label = `C${i + 1}`;
+            // Red for destroyed cities, green for alive cities
+            ctx.fillStyle = destroyedCities.includes(i) ? '#f00' : '#0f0';
+            ctx.fillText(label, x, 820);
+            
+            // Draw city upgrade button below label - improved appearance
         const currentLevel = cityUpgrades[i];
         const cost = 20 + (currentLevel * 15);
         const isDestroyed = destroyedCities.includes(i);
@@ -289,7 +341,8 @@ function render() {
         
         // Reset text baseline
         ctx.textBaseline = 'alphabetic';
-    });
+        });
+    }
     
     // Draw launchers
     launchers.forEach((launcher, index) => {
@@ -297,6 +350,7 @@ function render() {
         if (destroyedLaunchers.includes(index)) {
             return;
         }
+        
         
         // Get upgrade levels for visual indicators
         const upgrades = launcherUpgrades[index];

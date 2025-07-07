@@ -3,6 +3,47 @@ let mouseX = 0;
 let mouseY = 0;
 let selectedLauncher = 0; // Default to left launcher for mobile
 
+// Selection system for Command Mode
+function selectEntity(type, index) {
+    if (gameState.currentMode !== 'command') return;
+    
+    gameState.commandMode.selectedEntityType = type;
+    gameState.commandMode.selectedEntity = index;
+    
+    // Update upgrade panel based on selection
+    updateSelectionUpgradePanel();
+    
+    // Visual feedback
+    if (type && index !== null) {
+        let x, y;
+        if (type === 'city') {
+            x = cityPositions[index];
+            y = 750;
+            upgradeEffects.push({
+                x: x,
+                y: y,
+                text: 'CITY SELECTED',
+                alpha: 1,
+                vy: -1,
+                life: 60,
+                color: '#00ff00'
+            });
+        } else if (type === 'turret') {
+            x = launchers[index].x;
+            y = launchers[index].y - 20;
+            upgradeEffects.push({
+                x: x,
+                y: y,
+                text: 'TURRET SELECTED',
+                alpha: 1,
+                vy: -1,
+                life: 60,
+                color: '#00ffff'
+            });
+        }
+    }
+}
+
 function initializeInput() {
     const canvas = document.getElementById('gameCanvas');
     
@@ -24,23 +65,28 @@ function initializeInput() {
         const targetX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
         const targetY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
         
-        // Check for city upgrade button clicks
-        for (let i = 0; i < cityPositions.length; i++) {
-            const cityX = cityPositions[i];
-            const buttonLeft = cityX - 24;
-            const buttonRight = cityX + 24;
-            const buttonTop = 836;
-            const buttonBottom = 854;
-            
-            if (targetX >= buttonLeft && targetX <= buttonRight && 
-                targetY >= buttonTop && targetY <= buttonBottom) {
-                // If city is destroyed, try to repair it
-                if (destroyedCities.includes(i)) {
-                    repairCity(i);
-                } else {
-                    upgradeCity(i);
+        // Command Mode: No click-to-fire, all interaction through upgrade panel
+        if (gameState.currentMode === 'command') {
+            return; // Don't fire missiles on click
+        } else {
+            // Arcade Mode: Legacy city upgrade button clicks
+            for (let i = 0; i < cityPositions.length; i++) {
+                const cityX = cityPositions[i];
+                const buttonLeft = cityX - 24;
+                const buttonRight = cityX + 24;
+                const buttonTop = 836;
+                const buttonBottom = 854;
+                
+                if (targetX >= buttonLeft && targetX <= buttonRight && 
+                    targetY >= buttonTop && targetY <= buttonBottom) {
+                    // If city is destroyed, try to repair it
+                    if (destroyedCities.includes(i)) {
+                        repairCity(i);
+                    } else {
+                        upgradeCity(i);
+                    }
+                    return; // Don't fire missile
                 }
-                return; // Don't fire missile
             }
         }
         
@@ -49,9 +95,9 @@ function initializeInput() {
         // Don't fire below ground level
         if (targetY >= 800) return;
         
-        // Fire from selected launcher
+        // Fire from selected launcher (Arcade Mode only)
         const launcher = launchers[selectedLauncher];
-        if (!destroyedLaunchers.includes(selectedLauncher)) {
+        if (launcher && !destroyedLaunchers.includes(selectedLauncher)) {
             if (launcher.missiles <= 0) {
                 // No ammo
                 audioSystem.playEmptyAmmo();
@@ -103,13 +149,13 @@ function initializeInput() {
         else if (e.key.toLowerCase() === 'w') launcherIndex = 1;
         else if (e.key.toLowerCase() === 'e') launcherIndex = 2;
         
-        if (launcherIndex >= 0) {
+        if (launcherIndex >= 0 && launcherIndex < launchers.length) {
             // Update selected launcher for mobile UI
             selectedLauncher = launcherIndex;
             updateLauncherSelection();
             
             const launcher = launchers[launcherIndex];
-            if (!destroyedLaunchers.includes(launcherIndex)) {
+            if (launcher && !destroyedLaunchers.includes(launcherIndex)) {
                 if (launcher.missiles <= 0) {
                     // No ammo
                     audioSystem.playEmptyAmmo();

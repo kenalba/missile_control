@@ -69,9 +69,41 @@ const ModeManager = {
             return newUpgrade;
         });
         
-        // Initialize wave
-        gameState.enemiesToSpawn = config.initialEnemies;
-        gameState.planesToSpawn = 0;
+        // Initialize mode-specific gameplay
+        if (mode === 'command') {
+            // Command Mode: Continuous gameplay
+            gameState.enemiesToSpawn = 0; // No wave-based enemies
+            gameState.planesToSpawn = 0;
+            gameState.waveBreak = false; // No wave breaks
+            
+            // Initialize Command Mode state
+            gameState.commandMode.gameTime = 0;
+            gameState.commandMode.difficulty = 1;
+            gameState.commandMode.lastResourceTick = 0;
+            gameState.commandMode.lastEnemySpawn = 0;
+            gameState.commandMode.selectedEntity = null;
+            gameState.commandMode.selectedEntityType = null;
+            
+            // Initialize city data for Command Mode - start with scrap and ammo only
+            const productionModes = ['scrap', 'ammo']; // Science production must be unlocked
+            cityData = config.cityPositions.map((_, index) => ({
+                population: 100,
+                maxPopulation: 100,
+                productionMode: productionModes[index % 2], // Cycle through scrap, ammo
+                baseProduction: 1 // All produce 1 resource per tick (balanced for 3-second intervals)
+            }));
+            
+            // Initialize science resource - starts at 0, must be unlocked
+            gameState.science = 0;
+        } else {
+            // Arcade Mode: Wave-based gameplay
+            gameState.enemiesToSpawn = config.initialEnemies;
+            gameState.planesToSpawn = 0;
+            gameState.waveBreak = false;
+            
+            // Reset science for arcade mode
+            gameState.science = 0;
+        }
         
         // Reset selected launcher for mobile
         selectedLauncher = 0;

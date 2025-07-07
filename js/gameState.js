@@ -2,6 +2,7 @@
 let gameState = {
     score: 0,
     scrap: 0,
+    science: 0, // New resource for Command Mode
     wave: 1,
     cities: 6,
     gameRunning: true,
@@ -24,6 +25,19 @@ let gameState = {
     missileBonusIndex: 0,
     missileBonusTotal: 0,
     currentMode: 'arcade', // Current game mode: 'arcade' or 'command'
+    
+    // Command Mode specific state
+    commandMode: {
+        gameTime: 0, // Total game time in milliseconds
+        difficulty: 1, // Difficulty multiplier that increases over time
+        lastResourceTick: 0, // Timer for resource generation
+        resourceTickInterval: 3000, // Generate resources every 3 seconds
+        lastEnemySpawn: 0, // Timer for continuous enemy spawning
+        enemySpawnInterval: 2000, // Base interval between enemy spawns (2 seconds)
+        selectedEntity: null, // Currently selected city or turret for upgrades
+        selectedEntityType: null // 'city' or 'turret'
+    },
+    
     // Screen shake system
     screenShake: {
         intensity: 0,
@@ -50,6 +64,17 @@ let launcherUpgrades = [
     { speed: { level: 1, cost: 10 }, explosion: { level: 1, cost: 15 }, rate: { level: 1, cost: 20 }, capacity: { level: 1, cost: 25 }, autopilot: { level: 0, cost: 40 } }
 ];
 
+// Command Mode city system
+let cityData = [
+    // Each city has: population, maxPopulation, productionMode ('scrap', 'science', or 'ammo'), baseProduction
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 },
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 }
+];
+
 // Global upgrades
 let globalUpgrades = {
     cityShield: { level: 0, cost: 100 },
@@ -57,7 +82,8 @@ let globalUpgrades = {
     cityScrapBonus: { level: 0, cost: 30 },
     scrapMultiplier: { level: 0, cost: 80 },
     salvage: { level: 0, cost: 60 },
-    efficiency: { level: 0, cost: 90 }
+    efficiency: { level: 0, cost: 90 },
+    research: { level: 0, cost: 50 } // Unlocks science production
 };
 
 // Helper function to apply scrap multiplier
@@ -80,9 +106,24 @@ function getActualUpgradeCost(baseCost) {
 function updateUI() {
     document.getElementById('score').textContent = gameState.score;
     document.getElementById('scrap').textContent = gameState.scrap;
-    const planeText = gameState.planesToSpawn > 0 ? `, ${gameState.planesToSpawn} planes` : '';
-    document.getElementById('wave').textContent = `${gameState.wave} (${gameState.enemiesToSpawn} missiles${planeText})`;
     
+    // Command Mode specific UI updates
+    if (gameState.currentMode === 'command') {
+        // Show Science resource
+        document.getElementById('science').textContent = gameState.science;
+        document.getElementById('science-row').style.display = 'block';
+        
+        // Show continuous time and difficulty instead of wave
+        const timeMinutes = Math.floor(gameState.commandMode.gameTime / 60000);
+        const timeSeconds = Math.floor((gameState.commandMode.gameTime % 60000) / 1000);
+        const timeText = `${timeMinutes}:${timeSeconds.toString().padStart(2, '0')}`;
+        document.getElementById('wave').textContent = `Time: ${timeText} | Difficulty: ${gameState.commandMode.difficulty.toFixed(1)}x`;
+    } else {
+        // Arcade Mode - hide Science resource and show wave info
+        document.getElementById('science-row').style.display = 'none';
+        const planeText = gameState.planesToSpawn > 0 ? `, ${gameState.planesToSpawn} planes` : '';
+        document.getElementById('wave').textContent = `${gameState.wave} (${gameState.enemiesToSpawn} missiles${planeText})`;
+    }
     
     // Update economic upgrade buttons
     const scrapMultiplierBtn = document.getElementById('scrapMultiplier');
@@ -124,6 +165,27 @@ function updateUI() {
 }
 
 function updateUpgradeUI() {
+    // Command Mode uses selection-based UI
+    if (gameState.currentMode === 'command') {
+        // Show selection panel and hide traditional upgrade table
+        const upgradeTable = document.querySelector('.upgrade-table');
+        if (upgradeTable) {
+            upgradeTable.style.display = 'none';
+        }
+        
+        // Initialize selection panel if needed
+        if (typeof updateSelectionUpgradePanel === 'function') {
+            updateSelectionUpgradePanel();
+        }
+        return;
+    }
+    
+    // Arcade Mode: Traditional upgrade table
+    const upgradeTable = document.querySelector('.upgrade-table');
+    if (upgradeTable) {
+        upgradeTable.style.display = '';
+    }
+    
     // Update UI for all available launchers (dynamic based on current mode)
     for (let i = 0; i < launcherUpgrades.length; i++) {
         const upgrades = launcherUpgrades[i];

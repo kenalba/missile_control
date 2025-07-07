@@ -59,8 +59,8 @@ function isMissileThreatening(missile) {
 
 function fireMissile(launcher, targetX, targetY) {
     const launcherIndex = launchers.indexOf(launcher);
-    const speedLevel = launcherUpgrades[launcherIndex].speed.level;
-    const autopilotLevel = launcherUpgrades[launcherIndex].autopilot.level;
+    const speedLevel = launcherUpgrades[launcherIndex] ? launcherUpgrades[launcherIndex].speed.level : 1;
+    const autopilotLevel = launcherUpgrades[launcherIndex] ? launcherUpgrades[launcherIndex].autopilot.level : 0;
     const speed = 4.5 * Math.pow(1.3, speedLevel - 1);
     const dx = targetX - launcher.x;
     const dy = targetY - launcher.y;
@@ -69,7 +69,7 @@ function fireMissile(launcher, targetX, targetY) {
     // Calculate original flight plan for autopilot missiles
     const originalFlightTime = distance / speed; // Time to reach original target
     
-    playerMissiles.push({
+    const missile = {
         x: launcher.x,
         y: launcher.y,
         targetX: targetX,
@@ -87,7 +87,9 @@ function fireMissile(launcher, targetX, targetY) {
         originalTargetY: targetY,
         originalFlightTime: originalFlightTime,
         maxDeviation: 100 + (autopilotLevel * 50) // Max distance from original path
-    });
+    };
+    
+    playerMissiles.push(missile);
     
     launcher.missiles--;
     launcher.lastFire = Date.now();
@@ -224,7 +226,7 @@ function spawnPlane() {
 
 function createExplosion(x, y, isPlayer = false, launcherIndex = 0, explosionType = 'normal') {
     let size = 40;
-    if (isPlayer && launcherIndex !== undefined) {
+    if (isPlayer && launcherIndex !== undefined && launcherUpgrades[launcherIndex]) {
         const explosionLevel = launcherUpgrades[launcherIndex].explosion.level;
         size = 60 * Math.pow(1.2, explosionLevel - 1);
     }
@@ -442,7 +444,8 @@ function updateEntities(deltaTime) {
                     // Only steer if we haven't deviated too far
                     if (distToOriginalPath < missile.maxDeviation) {
                         // Smaller auto-explosion trigger radius (less reliable)
-                        const explosionLevel = launcherUpgrades[missile.launcherIndex].explosion.level;
+                        const explosionLevel = launcherUpgrades[missile.launcherIndex] ? 
+                            launcherUpgrades[missile.launcherIndex].explosion.level : 1;
                         const explosionRadius = 60 * Math.pow(1.2, explosionLevel - 1);
                         
                         if (nearestDist < explosionRadius * 0.5) { // Reduced from 0.8 to 0.5

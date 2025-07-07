@@ -26,19 +26,66 @@ function checkCollisions() {
             cityPositions.forEach((cityX, cityIndex) => {
                 if (!destroyedCities.includes(cityIndex) && 
                     Math.abs(missile.x - cityX) < 50 && missile.y >= 790) {
-                    destroyedCities.push(cityIndex);
-                    gameState.cities--;
-                    gameState.achievements.citiesLost++;
-                    // Wipe city upgrade when destroyed
-                    cityUpgrades[cityIndex] = 0;
                     
-                    // Create massive city destruction explosion
-                    createExplosion(cityX, 780, false, 0, 'city');
+                    if (gameState.currentMode === 'command') {
+                        // Command Mode: Damage population instead of destroying city
+                        if (cityData[cityIndex]) {
+                            const populationDamage = Math.floor(cityData[cityIndex].maxPopulation * 0.3); // 30% population damage
+                            cityData[cityIndex].population = Math.max(0, cityData[cityIndex].population - populationDamage);
+                            
+                            // Visual feedback for population damage
+                            upgradeEffects.push({
+                                x: cityX,
+                                y: 750,
+                                text: `-${populationDamage} population`,
+                                alpha: 1,
+                                vy: -1,
+                                life: 100,
+                                color: '#ff0000'
+                            });
+                            
+                            // Create explosion but don't destroy city
+                            createExplosion(cityX, 780, false, 0, 'damage');
+                            addScreenShake(6, 500);
+                            
+                            // Check if city is now uninhabitable (0 population)
+                            if (cityData[cityIndex].population <= 0) {
+                                destroyedCities.push(cityIndex);
+                                gameState.cities--;
+                                gameState.achievements.citiesLost++;
+                                cityUpgrades[cityIndex] = 0;
+                                
+                                // Stronger effects for complete population loss
+                                createExplosion(cityX, 780, false, 0, 'city');
+                                addScreenShake(8, 800);
+                                
+                                upgradeEffects.push({
+                                    x: cityX,
+                                    y: 720,
+                                    text: 'CITY ABANDONED',
+                                    alpha: 1,
+                                    vy: -1,
+                                    life: 150,
+                                    color: '#ff4444'
+                                });
+                            }
+                        }
+                    } else {
+                        // Arcade Mode: Destroy city immediately
+                        destroyedCities.push(cityIndex);
+                        gameState.cities--;
+                        gameState.achievements.citiesLost++;
+                        // Wipe city upgrade when destroyed
+                        cityUpgrades[cityIndex] = 0;
+                        
+                        // Create massive city destruction explosion
+                        createExplosion(cityX, 780, false, 0, 'city');
+                        
+                        // Screen shake for city destruction
+                        addScreenShake(8, 800);
+                    }
                     
-                    // Screen shake for city destruction
-                    addScreenShake(8, 800);
-                    
-                    // Stronger vibration for city destruction
+                    // Vibration feedback for any city hit
                     if (navigator.vibrate) {
                         navigator.vibrate([100, 50, 100]); // Pattern: vibrate-pause-vibrate
                     }
