@@ -153,13 +153,15 @@ function saveWaveCompletion(currentWave, currentScore) {
         totalScore: currentScore - saveData.totalStats.totalScore
     });
     
-    const newAchievements = checkAchievements();
+    const newAchievements = checkAchievements() || [];
     saveGame();
     
     // Show any new achievement notifications
-    newAchievements.forEach(achievement => {
-        setTimeout(() => showAchievementNotification(achievement), 500);
-    });
+    if (newAchievements && newAchievements.length > 0) {
+        newAchievements.forEach(achievement => {
+            setTimeout(() => showAchievementNotification(achievement), 500);
+        });
+    }
 }
 
 // Save at game over
@@ -174,16 +176,22 @@ function saveGameOver(finalScore, finalWave) {
     });
     
     addHighScore(finalScore, finalWave);
-    const newAchievements = checkAchievements();
+    const newAchievements = checkAchievements() || [];
     
     // Show any new achievement notifications
-    newAchievements.forEach(achievement => {
-        setTimeout(() => showAchievementNotification(achievement), 500);
-    });
+    if (newAchievements && newAchievements.length > 0) {
+        newAchievements.forEach(achievement => {
+            setTimeout(() => showAchievementNotification(achievement), 500);
+        });
+    }
 }
 
 // Check and unlock achievements
 function checkAchievements() {
+    if (!saveData || !saveData.achievements || !saveData.totalStats) {
+        return [];
+    }
+    
     const achievements = saveData.achievements;
     const stats = saveData.totalStats;
     let newAchievements = [];
