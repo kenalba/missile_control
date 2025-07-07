@@ -26,6 +26,13 @@ function updateGame(deltaTime) {
         }
     }
     
+    // Track time since all enemies spawned for wave completion timeout
+    if (gameState.enemiesToSpawn === 0) {
+        gameState.waveTimer += deltaTime;
+    } else {
+        gameState.waveTimer = 0; // Reset timer while still spawning
+    }
+    
     // Spawn planes (guaranteed timing per wave)
     if (!gameState.waveBreak && gameState.planesToSpawn > 0) {
         // Calculate when planes should spawn based on wave progress
@@ -51,16 +58,30 @@ function updateGame(deltaTime) {
         if (enemyMissiles.length === 0) return false;
         
         return enemyMissiles.some(missile => {
-            // Use the dynamic threat detection from entities.js
+            // For seekers, they're always potentially threatening if there are targets
+            if (missile.isSeeker) {
+                // Check if there are any live cities or launchers
+                const hasLiveCities = cityPositions.some((_, index) => !destroyedCities.includes(index));
+                const hasLiveLaunchers = launchers.some((_, index) => !destroyedLaunchers.includes(index));
+                return hasLiveCities || hasLiveLaunchers;
+            }
+            
+            // Use the dynamic threat detection from entities.js for normal missiles
             return isMissileThreatening(missile);
         });
     }
     
-    // Check wave completion (all enemies spawned and no enemies/missiles/explosions/planes remaining)
-    // OR no remaining missiles can damage live targets
-    const shouldEndWave = gameState.enemiesToSpawn === 0 && 
-        (enemyMissiles.length === 0 || !anyMissilesCanDamage()) && 
-        playerMissiles.length === 0 && explosions.length === 0 && planes.length === 0;
+    // Check wave completion (all enemies spawned and no threatening missiles remaining)
+    // Also require player missiles and explosions to clear for clean wave transition
+    const allEnemiesSpawned = gameState.enemiesToSpawn === 0;
+    const noThreateningMissiles = !anyMissilesCanDamage();
+    const noPlayerActivity = playerMissiles.length === 0 && explosions.length === 0 && planes.length === 0;
+    
+    // Emergency timeout: if enemies spawned and no player activity for 5 seconds, force wave end
+    const emergencyTimeout = allEnemiesSpawned && noPlayerActivity && 
+        gameState.waveTimer > 5000; // 5 second timeout
+    
+    const shouldEndWave = allEnemiesSpawned && (noThreateningMissiles || emergencyTimeout) && noPlayerActivity;
         
     if (shouldEndWave) {
         if (!gameState.waveBreak && !gameState.cityBonusPhase && !gameState.missileBonusPhase) {

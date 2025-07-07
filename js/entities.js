@@ -115,8 +115,8 @@ function spawnEnemyMissile() {
     const startX = Math.random() * canvas.width;
     let targetX = Math.random() * canvas.width;
     
-    // 60% chance to target a city or launcher instead of random position
-    if (Math.random() < 0.6) {
+    // 85% chance to target a city or launcher instead of random position
+    if (Math.random() < 0.85) {
         const targets = [...cityPositions, ...launchers.map(l => l.x)];
         const validTargets = targets.filter((_, index) => {
             // Filter out destroyed cities
