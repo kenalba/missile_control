@@ -67,23 +67,39 @@ Defend your cities from incoming missiles using strategic turret placements and 
 - **Save System**: Comprehensive localStorage persistence for progress and preferences
 - **Mobile Optimization**: Landscape-forced layout with touch-friendly controls
 
-### File Structure
-- `index.html` - Main HTML structure and game layout
-- `styles.css` - Responsive CSS with tooltip system and mobile optimizations
+### Architecture Overview
+
+**Modern TypeScript + Vite Build System** with incremental migration from legacy JavaScript.
+
+#### TypeScript Modules (Phase 1 ✅)
+- `src/main.ts` - TypeScript entry point and system initialization
+- `src/types/gameTypes.ts` - Comprehensive type definitions for all game entities
+- `src/config/constants.ts` - Game constants and configuration with type safety
+- `src/systems/audio.ts` - Type-safe Web Audio API sound generation
+- `src/systems/saveSystem.ts` - Type-safe localStorage persistence system
+- `src/utils/math.ts` - Mathematical utility functions with proper typing
+- `src/utils/collision.ts` - Collision detection utilities with type safety
+- `src/utils/index.ts` - Clean utility exports and convenience functions
+
+#### Legacy JavaScript Modules (Phase 2 - Pending Migration)
 - `js/main.js` - Core game loop and initialization
 - `js/modeManager.js` - Game mode switching and configuration
 - `js/gameState.js` - Game state management and UI updates
 - `js/entities.js` - Game entities (missiles, launchers, planes)
 - `js/input.js` - Input handling with entity selection support
 - `js/rendering.js` - Canvas rendering system with visual effects
-- `js/upgrades.js` - Main upgrade system controller (streamlined)
+- `js/upgrades.js` - Main upgrade system controller
 - `js/upgradeLogic.js` - Core upgrade mechanics and calculations
 - `js/ui/uiUtils.js` - UI component utilities and styling constants
 - `js/ui/panelManager.js` - Floating panel management with drag functionality
 - `js/ui/upgradeContent.js` - HTML generation for upgrade interfaces
-- `js/utils.js` - Utility functions and collision detection
-- `js/audio.js` - Web Audio API sound generation
-- `js/saveSystem.js` - LocalStorage persistence system
+- `js/utils.js` - Legacy utility functions (being replaced by TypeScript versions)
+
+#### Build & Deployment
+- `vite.config.ts` - Modern build configuration with TypeScript support
+- `tsconfig.json` - TypeScript compiler configuration with strict settings
+- `.github/workflows/deploy.yml` - Automated CI/CD pipeline for GitHub Pages
+- `package.json` - Node.js dependencies and build scripts
 
 ### Key Functions
 - `fireMissile(launcher, targetX, targetY)`: Launches player missile
@@ -167,7 +183,48 @@ Defend your cities from incoming missiles using strategic turret placements and 
 - ✅ **Difficulty Curve**: Authentic Missile Command speed progression
 - ✅ **Plane Spawning**: Guaranteed consistent plane timing per wave
 
+## Development Setup
+
+### Prerequisites
+- Node.js 18+ and npm
+- Modern browser with HTML5 Canvas support
+- Git for version control
+
+### Getting Started
+```bash
+# Clone the repository
+git clone https://github.com/kenalba/missile_control.git
+cd missile_control
+
+# Install dependencies
+npm install
+
+# Start development server (with hot reload)
+npm run dev
+
+# Build for production
+npm run build
+
+# Type check without building
+npm run type-check
+
+# Preview production build
+npm run preview
+```
+
+### Development Commands
+- `npm run dev` - Start Vite development server with hot reload
+- `npm run build` - Build optimized production bundle
+- `npm run type-check` - Run TypeScript type checking
+- `npm run preview` - Preview production build locally
+
+### TypeScript Migration Status
+- ✅ **Phase 1 Complete**: Build system, types, audio, save system, utilities
+- 🚧 **Phase 2 Next**: Game state, entities, input system with event bus
+- 📋 **Phase 3 Planned**: UI components, rendering system, main game loop
+
 ## Browser Compatibility
 - Requires modern browser with HTML5 Canvas support
-- Uses ES6 features (arrow functions, const/let)
-- No external dependencies
+- Uses ES2020 features with TypeScript compilation
+- Progressive Web App (PWA) with offline support
+- Mobile-optimized with touch controls

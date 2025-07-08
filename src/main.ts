@@ -1,5 +1,8 @@
 // Main TypeScript entry point for Missile Control
 
+// Import styles first for Vite development server
+import '../styles.css';
+
 // Import TypeScript modules and type definitions
 import './legacy';
 import { audioSystem } from '@/systems/audio';
