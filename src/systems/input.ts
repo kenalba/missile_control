@@ -15,13 +15,7 @@ export let selectedLauncher = 0; // Default to left launcher for mobile
 
 // Entity selection system for Command Mode
 export function selectEntity(type: 'city' | 'turret', index: number): void {
-    console.log(`selectEntity called: type=${type}, index=${index}`);
-    console.log(`Current game mode: ${gameState.currentMode}`);
-    console.log(`cityData length: ${cityData ? cityData.length : 'undefined'}`);
-    console.log(`launchers length: ${launchers ? launchers.length : 'undefined'}`);
-    
     if (gameState.currentMode !== 'command') {
-        console.log('Not in command mode, ignoring selection');
         return;
     }
     
@@ -38,8 +32,6 @@ export function selectEntity(type: 'city' | 'turret', index: number): void {
     
     gameState.commandMode.selectedEntityType = type;
     gameState.commandMode.selectedEntity = index;
-    console.log(`Selected entity: ${type} ${index}`);
-    console.log(`gameState.commandMode:`, gameState.commandMode);
     
     // Update upgrade panel based on selection
     if (gameState.currentMode === 'command') {

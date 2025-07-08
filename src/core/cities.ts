@@ -1,5 +1,8 @@
 // Command Mode City Management System
 import type { CityData, CityProductivityUpgrades } from '@/types/gameTypes';
+import { gameState } from '@/systems/observableState';
+import { launchers } from '@/entities/launchers';
+import { destroyedCities } from '@/entities/cities';
 
 // Command Mode city system
 export let cityData: CityData[] = [
@@ -32,7 +35,6 @@ export let ammoAccumulator = 0;
 export function calculateCityProductionRate(cityIndex: number): string {
     if (cityIndex < 0 || cityIndex >= cityData.length) return '0.0';
     
-    const destroyedCities = (window as any).destroyedCities || [];
     if (destroyedCities.includes(cityIndex)) return '0.0';
     
     const city = cityData[cityIndex];
@@ -52,17 +54,19 @@ export function calculateCityProductionRate(cityIndex: number): string {
 
 // Generate resources from cities based on population and production mode
 export function generateCityResources(): void {
-    const gameState = (window as any).gameState;
-    const launchers = (window as any).launchers;
-    const destroyedCities = (window as any).destroyedCities || [];
-    
-    if (!gameState || !launchers) return;
+    if (!gameState || !launchers || launchers.length === 0) {
+        return;
+    }
     
     for (let i = 0; i < cityData.length; i++) {
-        if (destroyedCities.includes(i)) continue;
+        if (destroyedCities.includes(i)) {
+            continue;
+        }
         
         const city = cityData[i];
-        if (city.population <= 0) continue;
+        if (city.population <= 0) {
+            continue;
+        }
         
         const populationMultiplier = city.population / city.maxPopulation;
         const baseProduction = city.baseProduction * populationMultiplier;
@@ -140,7 +144,6 @@ export function setCityProductionMode(cityIndex: number, mode: 'scrap' | 'scienc
         return false;
     }
     
-    const destroyedCities = (window as any).destroyedCities || [];
     if (destroyedCities.includes(cityIndex)) {
         return false;
     }
@@ -198,10 +201,7 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
 
 // Repair a destroyed city
 export function repairCity(cityIndex: number): boolean {
-    const destroyedCities = (window as any).destroyedCities || [];
-    const gameState = (window as any).gameState;
-    
-    if (!destroyedCities.includes(cityIndex) || !gameState) {
+    if (!destroyedCities.includes(cityIndex)) {
         return false;
     }
     
