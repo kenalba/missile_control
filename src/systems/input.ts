@@ -6,6 +6,7 @@ import { cityPositions, destroyedCities } from '@/entities/cities';
 import { fireMissile } from '@/entities/missiles';
 import { createUpgradeEffect } from '@/entities/particles';
 import { audioSystem } from '@/systems/audio';
+import { setMousePosition } from '@/systems/rendering';
 
 // Mouse state
 export let mouseX = 0;
@@ -95,6 +96,9 @@ export function initializeInput(): void {
         const rect = canvas.getBoundingClientRect();
         mouseX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
         mouseY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
+        
+        // Update rendering system with new mouse position
+        setMousePosition(mouseX, mouseY);
     });
 
     // Touch events for mobile
@@ -260,6 +264,9 @@ function handleTouch(e: TouchEvent): void {
         const touch = e.touches[0];
         mouseX = (touch.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
         mouseY = (touch.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
+        
+        // Update rendering system with new mouse position
+        setMousePosition(mouseX, mouseY);
     }
 }
 

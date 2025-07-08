@@ -14,6 +14,11 @@ import { saveSystem } from '@/systems/saveSystem';
 import { modeManager } from '@/systems/modeManager';
 import { initializeRenderer } from '@/systems/rendering';
 import '@/systems/stubs'; // Temporary stub functions
+import '@/systems/upgrades'; // Upgrade system
+import '@/systems/upgradeLogic'; // Legacy upgrade support
+import '@/ui/uiUtils'; // UI utilities
+import '@/ui/panelManager'; // Panel management
+import '@/ui/upgradeContent'; // Upgrade content generation
 
 // Initialize TypeScript systems
 console.log('🚀 Initializing Missile Control TypeScript systems...');
