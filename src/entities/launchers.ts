@@ -20,10 +20,9 @@ export function resetLaunchers(): void {
 }
 
 export function resetLauncherTimestamps(): void {
-    const currentTime = timeManager.getGameTime();
     launchers.forEach(launcher => {
-        // Set lastFire to allow immediate firing
-        launcher.lastFire = currentTime - launcher.fireRate;
+        // Set lastFire to allow immediate firing (use a very early timestamp)
+        launcher.lastFire = -launcher.fireRate;
     });
 }
 

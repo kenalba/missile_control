@@ -112,8 +112,30 @@ export function initializeInput(): void {
         const targetX = (e.clientX - rect.left) * (canvas.width / canvas.offsetWidth);
         const targetY = (e.clientY - rect.top) * (canvas.height / canvas.offsetHeight);
         
-        // Command Mode: No click-to-fire, all interaction through upgrade panel
+        // Command Mode: Handle entity selection clicks
         if (gameState.currentMode === 'command') {
+            // Check for city clicks
+            for (let i = 0; i < cityPositions.length; i++) {
+                const cityX = cityPositions[i];
+                const cityClickArea = 30; // Click area radius
+                if (Math.abs(targetX - cityX) <= cityClickArea && 
+                    targetY >= 720 && targetY <= 790) {
+                    selectEntity('city', i);
+                    return;
+                }
+            }
+            
+            // Check for turret clicks
+            for (let i = 0; i < launchers.length; i++) {
+                const launcher = launchers[i];
+                const turretClickArea = 30; // Click area radius
+                if (Math.abs(targetX - launcher.x) <= turretClickArea && 
+                    Math.abs(targetY - launcher.y) <= turretClickArea) {
+                    selectEntity('turret', i);
+                    return;
+                }
+            }
+            
             return; // Don't fire missiles on click
         } else {
             // Arcade Mode: Legacy city upgrade button clicks

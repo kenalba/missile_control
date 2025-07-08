@@ -4,6 +4,7 @@ import { launcherUpgrades } from '@/core/upgrades';
 import { audioSystem } from '@/systems/audio';
 import { cityPositions, destroyedCities } from './cities';
 import { launchers } from './launchers';
+import { timeManager } from '@/systems/timeManager';
 
 export let playerMissiles: PlayerMissile[] = [];
 export let enemyMissiles: EnemyMissile[] = [];
@@ -85,7 +86,7 @@ export function fireMissile(launcher: Launcher, targetX: number, targetY: number
     playerMissiles.push(missile);
     
     launcher.missiles--;
-    launcher.lastFire = Date.now();
+    launcher.lastFire = timeManager.getGameTime();
     
     // Play launch sound
     audioSystem.playMissileLaunch();

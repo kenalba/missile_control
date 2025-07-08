@@ -174,6 +174,9 @@ class UIUpdateSystem {
     if (panelScrap) {
       panelScrap.textContent = scrap.toString();
     }
+
+    // Refresh command panel when scrap changes
+    this.refreshCommandPanel();
   }
 
   private updateScienceDisplays(science: number): void {
@@ -188,6 +191,9 @@ class UIUpdateSystem {
     if (panelScience) {
       panelScience.textContent = science.toString();
     }
+
+    // Refresh command panel when science changes
+    this.refreshCommandPanel();
   }
 
   private updateWaveDisplay(wave: number): void {
@@ -230,6 +236,16 @@ class UIUpdateSystem {
 
   // Removed updateCommandPanelAffordability to prevent infinite loop
   // Panel updates should be called explicitly when needed
+
+  private refreshCommandPanel(): void {
+    // Only refresh if we're in command mode and panel is visible
+    if (observableGameState.currentMode === 'command') {
+      const updateCommandPanel = (window as any).updateCommandPanel;
+      if (typeof updateCommandPanel === 'function') {
+        updateCommandPanel();
+      }
+    }
+  }
 
   destroy(): void {
     // Clean up all subscriptions

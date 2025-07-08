@@ -7,7 +7,7 @@ import '../styles.css';
 import './legacy';
 import '@/core'; // Load all core game systems
 import '@/entities'; // Load all entity systems
-import { initializeInput } from '@/systems/input';
+import { initializeInput, selectEntity } from '@/systems/input';
 import { initGame, startGame } from '@/systems/gameLoop';
 import { audioSystem } from '@/systems/audio';
 import { saveSystem } from '@/systems/saveSystem';
@@ -39,6 +39,7 @@ uiUpdateSystem.initialize();
 (window as any).modeManager = modeManager;
 (window as any).initializeRenderer = initializeRenderer;
 (window as any).startGame = startGame;
+(window as any).selectEntity = selectEntity;
 (window as any).observableGameState = observableGameState;
 (window as any).gameState = observableGameState; // Make observable state the global gameState
 (window as any).timeManager = timeManager;
