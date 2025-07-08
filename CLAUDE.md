@@ -36,26 +36,48 @@ Defend your cities from incoming missiles using strategic turret placements and 
 
 ### Upgrade System
 
-#### Turret Upgrades (Per-Turret)
-- **Missile Speed** (10 scrap, 1.3x multiplier): Faster projectile velocity
-- **Explosion Size** (15 scrap, 1.4x multiplier): Larger blast radius  
-- **Fire Rate** (20 scrap, 1.5x multiplier): Faster reload times
-- **Missile Capacity** (25 scrap, 1.2x multiplier): More missiles per reload
-- **Autopilot** (40 scrap): Smart targeting system for automatic interception
+The upgrade system features a progressive research tree with Cold War-era military themes. All modes use scrap as the primary currency, with science unlocking advanced technologies.
 
-#### Economic Upgrades (Global)
-- **Scrap Multiplier** (80 scrap): +25% scrap from all sources
-- **Salvage Operations** (60 scrap): +3 bonus scrap from planes/bombers
-- **Efficiency** (90 scrap): -15% discount on all turret upgrade costs
-
-#### Tactical Upgrades
-- **Threat Detection** (75 scrap): Highlight dangerous missiles with red glow
+#### Global Upgrades
 - **Emergency Ammo** (3 scrap): Purchase single ammo for first available turret
-- **Science Unlock** (varies): Enable science production in cities (Command Mode)
+- **Science Unlock** (50 scrap): Enable science production in cities (Command Mode)
+
+**Economic Upgrades**
+- **Resource Boost** (80 scrap): +25% bonus materials from all sources
+- **Wreckage Ops** (60 scrap): Extra 3 scrap when destroying enemy aircraft
+- **Arms Discount** (90 scrap): 15% discount on all turret upgrades
+
+**Tactical Upgrades**
+- **RADAR Warning** (75 scrap): Highlight dangerous enemy missiles with red glow
+
+#### Turret Upgrades (Per-Turret, Command Mode)
+Research paths must be unlocked with science before purchasing upgrades:
+- **Fire Rate** (20 scrap base, 1.5x multiplier): Available from start
+- **Missile Speed** (10 scrap + research, 1.3x multiplier): Faster projectile velocity
+- **Explosion Size** (15 scrap + research, 1.4x multiplier): Larger blast radius
+- **Missile Capacity** (25 scrap + research, 1.2x multiplier): More missiles per reload
+- **Autopilot** (40 scrap + research): Smart targeting system for automatic interception
 
 #### City Management (Command Mode)
-- **Production Modes**: Scrap, Ammo, Science (requires unlock)
-- **City Efficiency Upgrades**: Increase resource production output
+**Technology Research** (science-based, progressive unlock system):
+- **Civilian Industry** (35 science): Required prerequisite for all specialized city improvements
+- **Civil Defense** (25 science): Unlock bunkers and population improvements
+- **Arms Manufacturing** (15 science): Unlock ammunition production facilities  
+- **Strategic Mining** (10 science): Unlock deep mining operations
+- **Defense Research** (30 science): Unlock classified research laboratories
+
+**City Science Upgrades**:
+- **Salvage Ops** (30 science): Convert excess ammunition to scrap materials
+- **Motor Pool** (20 science): Add +1 truck to all cities for faster delivery
+
+**City Upgrades** (requires Civilian Industry + specific tech):
+- **Urban Expansion**: Increase maximum population and housing capacity
+- **Bunker System**: Build underground bunkers (reduces missile damage)
+- **Production Facilities**: Specialized upgrades for Strategic Mining, Research Facility, or Arms Factory based on current production mode
+
+**City Features**:
+- **Production Modes**: Scrap, Ammo, Science (Science requires unlock)
+- **City Construction**: Build new cities at predefined strategic locations
 - **City Repair** (50 scrap): Restore destroyed cities
 
 ## Technical Details
@@ -159,7 +181,7 @@ Defend your cities from incoming missiles using strategic turret placements and 
 2. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
 3. **Seekers**: Enemy missiles that actively track and follow player missiles
 4. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
-5. **Command Mode Expansion**: Add turret/city construction functionality
+5. **Bunker Damage Reduction**: Implement actual damage reduction mechanics for bunker upgrades
 
 ### Low Priority
 6. **Celebration Effects**: Visual rewards for wave milestones and achievements
@@ -167,6 +189,12 @@ Defend your cities from incoming missiles using strategic turret placements and 
 8. **Code Cleanup**: Remove old modal code and legacy upgrade system remnants
 
 ## Completed Issues
+- ✅ **Upgrade System Reorganization**: Moved city tech to Cities tab, added Cold War themes
+- ✅ **Progressive Research Tree**: Civilian Industry prerequisite system with science-based unlocks
+- ✅ **Bunker System**: Separate upgrade from population expansion with damage reduction
+- ✅ **Interface Cleanup**: Hide purchased one-time upgrades to reduce clutter
+- ✅ **Production Mode Logic**: Science production only shows after research unlock
+- ✅ **Cold War Theming**: Military terminology throughout upgrade system
 - ✅ **Modular UI Architecture**: Separated upgrade system into focused modules
 - ✅ **Tooltip System**: Comprehensive hover-based descriptions with smart positioning
 - ✅ **Command Mode**: Floating panel with tabbed interface and entity selection

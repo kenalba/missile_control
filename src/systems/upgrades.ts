@@ -1,7 +1,7 @@
 // Unified Upgrade System - TypeScript Implementation
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
-import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
+import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityBunkerUpgrades, cityProductivityUpgrades } from '@/entities/cities';
 import { cityData } from '@/core/cities';
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
 import { upgradeEffects } from '@/entities/particles';
@@ -56,15 +56,27 @@ export function emergencyAmmoPurchase(): void {
 // Purchase global upgrades
 export function purchaseGlobalUpgrade(upgradeType: string): void {
   const upgrade = globalUpgrades[upgradeType];
-  if (!upgrade || upgrade.level > 0 || gameState.scrap < upgrade.cost) return;
+  if (!upgrade || upgrade.level > 0) return;
   
-  gameState.scrap -= upgrade.cost;
+  // Science-based upgrades
+  const scienceUpgrades = ['civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech', 'ammoRecycling', 'truckFleet'];
+  const isScience = scienceUpgrades.includes(upgradeType);
+  
+  if (isScience) {
+    if (gameState.science < upgrade.cost) return;
+    gameState.science -= upgrade.cost;
+  } else {
+    if (gameState.scrap < upgrade.cost) return;
+    gameState.scrap -= upgrade.cost;
+  }
+  
   upgrade.level = 1;
   
   // Visual feedback
   const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
   if (canvas) {
-    createUpgradeEffect(canvas.width / 2, 300, `${upgradeType.toUpperCase()} UNLOCKED!`, '#0f0');
+    const color = isScience ? '#00f' : '#0f0';
+    createUpgradeEffect(canvas.width / 2, 300, `${upgradeType.toUpperCase()} UNLOCKED!`, color);
   }
   
   // Special effects for specific upgrades
@@ -335,6 +347,7 @@ export function buildCity(): void {
   // Initialize upgrade levels for new city
   cityUpgrades.push(0);
   cityPopulationUpgrades.push(0);
+  cityBunkerUpgrades.push(0);
   
   // Initialize productivity upgrades for new city
   if (cityProductivityUpgrades.scrap) cityProductivityUpgrades.scrap.push(0);
@@ -466,6 +479,28 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
   }
 }
 
+// Upgrade city bunker system
+export function upgradeCityBunker(cityIndex: number): void {
+  if (cityIndex < 0 || cityIndex >= cityData.length) return;
+  if (destroyedCities.includes(cityIndex)) return;
+  
+  const currentLevel = cityBunkerUpgrades[cityIndex];
+  const cost = 60 + (currentLevel * 40);
+  
+  if (gameState.scrap < cost) return;
+  
+  gameState.scrap -= cost;
+  cityBunkerUpgrades[cityIndex]++;
+  
+  // Visual feedback
+  createUpgradeEffect(cityPositions[cityIndex], 750, `🏢 BUNKER LV${cityBunkerUpgrades[cityIndex]}!`, '#f80');
+  
+  updateUI();
+  if (gameState.currentMode === 'command') {
+    (window as any).updateCommandPanel?.();
+  }
+}
+
 // Unlock upgrade path function
 export function unlockUpgradePath(upgradeType: string, cost: number): void {
   if (gameState.science < cost) return;
@@ -515,6 +550,7 @@ export function initializeUpgradeSystem(): void {
 (window as any).buildTurret = buildTurret;
 (window as any).upgradeCityPopulation = upgradeCityPopulation;
 (window as any).upgradeCityProductivity = upgradeCityProductivity;
+(window as any).upgradeCityBunker = upgradeCityBunker;
 (window as any).unlockUpgradePath = unlockUpgradePath;
 (window as any).createUpgradeEffect = createUpgradeEffect;
 

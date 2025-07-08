@@ -6,6 +6,7 @@ export let destroyedCities: number[] = [];
 // Legacy compatibility for old city upgrade arrays
 export let cityUpgrades: number[] = [0, 0, 0, 0, 0, 0]; // Legacy: kept for compatibility
 export let cityPopulationUpgrades: number[] = [0, 0, 0, 0, 0, 0]; // Population capacity upgrades (increases max population)
+export let cityBunkerUpgrades: number[] = [0, 0, 0, 0, 0, 0]; // Bunker upgrades (reduces damage from missile hits)
 export let cityProductivityUpgrades = {
     scrap: [0, 0, 0, 0, 0, 0],    // Scrap production efficiency
     science: [0, 0, 0, 0, 0, 0],  // Science production efficiency  
@@ -16,6 +17,7 @@ export function resetCities(): void {
     destroyedCities = [];
     cityUpgrades = [0, 0, 0, 0, 0, 0];
     cityPopulationUpgrades = [0, 0, 0, 0, 0, 0];
+    cityBunkerUpgrades = [0, 0, 0, 0, 0, 0];
     cityProductivityUpgrades = {
         scrap: [0, 0, 0, 0, 0, 0],
         science: [0, 0, 0, 0, 0, 0],

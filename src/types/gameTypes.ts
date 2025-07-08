@@ -187,6 +187,11 @@ export interface GlobalUpgrades {
   salvage: UpgradeLevel;
   efficiency: UpgradeLevel;
   research: UpgradeLevel;
+  civilianIndustry: UpgradeLevel;
+  populationTech: UpgradeLevel;
+  arsenalTech: UpgradeLevel;
+  miningTech: UpgradeLevel;
+  researchTech: UpgradeLevel;
   ammoRecycling: UpgradeLevel;
   truckFleet: UpgradeLevel;
   [key: string]: UpgradeLevel;

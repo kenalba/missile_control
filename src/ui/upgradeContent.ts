@@ -2,7 +2,7 @@
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityData } from '@/core/cities';
-import { destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
+import { destroyedCities, cityUpgrades, cityPopulationUpgrades, cityBunkerUpgrades, cityProductivityUpgrades } from '@/entities/cities';
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
 import { createSectionHeader, createCompactUpgradeButton, COLORS } from '@/ui/uiUtils';
 
@@ -79,7 +79,7 @@ export function getGlobalUpgradesHTML(): string {
   
   html += '</div></div>';
   
-  // Economic Upgrades - Compact 5-column grid (can wrap to 2 rows)
+  // Economic Upgrades - Compact 3-column grid
   html += `
     <div style="margin-bottom: 15px;">
         ${createSectionHeader('Economic', '#0f0')}
@@ -87,16 +87,18 @@ export function getGlobalUpgradesHTML(): string {
   `;
   
   const economicUpgrades = [
-    { id: 'scrapMultiplier', name: 'Scrap+', description: '25% bonus scrap from all sources including missiles and bonuses' },
-    { id: 'salvage', name: 'Salvage', description: 'Extra 3 scrap when destroying planes and bombers' },
-    { id: 'efficiency', name: 'Efficiency', description: '15% discount on all turret upgrade costs' },
-    { id: 'ammoRecycling', name: 'Recycling', description: 'Convert excess ammo (when all turrets are full) to 2 scrap per ammo' },
-    { id: 'truckFleet', name: 'Fleet', description: 'Add +1 truck to all cities for faster ammo delivery' }
+    { id: 'scrapMultiplier', name: 'Resource Boost', description: '25% bonus materials from all sources. Wartime efficiency protocols.' },
+    { id: 'salvage', name: 'Wreckage Ops', description: 'Extra 3 scrap when destroying enemy aircraft. Battlefield salvage teams.' },
+    { id: 'efficiency', name: 'Arms Discount', description: '15% discount on all turret upgrades. Military procurement contracts.' }
   ];
   
   economicUpgrades.forEach(upgrade => {
     const upgradeData = globalUpgrades[upgrade.id];
     const isOwned = upgradeData && upgradeData.level > 0;
+    
+    // Hide one-time upgrades that are already owned
+    if (isOwned) return;
+    
     const cost = upgradeData ? upgradeData.cost : 50;
     const canAfford = gameState.scrap >= cost;
     
@@ -114,6 +116,7 @@ export function getGlobalUpgradesHTML(): string {
   
   html += '</div></div>';
   
+  
   // Combat Upgrades - Single row
   html += `
     <div>
@@ -122,12 +125,16 @@ export function getGlobalUpgradesHTML(): string {
   `;
   
   const combatUpgrades = [
-    { id: 'missileHighlight', name: 'Threat Detection', description: 'Highlight dangerous enemy missiles and seekers with red glow' }
+    { id: 'missileHighlight', name: 'RADAR Warning', description: 'Highlight dangerous enemy missiles with red glow. Early warning system.' }
   ];
   
   combatUpgrades.forEach(upgrade => {
     const upgradeData = globalUpgrades[upgrade.id];
     const isOwned = upgradeData && upgradeData.level > 0;
+    
+    // Hide one-time upgrades that are already owned
+    if (isOwned) return;
+    
     const cost = upgradeData ? upgradeData.cost : 75;
     const canAfford = gameState.scrap >= cost;
     
@@ -427,6 +434,96 @@ export function getCitiesUpgradesHTML(): string {
     <h4 style="color: #ff0; margin-top: 0; margin-bottom: 15px;">City Management</h4>
   `;
   
+  // Science upgrades section - only show if research is unlocked
+  const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
+  if (researchUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+          ${createSectionHeader('Technology Research', '#00f')}
+          <div class="compact-grid-2">
+    `;
+    
+    // Always show civilian industry first
+    const scienceUpgrades = [
+      { id: 'civilianIndustry', name: 'Civilian Industry', description: 'Unlock specialized production facilities for cities. Required for advanced city improvements.' }
+    ];
+    
+    // Only show specialized tech if civilian industry is unlocked
+    const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
+    if (civilianIndustryUnlocked) {
+      scienceUpgrades.push(
+        { id: 'populationTech', name: 'Civil Defense', description: 'Unlock bunkers and fallout shelters to protect civilian populations' },
+        { id: 'arsenalTech', name: 'Arms Manufacturing', description: 'Unlock military-grade ammunition production facilities' },
+        { id: 'miningTech', name: 'Strategic Mining', description: 'Unlock deep mining operations for critical military materials' },
+        { id: 'researchTech', name: 'Defense Research', description: 'Unlock classified research laboratories for advanced weapons technology' }
+      );
+    }
+    
+    scienceUpgrades.forEach(upgrade => {
+      const upgradeData = globalUpgrades[upgrade.id];
+      const isOwned = upgradeData && upgradeData.level > 0;
+      
+      // Hide one-time upgrades that are already owned
+      if (isOwned) return;
+      
+      const cost = upgradeData ? upgradeData.cost : 25;
+      const canAfford = gameState.science >= cost;
+      
+      html += createCompactUpgradeButton({
+        name: upgrade.name,
+        description: upgrade.description,
+        cost: cost,
+        isOwned: isOwned,
+        canAfford: canAfford,
+        color: COLORS.blue,
+        action: 'purchase-global',
+        actionData: upgrade.id,
+        additionalInfo: `${cost} 🔬`
+      });
+    });
+    
+    html += '</div></div>';
+    
+    // City Science upgrades - only show if civilian industry is unlocked
+    if (civilianIndustryUnlocked) {
+      html += `
+        <div style="margin-bottom: 15px;">
+            ${createSectionHeader('City Science', '#00f')}
+            <div class="compact-grid-2">
+      `;
+      
+      const cityScienceUpgrades = [
+        { id: 'ammoRecycling', name: 'Salvage Ops', description: 'Convert excess ammunition to scrap materials. Efficiency through wartime rationing.' },
+        { id: 'truckFleet', name: 'Motor Pool', description: 'Expand military transport capacity with additional convoy trucks' }
+      ];
+      
+      cityScienceUpgrades.forEach(upgrade => {
+        const upgradeData = globalUpgrades[upgrade.id];
+        const isOwned = upgradeData && upgradeData.level > 0;
+        
+        // Hide one-time upgrades that are already owned
+        if (isOwned) return;
+        
+        const cost = upgradeData ? upgradeData.cost : 30;
+        const canAfford = gameState.science >= cost;
+        
+        html += createCompactUpgradeButton({
+          name: upgrade.name,
+          description: upgrade.description,
+          cost: cost,
+          isOwned: isOwned,
+          canAfford: canAfford,
+          color: COLORS.blue,
+          action: 'purchase-global',
+          actionData: upgrade.id,
+          additionalInfo: `${cost} 🔬`
+        });
+      });
+      
+      html += '</div></div>';
+    }
+  }
+  
   // Get selected city or show all cities
   const selectedCity = gameState.commandMode.selectedEntityType === 'city' 
     ? gameState.commandMode.selectedEntity : null;
@@ -536,9 +633,20 @@ export function getCitiesUpgradesHTML(): string {
       
       const productionModes = [
         { id: 'scrap', name: 'Scrap', icon: '💰', description: 'Produces scrap for purchasing upgrades and repairs' },
-        { id: 'science', name: 'Science', icon: '🔬', description: 'Produces science for purchasing turret upgrades (requires Science unlock)' },
         { id: 'ammo', name: 'Ammo', icon: '📦', description: 'Produces ammunition for turret resupply' }
       ];
+      
+      // Only show science production if research is unlocked
+      const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
+      if (researchUnlocked) {
+        productionModes.push({ id: 'science', name: 'Science', icon: '🔬', description: 'Produces science for purchasing turret upgrades' });
+      }
+      
+      // Get current city's production upgrade levels for preview
+      const currentScrapLevel = cityProductivityUpgrades.scrap?.[selectedCity] || 0;
+      const currentScienceLevel = cityProductivityUpgrades.science?.[selectedCity] || 0;
+      const currentAmmoLevel = cityProductivityUpgrades.ammo?.[selectedCity] || 0;
+      const productionLevels = { scrap: currentScrapLevel, science: currentScienceLevel, ammo: currentAmmoLevel };
       
       productionModes.forEach(mode => {
         const isActive = city.productionMode === mode.id;
@@ -557,7 +665,9 @@ export function getCitiesUpgradesHTML(): string {
           clickHandler = `data-action="set-production" data-action-data="${selectedCity},${mode.id}"`;
         }
         
-        const tooltipText = isLocked ? 'Requires Science unlock from Global tab' : mode.description + (isActive ? ' (Currently Active)' : '');
+        const modeLevel = productionLevels[mode.id as keyof typeof productionLevels];
+        const tooltipText = isLocked ? 'Requires Science unlock from Global tab' : 
+          `${mode.description} (Level ${modeLevel})` + (isActive ? ' (Currently Active)' : '');
         
         html += `
           <button ${clickHandler}
@@ -565,6 +675,7 @@ export function getCitiesUpgradesHTML(): string {
                   style="${buttonStyle}"
                   data-tooltip="${tooltipText}">
               <strong>${mode.icon} ${mode.name}</strong>
+              ${modeLevel > 0 ? `<br><small>LV ${modeLevel}</small>` : ''}
               ${isActive ? '<br><small>ACTIVE</small>' : ''}
           </button>
         `;
@@ -576,49 +687,92 @@ export function getCitiesUpgradesHTML(): string {
       html += `
         <div>
             ${createSectionHeader('City Upgrades', '#ff0')}
-            <div class="compact-grid-2">
+            <div class="compact-grid-3">
       `;
       
-      // Population upgrade (increases max population and survival)
-      const popLevel = cityPopulationUpgrades[selectedCity];
-      const popCost = 40 + (popLevel * 30);
-      const canAffordPop = gameState.scrap >= popCost;
+      // Population upgrade (increases max population and survival) - only if civilian industry and population tech are unlocked
+      const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
+      const popTechUnlocked = globalUpgrades.populationTech?.level > 0;
+      if (civilianIndustryUnlocked && popTechUnlocked) {
+        const popLevel = cityPopulationUpgrades[selectedCity];
+        const popCost = 40 + (popLevel * 30);
+        const canAffordPop = gameState.scrap >= popCost;
+        
+        html += createCompactUpgradeButton({
+          name: `🏘️ Urban Expansion`,
+          description: `Expand city housing capacity. Level ${popLevel} → ${popLevel + 1}. Higher population = more resources per tick.`,
+          cost: popCost,
+          canAfford: canAffordPop,
+          color: COLORS.green,
+          action: 'upgrade-city-population',
+          actionData: `${selectedCity}`,
+          additionalInfo: `Max Pop: ${city.maxPopulation} → ${city.maxPopulation + 50}`
+        });
+      }
       
-      html += createCompactUpgradeButton({
-        name: `👥 Population`,
-        description: `Increase maximum population and damage resistance. Level ${popLevel} → ${popLevel + 1}. Higher population = more resources per tick.`,
-        cost: popCost,
-        canAfford: canAffordPop,
-        color: COLORS.green,
-        action: 'upgrade-city-population',
-        actionData: `${selectedCity}`,
-        additionalInfo: `Max Pop: ${city.maxPopulation} → ${city.maxPopulation + 50}`
-      });
+      // Bunker upgrade (reduces damage from missile hits) - only if civilian industry and population tech are unlocked
+      if (civilianIndustryUnlocked && popTechUnlocked) {
+        const bunkerLevel = cityBunkerUpgrades[selectedCity];
+        const bunkerCost = 60 + (bunkerLevel * 40);
+        const canAffordBunker = gameState.scrap >= bunkerCost;
+        
+        html += createCompactUpgradeButton({
+          name: `🏢 Bunker System`,
+          description: `Build underground bunkers and fallout shelters. Level ${bunkerLevel} → ${bunkerLevel + 1}. Reduces damage from missile hits.`,
+          cost: bunkerCost,
+          canAfford: canAffordBunker,
+          color: COLORS.orange,
+          action: 'upgrade-city-bunker',
+          actionData: `${selectedCity}`,
+          additionalInfo: `Damage reduction: ${bunkerLevel * 15}% → ${(bunkerLevel + 1) * 15}%`
+        });
+      }
       
-      // Specialized productivity upgrade (depends on current production mode)
+      // Specialized productivity upgrade (depends on current production mode) - only if civilian industry and corresponding tech are unlocked
       const currentMode = city.productionMode as 'scrap' | 'science' | 'ammo';
-      const prodLevel = cityProductivityUpgrades[currentMode][selectedCity];
-      const prodCost = 25 + (prodLevel * 20);
-      const canAffordProd = gameState.scrap >= prodCost;
+      const techRequirements = { scrap: 'miningTech', science: 'researchTech', ammo: 'arsenalTech' };
+      const requiredTech = techRequirements[currentMode];
+      const techUnlocked = globalUpgrades[requiredTech]?.level > 0;
       
-      const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
-      const modeNames = { scrap: 'Scrap Mining', science: 'Research Lab', ammo: 'Arsenal' };
-      const modeDescriptions = {
-        scrap: 'Specialized scrap extraction and refining equipment. Increases scrap output per tick.',
-        science: 'Advanced research laboratories and computing systems. Increases science output per tick.',
-        ammo: 'Ammunition manufacturing and storage facilities. Increases ammo output per tick.'
-      };
+      if (civilianIndustryUnlocked && techUnlocked) {
+        const prodLevel = cityProductivityUpgrades[currentMode][selectedCity];
+        const prodCost = 25 + (prodLevel * 20);
+        const canAffordProd = gameState.scrap >= prodCost;
+        
+        const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
+        const modeNames = { scrap: 'Strategic Mining', science: 'Research Facility', ammo: 'Arms Factory' };
+        const modeDescriptions = {
+          scrap: 'Deep mining operations for critical military materials. Increases scrap output per tick.',
+          science: 'Classified research laboratories for weapons technology. Increases science output per tick.',
+          ammo: 'Military-grade ammunition production facilities. Increases ammo output per tick.'
+        };
+        
+        html += createCompactUpgradeButton({
+          name: `${modeIcons[currentMode]} ${modeNames[currentMode]}`,
+          description: `${modeDescriptions[currentMode]} Level ${prodLevel} → ${prodLevel + 1}. Only affects ${currentMode} production.`,
+          cost: prodCost,
+          canAfford: canAffordProd,
+          color: currentMode === 'scrap' ? COLORS.green : currentMode === 'science' ? COLORS.blue : COLORS.yellow,
+          action: 'upgrade-city-productivity',
+          actionData: `${selectedCity},${currentMode}`,
+          additionalInfo: `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} efficiency +25%`
+        });
+      }
       
-      html += createCompactUpgradeButton({
-        name: `${modeIcons[currentMode]} ${modeNames[currentMode]}`,
-        description: `${modeDescriptions[currentMode]} Level ${prodLevel} → ${prodLevel + 1}. Only affects ${currentMode} production.`,
-        cost: prodCost,
-        canAfford: canAffordProd,
-        color: currentMode === 'scrap' ? COLORS.green : currentMode === 'science' ? COLORS.blue : COLORS.yellow,
-        action: 'upgrade-city-productivity',
-        actionData: `${selectedCity},${currentMode}`,
-        additionalInfo: `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} efficiency +25%`
-      });
+      // Show message if no upgrades are available
+      if (!civilianIndustryUnlocked) {
+        html += `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #888; font-size: 12px;">
+              Research Civilian Industry to unlock city improvements
+          </div>
+        `;
+      } else if (!popTechUnlocked && !techUnlocked) {
+        html += `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #888; font-size: 12px;">
+              Research specialized technology to unlock city upgrades
+          </div>
+        `;
+      }
       
       html += '</div></div>';
     }

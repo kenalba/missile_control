@@ -35,8 +35,15 @@ export let globalUpgrades: GlobalUpgrades = {
     salvage: { level: 0, cost: 60 },
     efficiency: { level: 0, cost: 90 },
     research: { level: 0, cost: 50 }, // Unlocks science production
-    ammoRecycling: { level: 0, cost: 70 }, // Converts excess ammo to scrap
-    truckFleet: { level: 0, cost: 100 } // +1 truck per city
+    // Science-based unlock upgrades (unlocks advanced city improvements)
+    civilianIndustry: { level: 0, cost: 35 }, // Unlocks specialized city production tech (science cost)
+    populationTech: { level: 0, cost: 25 }, // Unlocks population improvements (science cost)
+    arsenalTech: { level: 0, cost: 15 }, // Unlocks arsenal improvements (science cost)
+    miningTech: { level: 0, cost: 10 }, // Unlocks scrap mining improvements (science cost)
+    researchTech: { level: 0, cost: 30 }, // Unlocks research lab improvements (science cost)
+    // City-based science upgrades (moved from global economic)
+    ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
+    truckFleet: { level: 0, cost: 20 } // +1 truck per city (science cost)
 };
 
 // Unlocked turret upgrade paths (spent science to unlock)
@@ -89,8 +96,13 @@ export function resetUpgrades(): void {
         salvage: { level: 0, cost: 60 },
         efficiency: { level: 0, cost: 90 },
         research: { level: 0, cost: 50 },
-        ammoRecycling: { level: 0, cost: 70 },
-        truckFleet: { level: 0, cost: 100 }
+        civilianIndustry: { level: 0, cost: 35 },
+        populationTech: { level: 0, cost: 25 },
+        arsenalTech: { level: 0, cost: 15 },
+        miningTech: { level: 0, cost: 10 },
+        researchTech: { level: 0, cost: 30 },
+        ammoRecycling: { level: 0, cost: 30 },
+        truckFleet: { level: 0, cost: 20 }
     };
     
     unlockedUpgradePaths = {
