@@ -231,6 +231,48 @@ window.repairCity = function(cityIndex) {
     }
 };
 
+// Build new city function
+window.buildCity = function() {
+    const maxCities = 6;
+    const currentCities = cityData.length;
+    
+    if (currentCities >= maxCities) return;
+    
+    const cost = 100 + (currentCities * 50); // Increasing cost per city
+    if (gameState.scrap < cost) return;
+    
+    gameState.scrap -= cost;
+    
+    // Add new city to cityData
+    const newCity = {
+        population: 50, // Start with partial population
+        maxPopulation: 100,
+        productionMode: 'scrap', // Default production mode
+        baseProduction: 1
+    };
+    
+    cityData.push(newCity);
+    gameState.cities++;
+    
+    // Initialize upgrade levels for new city
+    cityUpgrades.push(0);
+    cityPopulationUpgrades.push(0);
+    
+    // Initialize productivity upgrades for new city
+    if (cityProductivityUpgrades.scrap) cityProductivityUpgrades.scrap.push(0);
+    if (cityProductivityUpgrades.science) cityProductivityUpgrades.science.push(0);  
+    if (cityProductivityUpgrades.ammo) cityProductivityUpgrades.ammo.push(0);
+    
+    // Visual feedback
+    const newCityX = cityPositions[currentCities]; // Use the position for the new city
+    createUpgradeEffect(newCityX || canvas.width / 2, 750, 'NEW CITY BUILT!', '#ff0');
+    
+    updateUI();
+    if (gameState.currentMode === 'command') {
+        window.updateCommandPanel();
+    }
+};
+
 // Upgrade city population capacity
 window.upgradeCityPopulation = function(cityIndex) {
     if (cityIndex < 0 || cityIndex >= cityData.length) return;

@@ -5,14 +5,47 @@ let selectedLauncher = 0; // Default to left launcher for mobile
 
 // Selection system for Command Mode - make globally accessible
 window.selectEntity = function(type, index) {
-    if (gameState.currentMode !== 'command') return;
+    console.log(`selectEntity called: type=${type}, index=${index}`);
+    console.log(`Current game mode: ${gameState.currentMode}`);
+    console.log(`cityData length: ${cityData ? cityData.length : 'undefined'}`);
+    console.log(`launchers length: ${launchers ? launchers.length : 'undefined'}`);
+    
+    if (gameState.currentMode !== 'command') {
+        console.log('Not in command mode, ignoring selection');
+        return;
+    }
+    
+    // Validate index bounds
+    if (type === 'city' && (index < 0 || index >= cityData.length)) {
+        console.error(`Invalid city index: ${index}, cityData.length: ${cityData.length}`);
+        return;
+    }
+    
+    if (type === 'turret' && (index < 0 || index >= launchers.length)) {
+        console.error(`Invalid turret index: ${index}, launchers.length: ${launchers.length}`);
+        return;
+    }
     
     gameState.commandMode.selectedEntityType = type;
     gameState.commandMode.selectedEntity = index;
+    console.log(`Selected entity: ${type} ${index}`);
+    console.log(`gameState.commandMode:`, gameState.commandMode);
     
     // Update upgrade panel based on selection
     if (gameState.currentMode === 'command') {
+        // Switch to appropriate tab based on entity type
+        if (type === 'city') {
+            window.currentUpgradeTab = 'cities';
+        } else if (type === 'turret') {
+            window.currentUpgradeTab = 'turrets';
+        }
+        
         window.openCommandPanel();
+        
+        // Force update the panel content to reflect selection
+        if (typeof updateCommandPanel === 'function') {
+            updateCommandPanel();
+        }
     }
     
     // Visual feedback
@@ -120,6 +153,7 @@ function initializeInput() {
             gameState.scrap += 100;
             return;
         }
+        
         
         // Debug controls (work anytime during game)
         if (gameState.gameRunning && !gameState.waveBreak) {

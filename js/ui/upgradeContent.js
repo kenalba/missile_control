@@ -24,7 +24,7 @@ function getGlobalUpgradesHTML() {
         cost: ammoExchangeRate,
         canAfford: canAffordAmmo,
         color: COLORS.yellow,
-        onClick: 'emergencyAmmoPurchase()'
+        action: 'emergency-ammo'
     });
     
     // Research unlock in same row if not unlocked
@@ -39,7 +39,8 @@ function getGlobalUpgradesHTML() {
             cost: researchCost,
             canAfford: canAffordResearch,
             color: COLORS.blue,
-            onClick: 'purchaseGlobalUpgrade(\'research\')'
+            action: 'purchase-global',
+            actionData: 'research'
         });
     } else {
         html += `
@@ -79,7 +80,8 @@ function getGlobalUpgradesHTML() {
             isOwned: isOwned,
             canAfford: canAfford,
             color: COLORS.green,
-            onClick: `purchaseGlobalUpgrade('${upgrade.id}')`
+            action: 'purchase-global',
+            actionData: upgrade.id
         });
     });
     
@@ -138,6 +140,46 @@ function getTurretsUpgradesHTML() {
     const selectedTurret = gameState.commandMode.selectedEntityType === 'turret' 
         ? gameState.commandMode.selectedEntity : 0;
     
+    // Global science unlock system - applies to all turrets (always show first)
+    const scienceUnlocks = {
+        rate: { required: 0, description: 'Available from start' },
+        speed: { required: 10, description: 'Requires 10 science to unlock velocity research' },
+        explosion: { required: 25, description: 'Requires 25 science to unlock explosive technology' },
+        capacity: { required: 50, description: 'Requires 50 science to unlock storage engineering' },
+        autopilot: { required: 100, description: 'Requires 100 science to unlock AI targeting systems' }
+    };
+    
+    // Add global science unlock section first
+    html += `
+        <div style="margin-bottom: 15px;">
+            ${createSectionHeader('Research Unlocks (Global)', 'rgb(100, 200, 255)')}
+            <div class="compact-grid-2" style="gap: 8px;">
+    `;
+    
+    // Show science unlock buttons for locked upgrades
+    const unlockedUpgrades = [];
+    Object.entries(scienceUnlocks).forEach(([key, unlock]) => {
+        if (gameState.science >= unlock.required) {
+            unlockedUpgrades.push(key);
+        } else {
+            // Show unlock button for this upgrade path
+            const cost = unlock.required;
+            const canAfford = gameState.science >= cost;
+            const upgradeType = { key, name: key.charAt(0).toUpperCase() + key.slice(1), icon: '🔬' };
+            
+            html += `
+                <div class="upgrade-btn-compact tooltip" 
+                     style="color: rgb(100, 200, 255); border-color: rgb(100, 200, 255); background: rgba(100, 200, 255, 0.1); cursor: default;"
+                     data-tooltip="${unlock.description}">
+                    <strong>🔒 ${upgradeType.name}</strong><br>
+                    <small>Need ${cost} 🔬</small>
+                </div>
+            `;
+        }
+    });
+    
+    html += '</div></div>';
+
     if (selectedTurret !== null && launchers[selectedTurret]) {
         const turretUpgrades = launcherUpgrades[selectedTurret];
         const launcher = launchers[selectedTurret];
@@ -164,7 +206,8 @@ function getTurretsUpgradesHTML() {
                 : 'color: #0ff; border-color: #0ff; background: rgba(0, 255, 255, 0.1);';
             
             html += `
-                <button onclick="window.selectEntity('turret', ${i})" 
+                <button data-action="select-turret" 
+                        data-action-data="${i}"
                         class="upgrade-btn-compact tooltip"
                         style="${buttonStyle}"
                         data-tooltip="${tooltipText}">
@@ -189,15 +232,6 @@ function getTurretsUpgradesHTML() {
             <div class="compact-grid-2" style="gap: 10px;">
         `;
         
-        // Science unlock system - define unlock requirements
-        const scienceUnlocks = {
-            rate: { required: 0, description: 'Available from start' },
-            speed: { required: 10, description: 'Requires 10 science to unlock velocity research' },
-            explosion: { required: 25, description: 'Requires 25 science to unlock explosive technology' },
-            capacity: { required: 50, description: 'Requires 50 science to unlock storage engineering' },
-            autopilot: { required: 100, description: 'Requires 100 science to unlock AI targeting systems' }
-        };
-        
         // Generate compact upgrade buttons with science gating
         const upgradeTypes = [
             { key: 'rate', name: 'Rate', icon: '🔥', description: 'Faster reload time between shots. Reduces cooldown for rapid firing.' },
@@ -221,7 +255,8 @@ function getTurretsUpgradesHTML() {
                     cost: cost,
                     canAfford: gameState.scrap >= cost,
                     color: COLORS.cyan,
-                    onClick: `upgrade('${upgradeType.key}', ${selectedTurret})`,
+                    action: 'upgrade-turret',
+                    actionData: `${upgradeType.key},${selectedTurret}`,
                     additionalInfo: `Level ${upgrade.level} → ${upgrade.level + 1}`
                 });
             } else {
@@ -253,7 +288,8 @@ function getTurretsUpgradesHTML() {
             const statusColor = isDestroyed ? '#f00' : '#0f0';
             
             html += `
-                <button onclick="window.selectEntity('turret', ${i})" 
+                <button data-action="select-turret" 
+                        data-action-data="${i}"
                         class="upgrade-btn-compact tooltip"
                         style="color: #0ff; border-color: #0ff; background: rgba(0, 255, 255, 0.1);"
                         data-tooltip="Ammo: ${launcher.missiles}/${launcher.maxMissiles} • Status: ${status}">
@@ -287,6 +323,32 @@ function getCitiesUpgradesHTML() {
     const selectedCity = gameState.commandMode.selectedEntityType === 'city' 
         ? gameState.commandMode.selectedEntity : null;
     
+    // Always show city building section first
+    const maxCities = 6;
+    const currentCities = cityData.length;
+    if (currentCities < maxCities) {
+        const buildCost = 100 + (currentCities * 50); // Increasing cost per city
+        const canAffordBuild = gameState.scrap >= buildCost;
+        
+        html += `
+            <div style="margin-bottom: 15px;">
+                ${createSectionHeader('Expansion', '#ff0')}
+                <div style="text-align: center;">
+                    ${createCompactUpgradeButton({
+                        name: '🏗️ Build City',
+                        description: `Construct a new city to increase resource production. City ${currentCities + 1} of ${maxCities} maximum.`,
+                        cost: buildCost,
+                        canAfford: canAffordBuild,
+                        color: COLORS.yellow,
+                        action: 'build-city',
+                        actionData: `${currentCities}`,
+                        additionalInfo: `Unlocks new production facility`
+                    })}
+                </div>
+            </div>
+        `;
+    }
+    
     if (selectedCity !== null && cityData[selectedCity]) {
         const city = cityData[selectedCity];
         const isDestroyed = destroyedCities.includes(selectedCity);
@@ -315,7 +377,8 @@ function getCitiesUpgradesHTML() {
                 : 'color: #ff0; border-color: #ff0; background: rgba(255, 255, 0, 0.1);';
             
             html += `
-                <button onclick="window.selectEntity('city', ${i})" 
+                <button data-action="select-city" 
+                        data-action-data="${i}"
                         class="upgrade-btn-compact tooltip"
                         style="${buttonStyle}"
                         data-tooltip="${tooltipText}">
@@ -334,8 +397,9 @@ function getCitiesUpgradesHTML() {
                 <div>
                     <strong style="color: #ff0;">Managing City ${selectedCity + 1}</strong>
                     <div style="font-size: 11px; color: #aaa;">
-                        ${isDestroyed ? 'DESTROYED' : `${city.productionMode} • Pop: ${city.population}/${city.maxPopulation}`}
+                        ${isDestroyed ? 'DESTROYED' : `${city.productionMode} • Pop: ${Math.floor(city.population)}/${city.maxPopulation}`}
                     </div>
+                    ${!isDestroyed ? `<div style="font-size: 11px; color: #0f0;">Production: ${calculateCityProductionRate(selectedCity)}/sec</div>` : ''}
                 </div>
             </div>
         `;
@@ -353,7 +417,8 @@ function getCitiesUpgradesHTML() {
                         cost: repairCost,
                         canAfford: canAffordRepair,
                         color: COLORS.red,
-                        onClick: `repairCity(${selectedCity})`
+                        action: 'repair-city',
+                        actionData: `${selectedCity}`
                     })}
                 </div>
             `;
@@ -385,7 +450,7 @@ function getCitiesUpgradesHTML() {
                     buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}, 0.3); border-width: 2px;`;
                 } else {
                     buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}, 0.1);`;
-                    clickHandler = `onclick="setCityProductionMode(${selectedCity}, '${mode.id}')"`;
+                    clickHandler = `data-action="set-production" data-action-data="${selectedCity},${mode.id}"`;
                 }
                 
                 const tooltipText = isLocked ? 'Requires Science unlock from Global tab' : mode.description + (isActive ? ' (Currently Active)' : '');
@@ -421,7 +486,8 @@ function getCitiesUpgradesHTML() {
                 cost: popCost,
                 canAfford: canAffordPop,
                 color: COLORS.green,
-                onClick: `upgradeCityPopulation(${selectedCity})`,
+                action: 'upgrade-city-population',
+                actionData: `${selectedCity}`,
                 additionalInfo: `Max Pop: ${city.maxPopulation} → ${city.maxPopulation + 50}`
             });
             
@@ -445,7 +511,8 @@ function getCitiesUpgradesHTML() {
                 cost: prodCost,
                 canAfford: canAffordProd,
                 color: currentMode === 'scrap' ? COLORS.green : currentMode === 'science' ? COLORS.blue : COLORS.yellow,
-                onClick: `upgradeCityProductivity(${selectedCity}, '${currentMode}')`,
+                action: 'upgrade-city-productivity',
+                actionData: `${selectedCity},${currentMode}`,
                 additionalInfo: `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} efficiency +25%`
             });
             
@@ -470,7 +537,8 @@ function getCitiesUpgradesHTML() {
                 : `Population: ${city.population}/${city.maxPopulation} • Producing: ${city.productionMode} • Level: ${cityUpgrades[i]}`;
             
             html += `
-                <button onclick="window.selectEntity('city', ${i})" 
+                <button data-action="select-city" 
+                        data-action-data="${i}"
                         class="upgrade-btn-compact tooltip"
                         style="color: #ff0; border-color: #ff0; background: rgba(255, 255, 0, 0.1);"
                         data-tooltip="${tooltipText}">

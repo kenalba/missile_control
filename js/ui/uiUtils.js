@@ -10,7 +10,7 @@ const BUTTON_STYLES = {
 
 const COLORS = {
     green: '0, 255, 0',
-    blue: '0, 0, 255', 
+    blue: '100, 200, 255', // Lighter blue for better readability
     yellow: '255, 255, 0',
     cyan: '0, 255, 255',
     orange: '255, 128, 0',
@@ -28,6 +28,8 @@ function createUpgradeButton(config) {
         canAfford = true,
         color = COLORS.green,
         onClick,
+        action,
+        actionData,
         additionalInfo = null,
         compact = false
     } = config;
@@ -47,7 +49,9 @@ function createUpgradeButton(config) {
 
     const buttonStyle = canAfford ? BUTTON_STYLES.available(color) : BUTTON_STYLES.disabled;
     const disabled = canAfford ? '' : 'disabled';
-    const onClickAttr = onClick ? `onclick="${onClick}"` : '';
+    
+    // Use new action system if provided, otherwise fall back to onClick
+    const actionAttrs = action ? `data-action="${action}" data-action-data="${actionData || ''}"` : (onClick ? `onclick="${onClick}"` : '');
     
     let tooltipText = description;
     if (additionalInfo) tooltipText += '. ' + additionalInfo;
@@ -55,7 +59,7 @@ function createUpgradeButton(config) {
 
     if (compact) {
         return `
-            <button ${onClickAttr} 
+            <button ${actionAttrs} 
                     class="upgrade-btn-compact tooltip"
                     style="color: rgb(${color}); border-color: rgb(${color}); background: rgba(${color}, 0.2);"
                     ${disabled}
@@ -67,7 +71,7 @@ function createUpgradeButton(config) {
     }
 
     return `
-        <button ${onClickAttr} 
+        <button ${actionAttrs} 
                 style="${BUTTON_STYLES.base} ${buttonStyle}"
                 ${disabled}>
             <strong>${name}</strong><br>

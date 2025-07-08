@@ -73,6 +73,28 @@ function updateCommandMode(deltaTime) {
     updateCityPopulation(deltaTime);
 }
 
+// Calculate production rate per second for a specific city
+function calculateCityProductionRate(cityIndex) {
+    if (destroyedCities.includes(cityIndex)) return 0;
+    
+    const city = cityData[cityIndex];
+    if (city.population <= 0) return 0;
+    
+    // Same calculation as generateCityResources but for display
+    const populationMultiplier = city.population / city.maxPopulation;
+    let baseProduction = Math.floor(city.baseProduction * populationMultiplier);
+    
+    const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
+    const productivityMultiplier = 1 + (productivityLevel * 0.25);
+    const finalProduction = Math.floor(baseProduction * productivityMultiplier);
+    
+    // Convert from per-3-seconds to per-second
+    return (finalProduction / 3).toFixed(1);
+}
+
+// Make globally accessible
+window.calculateCityProductionRate = calculateCityProductionRate;
+
 // Generate resources from cities based on population and production mode
 function generateCityResources() {
     for (let i = 0; i < cityData.length; i++) {
@@ -159,7 +181,7 @@ function distributeAmmo(ammoToDistribute) {
 
 // Update city population (gradual growth and recovery)
 function updateCityPopulation(deltaTime) {
-    const growthRate = 0.1; // Population grows by 0.1 per second
+    const growthRate = 0.33; // Population grows by 0.33 per second (1 every 3 seconds)
     
     for (let i = 0; i < cityData.length; i++) {
         if (destroyedCities.includes(i)) continue;
