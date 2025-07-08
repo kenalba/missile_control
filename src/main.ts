@@ -52,6 +52,13 @@ async function loadLegacyModules() {
   }
   
   console.log('🎮 All legacy modules loaded, game ready!');
+  
+  // Now that all legacy modules are loaded, initialize the game
+  if (typeof (window as any).initGame === 'function') {
+    (window as any).initGame();
+  } else {
+    console.error('❌ initGame function not found in legacy modules');
+  }
 }
 
 // Load legacy modules and initialize game

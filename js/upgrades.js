@@ -104,6 +104,11 @@ function initializeUpgradeSystem() {
         // Command Mode uses floating panel system
         // Panel functions are loaded from panelManager.js
         console.log('Command Mode upgrade system initialized');
+        
+        // Initialize global event delegation for upgrade panel clicks
+        if (typeof initializeGlobalEventDelegation === 'function') {
+            initializeGlobalEventDelegation();
+        }
     } else {
         // Arcade Mode uses traditional sidebar system
         console.log('Arcade Mode upgrade system initialized');

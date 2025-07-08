@@ -556,5 +556,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Start the game when the page loads
-document.addEventListener('DOMContentLoaded', initGame);
+// Start the game when the page loads - but only if called from TypeScript loader
+// The TypeScript main.ts will call initGame() after loading all legacy modules
+// document.addEventListener('DOMContentLoaded', initGame);
