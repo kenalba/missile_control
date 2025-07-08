@@ -366,31 +366,6 @@ function getCitiesUpgradesHTML() {
     const selectedCity = gameState.commandMode.selectedEntityType === 'city' 
         ? gameState.commandMode.selectedEntity : null;
     
-    // Always show city building section first
-    const maxCities = 6;
-    const currentCities = cityData.length;
-    if (currentCities < maxCities) {
-        const buildCost = 100 + (currentCities * 50); // Increasing cost per city
-        const canAffordBuild = gameState.scrap >= buildCost;
-        
-        html += `
-            <div style="margin-bottom: 15px;">
-                ${createSectionHeader('Expansion', '#ff0')}
-                <div style="text-align: center;">
-                    ${createCompactUpgradeButton({
-                        name: '🏗️ Build City',
-                        description: `Construct a new city to increase resource production. City ${currentCities + 1} of ${maxCities} maximum.`,
-                        cost: buildCost,
-                        canAfford: canAffordBuild,
-                        color: COLORS.yellow,
-                        action: 'build-city',
-                        actionData: `${currentCities}`,
-                        additionalInfo: `Unlocks new production facility`
-                    })}
-                </div>
-            </div>
-        `;
-    }
     
     if (selectedCity !== null && cityData[selectedCity]) {
         const city = cityData[selectedCity];
@@ -399,7 +374,7 @@ function getCitiesUpgradesHTML() {
         // Always show city selector when a city is selected
         html += `
             <div style="margin-bottom: 15px;">
-                ${createSectionHeader('City Selection', '#ff0')}
+                ${createSectionHeader('City Management', '#ff0')}
                 <div class="compact-grid-3">
         `;
         
@@ -428,6 +403,26 @@ function getCitiesUpgradesHTML() {
                     <strong>C${i + 1} ${isCityDestroyed ? '💥' : productionIcon}</strong><br>
                     <small style="color: ${statusColor};">${isCityDestroyed ? 'DESTROYED' : 'OK'}</small>
                     ${isSelected ? '<br><small style="color: #ff0;">SELECTED</small>' : ''}
+                </button>
+            `;
+        }
+        
+        // Add build city button if not at max capacity
+        const maxCities = 6;
+        const currentCities = cityData.length;
+        if (currentCities < maxCities) {
+            const buildCost = 100 + (currentCities * 50); // Increasing cost per city
+            const canAffordBuild = gameState.scrap >= buildCost;
+            
+            html += `
+                <button data-action="build-city" 
+                        data-action-data="${currentCities}"
+                        class="upgrade-btn-compact tooltip"
+                        style="color: ${canAffordBuild ? '#0f0' : '#666'}; border-color: ${canAffordBuild ? '#0f0' : '#666'}; background: rgba(${canAffordBuild ? '0, 255, 0' : '102, 102, 102'}, 0.1); ${canAffordBuild ? '' : 'opacity: 0.5;'}"
+                        data-tooltip="Construct a new city to increase resource production. City ${currentCities + 1} of ${maxCities} maximum. Costs ${buildCost} scrap."
+                        ${canAffordBuild ? '' : 'disabled'}>
+                    <strong>+ New City</strong><br>
+                    <small>${buildCost} 💰</small>
                 </button>
             `;
         }
@@ -565,7 +560,7 @@ function getCitiesUpgradesHTML() {
         // Show all cities overview in compact grid
         html += `
             <div style="margin-bottom: 15px;">
-                ${createSectionHeader('Select City', '#ff0')}
+                ${createSectionHeader('City Management', '#ff0')}
                 <div class="compact-grid-3">
         `;
         
@@ -587,6 +582,26 @@ function getCitiesUpgradesHTML() {
                         data-tooltip="${tooltipText}">
                     <strong>C${i + 1} ${isDestroyed ? '💥' : productionIcon}</strong><br>
                     <small style="color: ${statusColor};">${isDestroyed ? 'DESTROYED' : 'OK'}</small>
+                </button>
+            `;
+        }
+        
+        // Add build city button if not at max capacity
+        const maxCities = 6;
+        const currentCities = cityData.length;
+        if (currentCities < maxCities) {
+            const buildCost = 100 + (currentCities * 50); // Increasing cost per city
+            const canAffordBuild = gameState.scrap >= buildCost;
+            
+            html += `
+                <button data-action="build-city" 
+                        data-action-data="${currentCities}"
+                        class="upgrade-btn-compact tooltip"
+                        style="color: ${canAffordBuild ? '#0f0' : '#666'}; border-color: ${canAffordBuild ? '#0f0' : '#666'}; background: rgba(${canAffordBuild ? '0, 255, 0' : '102, 102, 102'}, 0.1); ${canAffordBuild ? '' : 'opacity: 0.5;'}"
+                        data-tooltip="Construct a new city to increase resource production. City ${currentCities + 1} of ${maxCities} maximum. Costs ${buildCost} scrap."
+                        ${canAffordBuild ? '' : 'disabled'}>
+                    <strong>+ New City</strong><br>
+                    <small>${buildCost} 💰</small>
                 </button>
             `;
         }
