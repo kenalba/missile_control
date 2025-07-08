@@ -223,53 +223,72 @@ window.repairCity = function(cityIndex) {
     }
 };
 
-// Generate a unique position for a new city
-function generateCityPosition() {
-    const minX = 200; // Minimum X position
-    const maxX = 1000; // Maximum X position  
-    const minDistance = 80; // Minimum distance between cities and from launchers
-    const maxAttempts = 50; // Maximum attempts to find a position
+// Get next available predefined city position
+function getNextCityPosition() {
+    if (gameState.currentMode !== 'command') {
+        // Fallback for non-command modes - use simple spacing
+        return 250 + (cityData.length * 120);
+    }
     
-    // Get all existing positions (cities + launchers)
-    const existingPositions = [
-        ...cityPositions,
-        ...launchers.map(l => l.x)
-    ];
+    const config = ModeManager.getCurrentConfig();
+    if (!config || !config.availableCityPositions) {
+        // Fallback if no predefined positions
+        return 250 + (cityData.length * 120);
+    }
     
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        const newX = minX + Math.random() * (maxX - minX);
-        
-        // Check if this position is far enough from all existing positions
-        const isValidPosition = existingPositions.every(existingX => 
-            Math.abs(newX - existingX) >= minDistance
-        );
-        
-        if (isValidPosition) {
-            return Math.floor(newX);
+    const availablePositions = config.availableCityPositions;
+    const occupiedPositions = cityPositions;
+    
+    // Find the first available position that's not already occupied
+    for (const position of availablePositions) {
+        if (!occupiedPositions.includes(position)) {
+            return position;
         }
     }
     
-    // Fallback: use a position based on city count if we can't find a good spot
-    return 250 + (cityData.length * 120);
+    // If all predefined positions are taken, return null
+    return null;
 }
 
 // Build new city function
 window.buildCity = function() {
-    const maxCities = 6;
-    const currentCities = cityData.length;
+    if (gameState.currentMode === 'command') {
+        // Command Mode: Use predefined positions and config
+        const config = ModeManager.getCurrentConfig();
+        if (!config || !config.availableCityPositions) return;
+        
+        const maxCities = config.availableCityPositions.length;
+        const currentCities = cityData.length;
+        
+        if (currentCities >= maxCities) return;
+        
+        const cost = 100 + (currentCities * 50); // Increasing cost per city
+        if (gameState.scrap < cost) return;
+        
+        // Get next available predefined position
+        const newCityX = getNextCityPosition();
+        if (newCityX === null) return; // No available positions
+        
+        gameState.scrap -= cost;
+        cityPositions.push(newCityX);
+    } else {
+        // Arcade Mode: Legacy behavior
+        const maxCities = 6;
+        const currentCities = cityData.length;
+        
+        if (currentCities >= maxCities) return;
+        
+        const cost = 100 + (currentCities * 50); // Increasing cost per city
+        if (gameState.scrap < cost) return;
+        
+        gameState.scrap -= cost;
+        
+        // Use simple spacing for arcade mode
+        const newCityX = 250 + (cityData.length * 120);
+        cityPositions.push(newCityX);
+    }
     
-    if (currentCities >= maxCities) return;
-    
-    const cost = 100 + (currentCities * 50); // Increasing cost per city
-    if (gameState.scrap < cost) return;
-    
-    gameState.scrap -= cost;
-    
-    // Generate unique position for new city
-    const newCityX = generateCityPosition();
-    cityPositions.push(newCityX);
-    
-    // Add new city to cityData
+    // Add new city to cityData (same for both modes)
     const newCity = {
         population: 50, // Start with partial population
         maxPopulation: 100,
@@ -290,7 +309,71 @@ window.buildCity = function() {
     if (cityProductivityUpgrades.ammo) cityProductivityUpgrades.ammo.push(0);
     
     // Visual feedback
+    const newCityX = cityPositions[cityPositions.length - 1];
     createUpgradeEffect(newCityX, 750, 'NEW CITY BUILT!', '#ff0');
+    
+    updateUI();
+    if (gameState.currentMode === 'command') {
+        window.updateCommandPanel();
+    }
+};
+
+// Build new turret function
+window.buildTurret = function() {
+    if (gameState.currentMode !== 'command') return;
+    
+    const config = ModeManager.getCurrentConfig();
+    if (!config || !config.availableTurretPositions) return;
+    
+    const maxTurrets = config.availableTurretPositions.length;
+    const currentTurrets = launchers.length;
+    
+    if (currentTurrets >= maxTurrets) return;
+    
+    const cost = 150 + (currentTurrets * 100); // Increasing cost: 150, 250, 350
+    if (gameState.scrap < cost) return;
+    
+    gameState.scrap -= cost;
+    
+    // Find next available turret position
+    const availablePositions = config.availableTurretPositions;
+    const occupiedPositions = launchers.map(launcher => launcher.x);
+    
+    let newTurretPosition = null;
+    for (const pos of availablePositions) {
+        if (!occupiedPositions.includes(pos.x)) {
+            newTurretPosition = pos;
+            break;
+        }
+    }
+    
+    if (!newTurretPosition) return; // No available positions
+    
+    // Create new turret
+    const newTurret = {
+        x: newTurretPosition.x,
+        y: newTurretPosition.y,
+        missiles: 10,
+        maxMissiles: 10,
+        lastFire: 0,
+        fireRate: 1000
+    };
+    
+    launchers.push(newTurret);
+    
+    // Initialize upgrade levels for new turret
+    const newTurretUpgrades = {
+        speed: { level: 1, cost: 10 },
+        explosion: { level: 1, cost: 15 },
+        rate: { level: 1, cost: 20 },
+        capacity: { level: 1, cost: 25 },
+        autopilot: { level: 0, cost: 40 }
+    };
+    
+    launcherUpgrades.push(newTurretUpgrades);
+    
+    // Visual feedback
+    createUpgradeEffect(newTurretPosition.x, newTurretPosition.y - 30, 'NEW TURRET BUILT!', '#0ff');
     
     updateUI();
     if (gameState.currentMode === 'command') {

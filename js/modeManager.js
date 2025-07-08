@@ -31,6 +31,21 @@ const ModeManager = {
             launcherPositions: [
                 { x: 600, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
             ],
+            // Predefined positions where turrets can be built (max 3 total)
+            availableTurretPositions: [
+                { x: 150, y: 770 },  // Left position (same as Arcade mode)
+                { x: 600, y: 770 },  // Center position (already occupied initially)
+                { x: 1050, y: 770 }  // Right position (same as Arcade mode)
+            ],
+            // Predefined positions where cities can be built (evenly spaced between turret positions)
+            availableCityPositions: [
+                300,   // Between left turret (150) and center turret (600)
+                400,   // Between center positions (starting city)
+                500,   // Between center positions  
+                700,   // Between center turret (600) and right turret (1050)
+                800,   // Between center and right (starting city)
+                900    // Between center turret (600) and right turret (1050)
+            ],
             initialUpgrades: [
                 { speed: { level: 1, cost: 10 }, explosion: { level: 1, cost: 15 }, rate: { level: 1, cost: 20 }, capacity: { level: 1, cost: 25 }, autopilot: { level: 0, cost: 40 } }
             ],

@@ -223,6 +223,29 @@ function getTurretsUpgradesHTML() {
             `;
         }
         
+        // Add build turret button if not at max capacity
+        const config = ModeManager.getCurrentConfig();
+        if (config && config.availableTurretPositions) {
+            const maxTurrets = config.availableTurretPositions.length;
+            const currentTurrets = launchers.length;
+            
+            if (currentTurrets < maxTurrets) {
+                const buildCost = 150 + (currentTurrets * 100); // Increasing cost per turret
+                const canAffordBuild = gameState.scrap >= buildCost;
+                
+                html += `
+                    <button data-action="build-turret" 
+                            class="upgrade-btn-compact tooltip"
+                            style="color: ${canAffordBuild ? '#0f0' : '#666'}; border-color: ${canAffordBuild ? '#0f0' : '#666'}; background: rgba(${canAffordBuild ? '0, 255, 0' : '102, 102, 102'}, 0.1); ${canAffordBuild ? '' : 'opacity: 0.5;'}"
+                            data-tooltip="Construct a new turret at the next available position. Turret ${currentTurrets + 1} of ${maxTurrets} maximum. Costs ${buildCost} scrap."
+                            ${canAffordBuild ? '' : 'disabled'}>
+                        <strong>+ New Turret</strong><br>
+                        <small>${buildCost} 💰</small>
+                    </button>
+                `;
+            }
+        }
+        
         html += `
                 </div>
             </div>
@@ -342,6 +365,29 @@ function getTurretsUpgradesHTML() {
             `;
         }
         
+        // Add build turret button if not at max capacity
+        const config = ModeManager.getCurrentConfig();
+        if (config && config.availableTurretPositions) {
+            const maxTurrets = config.availableTurretPositions.length;
+            const currentTurrets = launchers.length;
+            
+            if (currentTurrets < maxTurrets) {
+                const buildCost = 150 + (currentTurrets * 100); // Increasing cost per turret
+                const canAffordBuild = gameState.scrap >= buildCost;
+                
+                html += `
+                    <button data-action="build-turret" 
+                            class="upgrade-btn-compact tooltip"
+                            style="color: ${canAffordBuild ? '#0f0' : '#666'}; border-color: ${canAffordBuild ? '#0f0' : '#666'}; background: rgba(${canAffordBuild ? '0, 255, 0' : '102, 102, 102'}, 0.1); ${canAffordBuild ? '' : 'opacity: 0.5;'}"
+                            data-tooltip="Construct a new turret at the next available position. Turret ${currentTurrets + 1} of ${maxTurrets} maximum. Costs ${buildCost} scrap."
+                            ${canAffordBuild ? '' : 'disabled'}>
+                        <strong>+ New Turret</strong><br>
+                        <small>${buildCost} 💰</small>
+                    </button>
+                `;
+            }
+        }
+        
         html += `
                 </div>
             </div>
@@ -408,7 +454,8 @@ function getCitiesUpgradesHTML() {
         }
         
         // Add build city button if not at max capacity
-        const maxCities = 6;
+        const config = ModeManager.getCurrentConfig();
+        const maxCities = (config && config.availableCityPositions) ? config.availableCityPositions.length : 6;
         const currentCities = cityData.length;
         if (currentCities < maxCities) {
             const buildCost = 100 + (currentCities * 50); // Increasing cost per city
@@ -587,7 +634,8 @@ function getCitiesUpgradesHTML() {
         }
         
         // Add build city button if not at max capacity
-        const maxCities = 6;
+        const config = ModeManager.getCurrentConfig();
+        const maxCities = (config && config.availableCityPositions) ? config.availableCityPositions.length : 6;
         const currentCities = cityData.length;
         if (currentCities < maxCities) {
             const buildCost = 100 + (currentCities * 50); // Increasing cost per city

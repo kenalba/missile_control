@@ -79,6 +79,16 @@ window.selectEntity = function(type, index) {
     }
 }
 
+// Helper function to find launcher index by position
+function findTurretByPosition(targetX) {
+    for (let i = 0; i < launchers.length; i++) {
+        if (launchers[i].x === targetX) {
+            return i;
+        }
+    }
+    return -1; // Not found
+}
+
 function initializeInput() {
     const canvas = document.getElementById('gameCanvas');
     
@@ -198,9 +208,27 @@ function initializeInput() {
         if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
         
         let launcherIndex = -1;
-        if (e.key.toLowerCase() === 'q') launcherIndex = 0;
-        else if (e.key.toLowerCase() === 'w') launcherIndex = 1;
-        else if (e.key.toLowerCase() === 'e') launcherIndex = 2;
+        
+        // Dynamic key mapping based on available launchers
+        if (gameState.currentMode === 'command') {
+            // Command Mode: Map keys to turrets by position, W always targets center turret
+            const centerTurretIndex = findTurretByPosition(600); // Center position is always 600
+            
+            if (e.key.toLowerCase() === 'w' && centerTurretIndex !== -1) {
+                launcherIndex = centerTurretIndex;
+            } else if (e.key.toLowerCase() === 'q') {
+                // Q targets leftmost available turret (excluding center)
+                launcherIndex = findTurretByPosition(150); // Left position
+            } else if (e.key.toLowerCase() === 'e') {
+                // E targets rightmost available turret (excluding center)
+                launcherIndex = findTurretByPosition(1050); // Right position
+            }
+        } else {
+            // Arcade Mode: Traditional static mapping
+            if (e.key.toLowerCase() === 'q') launcherIndex = 0;
+            else if (e.key.toLowerCase() === 'w') launcherIndex = 1;
+            else if (e.key.toLowerCase() === 'e') launcherIndex = 2;
+        }
         
         if (launcherIndex >= 0 && launcherIndex < launchers.length) {
             // Update selected launcher for mobile UI

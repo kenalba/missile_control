@@ -96,6 +96,11 @@ function handleUpgradePanelActions(event) {
                 markPanelDirty(); // Force immediate update
                 break;
                 
+            case 'build-turret':
+                window.buildTurret();
+                markPanelDirty(); // Force immediate update
+                break;
+                
             default:
                 console.warn(`Unknown panel action: ${action}`);
         }
