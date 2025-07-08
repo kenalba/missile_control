@@ -5,6 +5,7 @@ import '../styles.css';
 
 // Import TypeScript modules and type definitions
 import './legacy';
+import '@/core'; // Load all core game systems
 import { audioSystem } from '@/systems/audio';
 import { saveSystem } from '@/systems/saveSystem';
 // Import only what we use to avoid unused import warnings
@@ -23,7 +24,7 @@ console.log('💾 Save system loaded:', saveSystem.hasHighScores() ? 'with exist
 // This ensures they load after our TypeScript systems are initialized
 async function loadLegacyModules() {
   const legacyModules = [
-    '/js/gameState.js',
+    // '/js/gameState.js', // Now handled by TypeScript core modules
     '/js/modeManager.js', 
     '/js/entities.js',
     '/js/input.js',
