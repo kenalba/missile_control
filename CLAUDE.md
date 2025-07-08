@@ -1,104 +1,161 @@
 # Missile Command - Upgrade Edition
 
-A web-based Missile Command clone with an upgrade system where destroyed missiles earn scrap that can be spent on improvements.
+A modern web-based Missile Command clone with dual game modes, comprehensive upgrade systems, and space-efficient UI design.
 
 ## Game Overview
 
-Defend your cities from incoming missiles using three missile launchers. Each destroyed enemy missile awards points and scrap. Use scrap to upgrade your defenses and survive increasingly difficult waves.
+Defend your cities from incoming missiles using strategic turret placements and upgrades. Choose between Arcade Mode (classic 6 cities, 3 turrets) or Command Mode (strategic base building starting with 1 turret, 2 cities). Each destroyed enemy missile awards points and scrap for purchasing improvements.
+
+## Game Modes
+
+### Arcade Mode
+- **Classic Experience**: 6 cities, 3 turrets, traditional upgrade table
+- **Fast-Paced Action**: All turrets available from start, familiar Missile Command gameplay
+- **Global Upgrades**: Economic and tactical bonuses displayed in sidebar sections
+
+### Command Mode  
+- **Strategic Building**: Start with 1 turret, 2 cities - expand your base over time
+- **Floating Command Center**: Draggable upgrade panel with tabbed interface
+- **Entity Selection**: Click turrets/cities in-game or use selection buttons
+- **Space-Efficient UI**: Compact tooltip-based interface for maximum information density
 
 ## Controls
 
 - **Mouse**: Click to target and fire missiles (auto-selects closest available launcher)
 - **Keyboard**: Q/W/E keys to fire from specific launchers (left/center/right)
 - **Mouse tracking**: Crosshair follows mouse for targeting
+- **Command Mode**: Click entities to select, Escape to close panels
 
 ## Game Mechanics
 
 ### Core Systems
-- **3 Cities**: Game ends when all cities are destroyed
-- **3 Missile Launchers**: Each starts with 10 missiles, positioned at 200px, 600px, and 1000px
-- **Wave System**: Waves get progressively harder with more frequent enemy missiles
-- **Scrap Economy**: Destroyed missiles give 2 scrap + 10 points each
+- **Cities**: Varies by mode (6 in Arcade, 2-6 in Command). Game ends when all destroyed
+- **Turrets**: 3 in Arcade, 1-3 in Command. Each starts with 10 missiles at 200px, 600px, 1000px
+- **Wave System**: Progressive difficulty with smart bombs (wave 3+), planes (wave 5+)
+- **Scrap Economy**: 2 base scrap + 10 points per destroyed missile, enhanced by upgrades
 
 ### Upgrade System
-- **Missile Speed** (10 scrap, 1.3x multiplier): Faster player missiles
-- **Explosion Size** (15 scrap, 1.4x multiplier): Larger blast radius
+
+#### Turret Upgrades (Per-Turret)
+- **Missile Speed** (10 scrap, 1.3x multiplier): Faster projectile velocity
+- **Explosion Size** (15 scrap, 1.4x multiplier): Larger blast radius  
 - **Fire Rate** (20 scrap, 1.5x multiplier): Faster reload times
-- **Missile Capacity** (25 scrap, 1.2x multiplier): More missiles per launcher
-- **City Repair** (50 scrap): Restore one destroyed city
+- **Missile Capacity** (25 scrap, 1.2x multiplier): More missiles per reload
+- **Autopilot** (40 scrap): Smart targeting system for automatic interception
+
+#### Economic Upgrades (Global)
+- **Scrap Multiplier** (80 scrap): +25% scrap from all sources
+- **Salvage Operations** (60 scrap): +3 bonus scrap from planes/bombers
+- **Efficiency** (90 scrap): -15% discount on all turret upgrade costs
+
+#### Tactical Upgrades
+- **Threat Detection** (75 scrap): Highlight dangerous missiles with red glow
+- **Emergency Ammo** (3 scrap): Purchase single ammo for first available turret
+- **Science Unlock** (varies): Enable science production in cities (Command Mode)
+
+#### City Management (Command Mode)
+- **Production Modes**: Scrap, Ammo, Science (requires unlock)
+- **City Efficiency Upgrades**: Increase resource production output
+- **City Repair** (50 scrap): Restore destroyed cities
 
 ## Technical Details
 
+### Architecture
+- **Modular Design**: Separated UI, logic, and content generation into focused modules
+- **Canvas Rendering**: 1200x900 internal resolution with responsive scaling
+- **Mode System**: Dynamic game mode switching with different UI layouts
+- **Save System**: Comprehensive localStorage persistence for progress and preferences
+- **Mobile Optimization**: Landscape-forced layout with touch-friendly controls
+
 ### File Structure
 - `index.html` - Main HTML structure and game layout
-- `styles.css` - All CSS styling and visual design
+- `styles.css` - Responsive CSS with tooltip system and mobile optimizations
 - `js/main.js` - Core game loop and initialization
+- `js/modeManager.js` - Game mode switching and configuration
 - `js/gameState.js` - Game state management and UI updates
 - `js/entities.js` - Game entities (missiles, launchers, planes)
-- `js/input.js` - Input handling and canvas click detection
-- `js/rendering.js` - Canvas rendering system
-- `js/upgrades.js` - Upgrade system and effects
+- `js/input.js` - Input handling with entity selection support
+- `js/rendering.js` - Canvas rendering system with visual effects
+- `js/upgrades.js` - Main upgrade system controller (streamlined)
+- `js/upgradeLogic.js` - Core upgrade mechanics and calculations
+- `js/ui/uiUtils.js` - UI component utilities and styling constants
+- `js/ui/panelManager.js` - Floating panel management with drag functionality
+- `js/ui/upgradeContent.js` - HTML generation for upgrade interfaces
 - `js/utils.js` - Utility functions and collision detection
-- `js/audio.js` - Audio system (placeholder)
-- Canvas-based rendering (1200x900)
-- Retro terminal aesthetic (green on black)
+- `js/audio.js` - Web Audio API sound generation
+- `js/saveSystem.js` - LocalStorage persistence system
 
 ### Key Functions
 - `fireMissile(launcher, targetX, targetY)`: Launches player missile
 - `spawnEnemyMissile()`: Creates enemy missiles from random positions
 - `createExplosion(x, y, isPlayer)`: Handles explosion effects and collision detection
 - `checkCollisions()`: Manages all collision detection between missiles and explosions
-- `upgrade(type)`: Handles upgrade purchases and applies effects
+- `upgrade(type, launcherIndex)`: Handles upgrade purchases and applies effects
+- `selectEntity(type, index)`: Command Mode entity selection system
+- `openCommandPanel()`: Shows floating upgrade panel with tabbed interface
+- `createCompactUpgradeButton(config)`: Generates tooltip-enabled upgrade buttons
 
 ### Game State
-- Score, scrap, wave, cities tracked in `gameState` object
-- Upgrade levels and costs in `upgrades` object
-- All game entities stored in arrays: `playerMissiles`, `enemyMissiles`, `explosions`, `particles`
+- Score, scrap, science, wave, cities tracked in `gameState` object
+- Mode-specific data in `gameState.currentMode` and `gameState.commandMode`
+- Upgrade levels stored in `launcherUpgrades`, `globalUpgrades`, `cityUpgrades`
+- All game entities in arrays: `playerMissiles`, `enemyMissiles`, `explosions`, `particles`
 
 ## Recent Improvements (Latest Session)
 
-### Visual Overhaul
-- **Ground Redesign**: Moved ground higher to eliminate empty space, replaced boring gray with textured brown design
-- **City Upgrade UI**: Moved upgrade buttons from HTML panel directly to canvas below cities for better UX
-- **Canvas Click Detection**: Implemented sophisticated click detection for city upgrades and repairs
-- **Turret Visualizations**: Created detailed visual representations for upgrades:
-  - Speed: Exhaust flames behind turret
-  - Explosion: Wider barrel with reinforcement rings
-  - Fire Rate: Cooling vents on sides
-  - Capacity: Ammo drums with belt connections
-  - Autopilot: Radar dish with animated scanning beam
-- **Button Polish**: Pixel-perfect positioning with 3D effects and proper contrast
-- **High Score Display**: Top 5 scores shown on game over screen with dates
-- **Screenshake Effects**: Subtle screen shake for explosions and impacts
+### UI Architecture Overhaul (Current)
+- **Modular UI System**: Extracted upgrade generation into focused modules (`uiUtils.js`, `panelManager.js`, `upgradeContent.js`)
+- **Space-Efficient Design**: Redesigned Command Center with compact grids (2-col, 3-col, 4-col layouts)
+- **Comprehensive Tooltip System**: Hover-based descriptions replace verbose inline text
+- **Floating Command Panel**: Draggable upgrade interface with tabbed organization (Global, Turrets, Cities)
+- **Smart Positioning**: Tooltips automatically adjust position to prevent edge clipping
+- **Streamlined Core**: Reduced main `upgrades.js` from 1000+ lines to focused controller
 
-### Gameplay Improvements
-- **Wave Break Control**: Disabled missile launching between rounds for smoother gameplay
-- **Modal Centering**: Wave break modal now centers on game canvas instead of full viewport
-- **Middle Turret Balance**: Starts with level 2 in all stats except autopilot (matches original Missile Command)
-- **Economic System**: Added scrap multiplier, salvage bonus, and efficiency discount upgrades
-- **Targeted Repairs**: City repair buttons now repair the specific clicked city
-- **Difficulty Curve**: Enemy missile speed follows original Missile Command curve - rapid acceleration to wave 6, then plateau
-- **Guaranteed Planes**: Planes now spawn at fixed intervals (25%, 50%, 75% through wave) for consistent difficulty
+### Command Mode Implementation
+- **Dual Game Modes**: Mode selection screen with Arcade (classic) and Command (strategic) options
+- **Entity Selection**: Click turrets/cities in-game or use selection buttons in panel
+- **Mode-Specific UI**: Different interfaces optimized for each gameplay style
+- **Floating Panel Controls**: Minimize, close, and drag functionality for Command Center
+- **Entity-Specific Tabs**: Dynamic content based on selected turret or city
 
-### Technical Enhancements
-- **Canvas-based UI**: City upgrades now rendered directly on canvas for consistent visuals
-- **Coordinate Mapping**: Proper click detection accounting for canvas scaling
-- **Scrap Bonus System**: Economic upgrades properly applied throughout reward calculations
-- **Save System**: Comprehensive localStorage-based persistence with achievements and stats
-- **Pause Functionality**: Spacebar to pause/unpause with visual overlay
+### Visual & UX Polish
+- **Ground Redesign**: Moved ground higher with textured brown design replacing gray
+- **City Upgrade UI**: Canvas-rendered upgrade buttons with sophisticated click detection
+- **Turret Visualizations**: Detailed upgrade representations (exhaust, vents, ammo drums, radar)
+- **High Score Display**: Top 5 scores with dates on game over screen
+- **Screenshake Effects**: Subtle feedback for explosions and impacts
+- **Status Section Redesign**: Improved readability with organized stat displays
+
+### Gameplay Balance
+- **Wave Break Control**: Disabled missile launching between rounds for smoother transitions
+- **Middle Turret Enhancement**: Starts at level 2 (matches original Missile Command balance)
+- **Economic System**: Comprehensive scrap multipliers, salvage bonuses, efficiency discounts
+- **Targeted City Repairs**: Click specific cities to repair them individually
+- **Authentic Difficulty Curve**: Enemy missile speed follows original progression
+- **Guaranteed Plane Spawning**: Fixed intervals (25%, 50%, 75% through wave)
 
 ## Priority Todo List
 
+### Current Known Issues
+1. **BUG: Tooltip Opacity Inheritance**: Tooltips on disabled buttons inherit 50% opacity making text hard to read
+
 ### Medium Priority
-1. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
-2. **Seekers**: Enemy missiles that actively track and follow player missiles
-3. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
+2. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
+3. **Seekers**: Enemy missiles that actively track and follow player missiles
+4. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
+5. **Command Mode Expansion**: Add turret/city construction functionality
 
 ### Low Priority
-4. **Celebration Effects**: Visual rewards for wave milestones and achievements
-5. **Mobile Haptics**: Haptic feedback on explosions and firing
+6. **Celebration Effects**: Visual rewards for wave milestones and achievements
+7. **Mobile Haptics**: Haptic feedback on explosions and firing
+8. **Code Cleanup**: Remove old modal code and legacy upgrade system remnants
 
 ## Completed Issues
+- ✅ **Modular UI Architecture**: Separated upgrade system into focused modules
+- ✅ **Tooltip System**: Comprehensive hover-based descriptions with smart positioning
+- ✅ **Command Mode**: Floating panel with tabbed interface and entity selection
+- ✅ **Space-Efficient Design**: Compact grids and tooltip-based interface
+- ✅ **Dual Game Modes**: Arcade and Command mode selection with different UI layouts
 - ✅ **Audio**: Sound effects implemented and working well
 - ✅ **Visual Layout**: Ground redesign and UI improvements completed
 - ✅ **Game Balance**: Difficulty curve and upgrade progression refined
