@@ -5,13 +5,11 @@ class TimeManager {
     private startTime: number = 0;
     private totalPausedTime: number = 0;
     private pauseStartTime: number = 0;
-    private lastUpdateTime: number = 0;
 
     initialize(): void {
         this.startTime = Date.now();
         this.totalPausedTime = 0;
         this.pauseStartTime = 0;
-        this.lastUpdateTime = Date.now();
         gameState.gameTime = 0;
     }
 
@@ -35,7 +33,6 @@ class TimeManager {
 
         // Update game time (real time minus paused time)
         gameState.gameTime = now - this.startTime - this.totalPausedTime;
-        this.lastUpdateTime = now;
     }
 
     // Get current game time (pause-aware)

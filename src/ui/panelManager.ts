@@ -1,10 +1,8 @@
 // Panel Management for Command Mode floating upgrade panel
 import { gameState } from '@/systems/observableState';
-import { cityData } from '@/core/cities';
-import { globalUpgrades, launcherUpgrades } from '@/core/upgrades';
+import { globalUpgrades } from '@/core/upgrades';
 
 let isDragging = false;
-let dragOffset = { x: 0, y: 0 };
 
 // Global event delegation for all upgrade panel actions
 export function initializeGlobalEventDelegation(): void {
@@ -227,12 +225,9 @@ export function toggleCommandPanel(): void {
   }
 }
 
-// Simple dirty flag system - much more efficient
-let panelNeedsUpdate = true;
-
 // Mark panel as needing update (called by actions that change the UI)
 export function markPanelDirty(): void {
-  panelNeedsUpdate = true;
+  // Panel content is dynamically generated on each update
 }
 
 // Update Command panel content (simplified with observable state)
@@ -252,67 +247,6 @@ export function updateCommandPanel(): void {
   updatePanelTabbedContent();
 }
 
-// Update button affordability states without full rebuild
-function updateButtonAffordability(): void {
-  const commandPanelBody = document.getElementById('commandPanelBody');
-  if (!commandPanelBody) return;
-  
-  // Find all upgrade buttons and update their affordability states
-  const upgradeButtons = commandPanelBody.querySelectorAll('[data-action]');
-  
-  upgradeButtons.forEach(button => {
-    const actionElement = button as HTMLElement;
-    const action = actionElement.getAttribute('data-action');
-    const actionData = actionElement.getAttribute('data-action-data');
-    
-    // Only update buttons that have cost implications
-    if (!action) return;
-    
-    let canAfford = true;
-    let cost = 0;
-    
-    try {
-      if (action === 'upgrade-turret' && actionData) {
-        const [upgradeType, launcherIndex] = actionData.split(',');
-        const launcherIdx = parseInt(launcherIndex);
-        if (launcherIdx >= 0 && launcherUpgrades[launcherIdx] && launcherUpgrades[launcherIdx][upgradeType]) {
-          const upgrade = launcherUpgrades[launcherIdx][upgradeType];
-          const actualCost = Math.floor(upgrade.cost * (globalUpgrades.efficiency?.level > 0 ? 0.85 : 1.0));
-          cost = actualCost;
-          canAfford = gameState.scrap >= actualCost;
-        }
-      } else if (action === 'purchase-global' && actionData) {
-        const upgrade = globalUpgrades[actionData];
-        if (upgrade) {
-          cost = upgrade.cost;
-          canAfford = gameState.scrap >= upgrade.cost;
-        }
-      } else if (action === 'emergency-ammo') {
-        cost = 3;
-        canAfford = gameState.scrap >= 3;
-      } else if (action === 'unlock-upgrade-path' && actionData) {
-        const [, costStr] = actionData.split(',');
-        cost = parseInt(costStr);
-        canAfford = gameState.science >= cost;
-      }
-      
-      // Update button styling based on affordability
-      if (cost > 0) {
-        if (canAfford) {
-          actionElement.style.opacity = '1';
-          actionElement.style.color = actionElement.style.color.replace('rgb(102, 102, 102)', '#0ff');
-          (actionElement as HTMLButtonElement).disabled = false;
-        } else {
-          actionElement.style.opacity = '0.5';
-          actionElement.style.color = '#666';
-          (actionElement as HTMLButtonElement).disabled = true;
-        }
-      }
-    } catch (error) {
-      // Ignore parsing errors for buttons that don't need cost updates
-    }
-  });
-}
 
 // Update panel tabbed content (full recreation)
 export function updatePanelTabbedContent(): void {

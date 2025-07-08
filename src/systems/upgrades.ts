@@ -1,5 +1,4 @@
 // Unified Upgrade System - TypeScript Implementation
-import type { GameState } from '@/types/gameTypes';
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
@@ -9,15 +8,6 @@ import { upgradeEffects } from '@/entities/particles';
 import { updateUI } from '@/systems/ui';
 
 // Type definitions for upgrade system
-interface UpgradeEffect {
-  x: number;
-  y: number;
-  text: string;
-  alpha: number;
-  vy: number;
-  life: number;
-  color: string;
-}
 
 // Get actual upgrade cost after applying efficiency discount
 function getActualUpgradeCost(baseCost: number): number {

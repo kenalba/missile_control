@@ -186,7 +186,7 @@ export class ModeManager {
             population: 100,
             maxPopulation: 100,
             productionMode: productionModes[index % 2] as 'scrap' | 'ammo' | 'science', // Cycle through scrap, ammo
-            baseProduction: 0.6, // Slower production: 0.6 resource per tick (every 3 seconds)
+            baseProduction: 0.8, // Balanced production: 0.8 resource per tick (every 3 seconds)
             ammoStockpile: 0,
             maxAmmoStockpile: 5,
             maxTrucks: 1

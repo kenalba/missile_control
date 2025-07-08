@@ -167,14 +167,6 @@ export function getTurretsUpgradesHTML(): string {
   const selectedTurret = gameState.commandMode.selectedEntityType === 'turret' 
     ? gameState.commandMode.selectedEntity : 0;
   
-  // Science requirements to unlock upgrade paths
-  const scienceUnlocks = {
-    rate: 0,      // Available from start
-    speed: 10,    // Requires 10 science to unlock
-    explosion: 25,
-    capacity: 50,
-    autopilot: 100
-  };
 
   if (selectedTurret !== null && launchers[selectedTurret]) {
     const turretUpgrades = launcherUpgrades[selectedTurret];
@@ -305,7 +297,7 @@ export function getTurretsUpgradesHTML(): string {
       return unlockedUpgradePaths[upgradeType.key];
     });
     
-    unlockedUpgradeTypes.forEach((upgradeType, index) => {
+    unlockedUpgradeTypes.forEach((upgradeType) => {
       const upgrade = turretUpgrades[upgradeType.key];
       const scrapCost = getActualUpgradeCost(upgrade.cost);
       const canAfford = gameState.scrap >= scrapCost;

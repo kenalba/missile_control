@@ -1,9 +1,5 @@
 // Legacy arcade mode upgrade system support
-import type { GameState } from '@/types/gameTypes';
 import { gameState } from '@/systems/observableState';
-import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
-import { createUpgradeEffect } from '@/systems/upgrades';
-import { updateUI } from '@/systems/ui';
 
 // Legacy support functions for old tabbed upgrade panel (Arcade Mode)
 export function updateTabbedUpgradePanel(): void {
