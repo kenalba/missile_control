@@ -17,7 +17,7 @@ export interface GameEntity extends Position {
 export interface Missile extends GameEntity {
   vx: number;
   vy: number;
-  speed: number;
+  speed?: number;
   targetX: number;
   targetY: number;
   launcherIndex?: number;
@@ -27,13 +27,40 @@ export interface Missile extends GameEntity {
   maxLife?: number;
 }
 
+export interface PlayerMissile extends Missile {
+  autopilot: boolean;
+  autopilotStrength: number;
+  timeAlive: number;
+  maxLifetime: number;
+  originalTargetX: number;
+  originalTargetY: number;
+  originalFlightTime: number;
+  maxDeviation: number;
+}
+
+export interface EnemyMissile extends Missile {
+  isSplitter: boolean;
+  splitAt: number | null;
+  seekerBlinkTimer: number;
+  seekerTargetX: number;
+  seekerTargetY: number;
+  lastRetarget: number;
+  isTargetingValid: boolean;
+  sparkleTimer: number;
+  lastThreatCheck: number;
+  fromPlane?: boolean;
+}
+
 export interface Explosion extends GameEntity {
   radius: number;
   maxRadius: number;
-  life: number;
-  maxLife: number;
+  growing: boolean;
   isPlayer: boolean;
   alpha: number;
+  type: 'normal' | 'plane' | 'city' | 'splitter';
+  shockwave: boolean;
+  shockwaveRadius: number;
+  shockwaveAlpha: number;
 }
 
 export interface Launcher extends Position {
@@ -46,24 +73,27 @@ export interface Launcher extends Position {
 export interface Plane extends GameEntity {
   vx: number;
   vy: number;
-  life: number;
-  maxLife: number;
-  alpha: number;
+  lastFire: number;
+  fireRate: number;
+  trail: Position[];
   hp: number; // Hit points for plane destruction
+  fromLeft: boolean;
+  engineSoundId: any;
 }
 
 export interface Particle extends GameEntity {
   vx: number;
   vy: number;
   life: number;
-  maxLife: number;
+  maxLife?: number;
   color: string;
   size: number;
-  decay: number;
+  decay?: number;
   text?: string;
   isText?: boolean;
   sparkle?: boolean;
   firework?: boolean;
+  isFlash?: boolean;
 }
 
 export interface UpgradeEffect extends GameEntity {

@@ -6,65 +6,34 @@ import '../styles.css';
 // Import TypeScript modules and type definitions
 import './legacy';
 import '@/core'; // Load all core game systems
+import '@/entities'; // Load all entity systems
+import { initializeInput } from '@/systems/input';
+import { initGame, startGame } from '@/systems/gameLoop';
 import { audioSystem } from '@/systems/audio';
 import { saveSystem } from '@/systems/saveSystem';
-// Import only what we use to avoid unused import warnings
-// import { GAME_CONFIG } from '@/config/constants';
+import { modeManager } from '@/systems/modeManager';
+import { initializeRenderer } from '@/systems/rendering';
+import '@/systems/stubs'; // Temporary stub functions
 
-// Initialize TypeScript systems first
+// Initialize TypeScript systems
 console.log('🚀 Initializing Missile Control TypeScript systems...');
 console.log('🔊 Audio system state:', audioSystem.getState());
 console.log('💾 Save system loaded:', saveSystem.hasHighScores() ? 'with existing data' : 'fresh start');
 
-// Make our TypeScript systems globally available for legacy compatibility
+// Initialize input system
+initializeInput();
+
+// Make our TypeScript systems globally available for any remaining legacy code
 (window as any).audioSystem = audioSystem;
 (window as any).saveSystem = saveSystem;
+(window as any).modeManager = modeManager;
+(window as any).initializeRenderer = initializeRenderer;
+(window as any).startGame = startGame;
 
-// Load legacy JavaScript modules dynamically
-// This ensures they load after our TypeScript systems are initialized
-async function loadLegacyModules() {
-  const legacyModules = [
-    // '/js/gameState.js', // Now handled by TypeScript core modules
-    '/js/modeManager.js', 
-    '/js/entities.js',
-    '/js/input.js',
-    '/js/rendering.js',
-    '/js/upgradeLogic.js',
-    '/js/upgrades.js',
-    '/js/ui/uiUtils.js',
-    '/js/ui/panelManager.js',
-    '/js/ui/upgradeContent.js',
-    '/js/utils.js',
-    '/js/main.js'
-  ];
-
-  for (const module of legacyModules) {
-    const script = document.createElement('script');
-    script.src = module;
-    script.type = 'text/javascript';
-    
-    await new Promise<void>((resolve, reject) => {
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error(`Failed to load ${module}`));
-      document.head.appendChild(script);
-    });
-    
-    console.log(`✅ Loaded legacy module: ${module}`);
-  }
-  
-  console.log('🎮 All legacy modules loaded, game ready!');
-  
-  // Now that all legacy modules are loaded, initialize the game
-  if (typeof (window as any).initGame === 'function') {
-    (window as any).initGame();
-  } else {
-    console.error('❌ initGame function not found in legacy modules');
-  }
-}
-
-// Load legacy modules and initialize game
-loadLegacyModules().catch(error => {
-  console.error('❌ Failed to load legacy modules:', error);
+// Initialize the game when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('🎮 DOM ready, initializing game...');
+  initGame();
 });
 
 // Register service worker for PWA functionality
