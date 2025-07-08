@@ -1,5 +1,5 @@
 // Input system for handling keyboard, mouse, and touch events
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { cityData } from '@/core/cities';
 import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities } from '@/entities/cities';

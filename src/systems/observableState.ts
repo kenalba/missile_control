@@ -6,7 +6,7 @@ import { gameState as originalGameState } from '@/core/gameState';
 type StateObserver = (property: keyof GameState, newValue: any, oldValue: any) => void;
 
 // Observable wrapper for game state
-class ObservableGameState {
+class GameStateObserver {
   private observers = new Set<StateObserver>();
   private _state: GameState;
 
@@ -19,7 +19,7 @@ class ObservableGameState {
         if (typeof property === 'string' && property in target._state) {
           return target._state[property as keyof GameState];
         }
-        return target[property as keyof ObservableGameState];
+        return target[property as keyof GameStateObserver];
       },
       
       set(target, property: string | symbol, value) {
@@ -103,7 +103,7 @@ class ObservableGameState {
 }
 
 // Create observable game state
-export const observableGameState = new ObservableGameState(originalGameState) as ObservableGameState & GameState;
+export const observableGameState = new GameStateObserver(originalGameState) as GameStateObserver & GameState;
 
 // Export observableGameState as gameState for compatibility
 export const gameState = observableGameState;
@@ -113,24 +113,17 @@ class UIUpdateSystem {
   private unsubscribers: Array<() => void> = [];
 
   initialize(): void {
-    console.log('🔄 Initializing UI Update System with observable state...');
-    console.log('📊 Current game state:', gameState);
-    
     // Subscribe to scrap changes
     this.unsubscribers.push(
-      observableGameState.subscribeToProperty('scrap', (newScrap, oldScrap) => {
+      observableGameState.subscribeToProperty('scrap', (newScrap) => {
         this.updateScrapDisplays(newScrap);
-        this.updateCommandPanelAffordability();
-        console.log(`💰 Scrap changed: ${oldScrap} → ${newScrap}`);
       })
     );
 
     // Subscribe to science changes
     this.unsubscribers.push(
-      observableGameState.subscribeToProperty('science', (newScience, oldScience) => {
+      observableGameState.subscribeToProperty('science', (newScience) => {
         this.updateScienceDisplays(newScience);
-        this.updateCommandPanelAffordability();
-        console.log(`Science changed: ${oldScience} → ${newScience}`);
       })
     );
 
@@ -161,8 +154,6 @@ class UIUpdateSystem {
         this.updateModeSpecificUI(newMode);
       })
     );
-
-    console.log('Observable UI system initialized');
   }
 
   private updateScrapDisplays(scrap: number): void {
@@ -237,12 +228,8 @@ class UIUpdateSystem {
     }
   }
 
-  private updateCommandPanelAffordability(): void {
-    // Trigger panel update if it exists
-    if (typeof (window as any).updateCommandPanel === 'function') {
-      (window as any).updateCommandPanel();
-    }
-  }
+  // Removed updateCommandPanelAffordability to prevent infinite loop
+  // Panel updates should be called explicitly when needed
 
   destroy(): void {
     // Clean up all subscriptions

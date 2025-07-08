@@ -1,5 +1,5 @@
 // UI System with TypeScript typing
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { globalUpgrades, launcherUpgrades } from '@/core/upgrades';
 import { getActualUpgradeCost } from '@/core/economy';
 
@@ -88,7 +88,9 @@ function showCommandModeUI(): void {
     
     // Show Command Mode toggle button
     const toggleButton = document.getElementById('command-upgrade-toggle');
-    if (toggleButton) toggleButton.style.display = 'block';
+    if (toggleButton) {
+        toggleButton.style.display = 'block';
+    }
 }
 
 function showArcadeModeUI(): void {

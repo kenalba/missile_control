@@ -1,6 +1,6 @@
 // Rendering system with TypeScript typing
 import type { Explosion, Missile, Launcher, Particle } from '@/types/gameTypes';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { playerMissiles, enemyMissiles } from '@/entities/missiles';
 import { explosions } from '@/entities/explosions';
 import { planes } from '@/entities/planes';

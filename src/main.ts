@@ -32,7 +32,7 @@ initializeInput();
 // Initialize observable state system
 uiUpdateSystem.initialize();
 
-// Make our TypeScript systems globally available for any remaining legacy code
+// Make our TypeScript systems globally available immediately
 (window as any).audioSystem = audioSystem;
 (window as any).saveSystem = saveSystem;
 (window as any).modeManager = modeManager;
@@ -40,6 +40,9 @@ uiUpdateSystem.initialize();
 (window as any).startGame = startGame;
 (window as any).observableGameState = observableGameState;
 (window as any).gameState = observableGameState; // Make observable state the global gameState
+
+// Also export startGame directly for HTML onclick handlers
+(window as any).startGame = startGame;
 
 // Initialize the game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,5 +1,5 @@
 // Mode Manager - Handles switching between Arcade and Command modes
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { destroyedCities, cityUpgrades, cityPositions } from '@/entities/cities';
 import { cityData } from '@/core/cities';
 import { launchers, destroyedLaunchers } from '@/entities/launchers';
