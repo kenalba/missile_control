@@ -55,6 +55,12 @@ const ModeManager = {
         gameState.cities = config.initialCities;
         destroyedCities = [];
         cityUpgrades = new Array(config.initialCities).fill(0);
+        cityPopulationUpgrades = new Array(config.initialCities).fill(0);
+        cityProductivityUpgrades = {
+            scrap: new Array(config.initialCities).fill(0),
+            science: new Array(config.initialCities).fill(0),
+            ammo: new Array(config.initialCities).fill(0)
+        };
         cityPositions = [...config.cityPositions];
         
         // Initialize launchers

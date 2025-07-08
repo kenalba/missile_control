@@ -122,11 +122,41 @@ function updateCommandPanel() {
         panelScienceRow.style.display = (globalUpgrades.research && globalUpgrades.research.level > 0) ? 'block' : 'none';
     }
     
-    // Generate tabbed interface content
-    updatePanelTabbedContent();
+    // Only update content if panel has tabs already, otherwise initialize
+    const existingTabs = panelBody.querySelector('.panel-tab-buttons');
+    if (!existingTabs) {
+        updatePanelTabbedContent();
+    } else {
+        // Just update the content area, not the whole panel
+        updateContentOnly();
+    }
 }
 
-// Update panel tabbed content
+// Update only the content area (not the tabs)
+function updateContentOnly() {
+    const panelBody = document.getElementById('commandPanelBody');
+    if (!panelBody) return;
+    
+    const contentContainer = panelBody.querySelector('div[style*="flex: 1"]');
+    if (!contentContainer) return;
+    
+    const currentTab = window.currentUpgradeTab || 'global';
+    
+    // Generate content HTML based on current tab
+    let contentHtml = '';
+    if (currentTab === 'global') {
+        contentHtml = getGlobalUpgradesHTML();
+    } else if (currentTab === 'turrets') {
+        contentHtml = getTurretsUpgradesHTML();
+    } else if (currentTab === 'cities') {
+        contentHtml = getCitiesUpgradesHTML();
+    }
+    
+    // Set content
+    contentContainer.innerHTML = contentHtml;
+}
+
+// Update panel tabbed content (full recreation)
 function updatePanelTabbedContent() {
     const panelBody = document.getElementById('commandPanelBody');
     if (!panelBody) return;
@@ -149,7 +179,40 @@ function updatePanelTabbedContent() {
     ];
     
     tabs.forEach(tabInfo => {
-        const button = createTabButton(tabInfo, currentTab, switchPanelTab);
+        const isActive = currentTab === tabInfo.id;
+        const button = document.createElement('button');
+        button.textContent = tabInfo.label;
+        button.style.cssText = `
+            flex: 1; 
+            padding: 12px; 
+            background: ${isActive ? '#0f0' : 'transparent'}; 
+            color: ${isActive ? '#000' : '#0f0'}; 
+            border: none; 
+            cursor: pointer;
+            border-radius: 0;
+            font-weight: bold; 
+            font-size: 13px; 
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        `;
+        
+        // Add click handler directly
+        button.onclick = () => {
+            window.currentUpgradeTab = tabInfo.id;
+            updateContentOnly();
+        };
+        
+        // Add hover effect for inactive tabs
+        if (!isActive) {
+            button.addEventListener('mouseenter', () => {
+                button.style.background = 'rgba(0, 255, 0, 0.1)';
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                button.style.background = 'transparent';
+            });
+        }
+        
         tabButtonsContainer.appendChild(button);
     });
     
@@ -181,7 +244,7 @@ function switchPanelTab(tab) {
     updatePanelTabbedContent();
 }
 
-// Make functions globally accessible
+// Make functions globally accessible immediately
 window.openCommandPanel = openCommandPanel;
 window.closeCommandPanel = closeCommandPanel;
 window.toggleCommandPanel = toggleCommandPanel;

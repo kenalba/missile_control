@@ -14,7 +14,13 @@ let planes = [];
 let cityPositions = [270, 390, 510, 690, 810, 930];
 let destroyedCities = [];
 let destroyedLaunchers = [];
-let cityUpgrades = [0, 0, 0, 0, 0, 0]; // Upgrade level for each city (0-3)
+let cityUpgrades = [0, 0, 0, 0, 0, 0]; // Legacy: kept for compatibility
+let cityPopulationUpgrades = [0, 0, 0, 0, 0, 0]; // Population capacity upgrades (increases max population)
+let cityProductivityUpgrades = {
+    scrap: [0, 0, 0, 0, 0, 0],    // Scrap production efficiency
+    science: [0, 0, 0, 0, 0, 0],  // Science production efficiency  
+    ammo: [0, 0, 0, 0, 0, 0]      // Ammo production efficiency
+};
 
 // Calculate where a missile will hit based on current position and velocity
 function calculateMissileImpact(missile) {

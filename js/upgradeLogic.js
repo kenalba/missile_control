@@ -101,6 +101,27 @@ window.upgrade = function(type, launcherIndex) {
     
     if (!upgrade) return;
     
+    // Check science requirements in Command Mode
+    if (gameState.currentMode === 'command') {
+        const scienceUnlocks = {
+            rate: { required: 0 },
+            speed: { required: 10 },
+            explosion: { required: 25 },
+            capacity: { required: 50 },
+            autopilot: { required: 100 }
+        };
+        
+        const unlockReq = scienceUnlocks[type];
+        if (unlockReq && gameState.science < unlockReq.required) {
+            // Visual feedback for insufficient science
+            const launcher = launchers[launcherIndex];
+            if (launcher) {
+                createUpgradeEffect(launcher.x, launcher.y - 30, `Need ${unlockReq.required} Science!`, '#f00');
+            }
+            return;
+        }
+    }
+    
     const cost = getActualUpgradeCost(upgrade.cost);
     if (gameState.scrap < cost) return;
     
@@ -194,10 +215,68 @@ window.repairCity = function(cityIndex) {
     if (index > -1) {
         destroyedCities.splice(index, 1);
         gameState.cities++;
+        
+        // Restore city to base population when repaired
+        if (cityData[cityIndex]) {
+            cityData[cityIndex].population = Math.floor(cityData[cityIndex].maxPopulation * 0.3); // Start with 30% population
+        }
     }
     
     // Visual feedback
     createUpgradeEffect(cityPositions[cityIndex], 750, 'CITY REPAIRED!', '#0f0');
+    
+    updateUI();
+    if (gameState.currentMode === 'command') {
+        window.updateCommandPanel();
+    }
+};
+
+// Upgrade city population capacity
+window.upgradeCityPopulation = function(cityIndex) {
+    if (cityIndex < 0 || cityIndex >= cityData.length) return;
+    if (destroyedCities.includes(cityIndex)) return;
+    
+    const currentLevel = cityPopulationUpgrades[cityIndex];
+    const cost = 40 + (currentLevel * 30);
+    
+    if (gameState.scrap < cost) return;
+    
+    gameState.scrap -= cost;
+    cityPopulationUpgrades[cityIndex]++;
+    
+    // Increase max population and current population
+    const city = cityData[cityIndex];
+    const populationIncrease = 50;
+    city.maxPopulation += populationIncrease;
+    city.population = Math.min(city.population + populationIncrease, city.maxPopulation);
+    
+    // Visual feedback
+    createUpgradeEffect(cityPositions[cityIndex], 750, `+${populationIncrease} POPULATION!`, '#0f0');
+    
+    updateUI();
+    if (gameState.currentMode === 'command') {
+        window.updateCommandPanel();
+    }
+};
+
+// Upgrade city productivity for specific resource type
+window.upgradeCityProductivity = function(cityIndex, productionType) {
+    if (cityIndex < 0 || cityIndex >= cityData.length) return;
+    if (destroyedCities.includes(cityIndex)) return;
+    if (!cityProductivityUpgrades[productionType]) return;
+    
+    const currentLevel = cityProductivityUpgrades[productionType][cityIndex];
+    const cost = 25 + (currentLevel * 20);
+    
+    if (gameState.scrap < cost) return;
+    
+    gameState.scrap -= cost;
+    cityProductivityUpgrades[productionType][cityIndex]++;
+    
+    // Visual feedback
+    const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
+    const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
+    createUpgradeEffect(cityPositions[cityIndex], 750, `${modeIcons[productionType]} +25% EFFICIENCY!`, modeColors[productionType]);
     
     updateUI();
     if (gameState.currentMode === 'command') {

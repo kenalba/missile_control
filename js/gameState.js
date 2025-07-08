@@ -158,6 +158,11 @@ function updateUI() {
     // Update upgrade UI
     updateUpgradeUI();
     
+    // Update Command Panel if in Command Mode and panel is open
+    if (gameState.currentMode === 'command' && typeof updateCommandPanel === 'function') {
+        updateCommandPanel();
+    }
+    
     // Update mobile upgrade toggle
     updateMobileUpgradeToggle();
     
@@ -413,6 +418,12 @@ function restartGame() {
     destroyedCities = [];
     destroyedLaunchers = [];
     cityUpgrades = [0, 0, 0, 0, 0, 0];
+    cityPopulationUpgrades = [0, 0, 0, 0, 0, 0];
+    cityProductivityUpgrades = {
+        scrap: [0, 0, 0, 0, 0, 0],
+        science: [0, 0, 0, 0, 0, 0],
+        ammo: [0, 0, 0, 0, 0, 0]
+    };
     
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('waveBreak').style.display = 'none';

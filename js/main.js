@@ -84,19 +84,24 @@ function generateCityResources() {
         
         // Calculate production based on population percentage and base production
         const populationMultiplier = city.population / city.maxPopulation;
-        const production = Math.floor(city.baseProduction * populationMultiplier);
+        let baseProduction = Math.floor(city.baseProduction * populationMultiplier);
+        
+        // Apply productivity upgrades for this specific production type
+        const productivityLevel = cityProductivityUpgrades[city.productionMode][i];
+        const productivityMultiplier = 1 + (productivityLevel * 0.25); // +25% per level
+        const finalProduction = Math.floor(baseProduction * productivityMultiplier);
         
         if (city.productionMode === 'scrap') {
-            gameState.scrap += production;
+            gameState.scrap += finalProduction;
         } else if (city.productionMode === 'science' && globalUpgrades.research && globalUpgrades.research.level > 0) {
-            gameState.science += production;
+            gameState.science += finalProduction;
         } else if (city.productionMode === 'ammo') {
             // Distribute ammo to launchers that need it
-            distributeAmmo(production);
+            distributeAmmo(finalProduction);
         }
         
         // Visual feedback for resource generation
-        if (production > 0) {
+        if (finalProduction > 0) {
             const cityX = cityPositions[i];
             let color = '#0f0'; // Default green for scrap
             if (city.productionMode === 'science') color = '#00f'; // Blue for science
@@ -105,7 +110,7 @@ function generateCityResources() {
             upgradeEffects.push({
                 x: cityX,
                 y: 750,
-                text: `+${production} ${city.productionMode}`,
+                text: `+${finalProduction} ${city.productionMode}`,
                 alpha: 0.8,
                 vy: -0.5,
                 life: 60,

@@ -1171,7 +1171,7 @@ body {
 /* Fix opacity inheritance from disabled buttons */
 .upgrade-btn-compact:disabled.tooltip:hover::after,
 button:disabled.tooltip:hover::after {
-    opacity: 2 !important;
+    opacity: 1 !important;
 }
 
 /* JavaScript will position the tooltip dynamically to prevent clipping */
