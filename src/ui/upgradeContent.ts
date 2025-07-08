@@ -79,7 +79,7 @@ export function getGlobalUpgradesHTML(): string {
   
   html += '</div></div>';
   
-  // Economic Upgrades - Compact 3-column grid
+  // Economic Upgrades - Compact 5-column grid (can wrap to 2 rows)
   html += `
     <div style="margin-bottom: 15px;">
         ${createSectionHeader('Economic', '#0f0')}
@@ -89,7 +89,9 @@ export function getGlobalUpgradesHTML(): string {
   const economicUpgrades = [
     { id: 'scrapMultiplier', name: 'Scrap+', description: '25% bonus scrap from all sources including missiles and bonuses' },
     { id: 'salvage', name: 'Salvage', description: 'Extra 3 scrap when destroying planes and bombers' },
-    { id: 'efficiency', name: 'Efficiency', description: '15% discount on all turret upgrade costs' }
+    { id: 'efficiency', name: 'Efficiency', description: '15% discount on all turret upgrade costs' },
+    { id: 'ammoRecycling', name: 'Recycling', description: 'Convert excess ammo (when all turrets are full) to 2 scrap per ammo' },
+    { id: 'truckFleet', name: 'Fleet', description: 'Add +1 truck to all cities for faster ammo delivery' }
   ];
   
   economicUpgrades.forEach(upgrade => {

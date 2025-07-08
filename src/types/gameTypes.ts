@@ -186,6 +186,8 @@ export interface GlobalUpgrades {
   salvage: UpgradeLevel;
   efficiency: UpgradeLevel;
   research: UpgradeLevel;
+  ammoRecycling: UpgradeLevel;
+  truckFleet: UpgradeLevel;
 }
 
 export interface UnlockedUpgradePaths {
@@ -201,6 +203,35 @@ export interface CityData {
   maxPopulation: number;
   productionMode: 'scrap' | 'science' | 'ammo';
   baseProduction: number;
+  stockpile: {
+    scrap: number;
+    science: number;
+    ammo: number;
+  };
+  maxStockpile: {
+    scrap: number;
+    science: number;
+    ammo: number;
+  };
+}
+
+export interface AmmoTruck {
+  id: string;
+  cityIndex: number;
+  startX: number;
+  startY: number;
+  targetX: number;
+  targetY: number;
+  currentX: number;
+  currentY: number;
+  ammoAmount: number;
+  targetTurretIndex: number;
+  progress: number; // 0 to 1
+  deliveryTime: number; // total time in ms
+  startTime: number;
+  status: 'delivering' | 'returning' | 'idle';
+  returnStartTime?: number;
+  returnTime?: number;
 }
 
 export interface CityProductivityUpgrades {

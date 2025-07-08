@@ -5,6 +5,7 @@ export * from './explosions';
 export * from './particles';
 export * from './planes';
 export * from './cities';
+export * from './trucks';
 export * from './debug';
 
 import { playerMissiles, enemyMissiles } from './missiles';
@@ -13,6 +14,7 @@ import { explosions } from './explosions';
 import { updateParticles, updateUpgradeEffects } from './particles';
 import { updatePlanes } from './planes';
 import { updateExplosions } from './explosions';
+import { updateTrucks } from './trucks';
 import { launchers } from './launchers';
 import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
 import { gameState } from '@/systems/observableState';
@@ -126,7 +128,7 @@ export function updateEntities(deltaTime: number, canvas: HTMLCanvasElement): vo
         
         // Very long trails - cover entire screen diagonal plus extra for visual appeal
         // Screen diagonal ~1500px, so 500 points should cover any visible trail
-        if (missile.trail.length > 21000) {
+        if (missile.trail.length > 2000) {
             missile.trail.shift();
         }
         
@@ -328,6 +330,7 @@ export function updateEntities(deltaTime: number, canvas: HTMLCanvasElement): vo
     updateExplosions(deltaTime);
     updateParticles(deltaTime);
     updateUpgradeEffects(deltaTime);
+    updateTrucks(deltaTime);
 }
 
 // updateEntities function is already exported above

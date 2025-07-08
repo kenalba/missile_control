@@ -2,17 +2,20 @@
 import type { CityData, CityProductivityUpgrades } from '@/types/gameTypes';
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
-import { destroyedCities } from '@/entities/cities';
+import { destroyedCities, cityPositions } from '@/entities/cities';
+import { createUpgradeEffect } from '@/entities/particles';
+import { createAmmoTruck } from '@/entities/trucks';
 
 // Command Mode city system
 export let cityData: CityData[] = [
-    // Each city has: population, maxPopulation, productionMode ('scrap', 'science', or 'ammo'), baseProduction
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 },
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 }
+    // Each city has: population, maxPopulation, productionMode, baseProduction
+    // Ammo stockpiles are added dynamically for backward compatibility
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any
 ];
 
 // City upgrade levels (legacy system for Arcade Mode)
@@ -28,8 +31,10 @@ export let cityProductivityUpgrades: CityProductivityUpgrades = {
     ammo: [0, 0, 0, 0, 0, 0]
 };
 
-// Ammo accumulator for precise fractional ammo production
+// Resource accumulators for precise fractional production
 export let ammoAccumulator = 0;
+export let scrapAccumulator = 0;
+export let scienceAccumulator = 0;
 
 // Calculate production rate per second for a specific city
 export function calculateCityProductionRate(cityIndex: number): string {
@@ -52,6 +57,19 @@ export function calculateCityProductionRate(cityIndex: number): string {
     return (finalProduction / 3).toFixed(1);
 }
 
+// Ensure city has ammo stockpile and truck properties (backward compatibility)
+function ensureAmmoStockpile(city: any): void {
+    if (!city.ammoStockpile) {
+        city.ammoStockpile = 0;
+    }
+    if (city.maxAmmoStockpile === undefined) {
+        city.maxAmmoStockpile = 5;
+    }
+    if (city.maxTrucks === undefined) {
+        city.maxTrucks = 1; // Each city starts with 1 truck
+    }
+}
+
 // Generate resources from cities based on population and production mode
 export function generateCityResources(): void {
     if (!gameState || !launchers || launchers.length === 0) {
@@ -68,6 +86,11 @@ export function generateCityResources(): void {
             continue;
         }
         
+        // Only ensure ammo stockpile for ammo-producing cities
+        if (city.productionMode === 'ammo') {
+            ensureAmmoStockpile(city);
+        }
+        
         const populationMultiplier = city.population / city.maxPopulation;
         const baseProduction = city.baseProduction * populationMultiplier;
         
@@ -77,23 +100,43 @@ export function generateCityResources(): void {
         
         switch (city.productionMode) {
             case 'scrap':
-                const scrapProduced = Math.floor(finalProduction);
-                if (scrapProduced > 0) {
+                // Accumulate fractional scrap production
+                scrapAccumulator += finalProduction;
+                
+                // Convert to integer scrap when we have enough
+                const scrapToAward = Math.floor(scrapAccumulator);
+                if (scrapToAward > 0) {
+                    scrapAccumulator -= scrapToAward;
+                    
+                    // Visual feedback for scrap production
+                    const cityX = cityPositions[i];
+                    createUpgradeEffect(cityX, 750, `+${scrapToAward} SCRAP`, '#0f0');
+                    
                     if ((window as any).awardScrap) {
-                        (window as any).awardScrap(scrapProduced, `city ${i}`);
+                        (window as any).awardScrap(scrapToAward, `city ${i}`);
                     } else {
-                        gameState.scrap += scrapProduced;
+                        gameState.scrap += scrapToAward;
                     }
                 }
                 break;
                 
             case 'science':
-                const scienceProduced = Math.floor(finalProduction);
-                if (scienceProduced > 0) {
+                // Accumulate fractional science production
+                scienceAccumulator += finalProduction;
+                
+                // Convert to integer science when we have enough
+                const scienceToAward = Math.floor(scienceAccumulator);
+                if (scienceToAward > 0) {
+                    scienceAccumulator -= scienceToAward;
+                    
+                    // Visual feedback for science production
+                    const cityX = cityPositions[i];
+                    createUpgradeEffect(cityX, 750, `+${scienceToAward} RESEARCH`, '#00f');
+                    
                     if ((window as any).awardScience) {
-                        (window as any).awardScience(scienceProduced);
+                        (window as any).awardScience(scienceToAward);
                     } else {
-                        gameState.science += scienceProduced;
+                        gameState.science += scienceToAward;
                     }
                 }
                 break;
@@ -107,14 +150,53 @@ export function generateCityResources(): void {
                 if (ammoToDistribute > 0) {
                     ammoAccumulator -= ammoToDistribute;
                     
-                    // Distribute ammo to turrets that need it
-                    let remainingAmmo = ammoToDistribute;
-                    for (let j = 0; j < launchers.length && remainingAmmo > 0; j++) {
-                        if (launchers[j].missiles < launchers[j].maxMissiles) {
-                            const ammoNeeded = launchers[j].maxMissiles - launchers[j].missiles;
-                            const ammoToGive = Math.min(remainingAmmo, ammoNeeded);
-                            launchers[j].missiles += ammoToGive;
-                            remainingAmmo -= ammoToGive;
+                    // Add to city ammo stockpile
+                    const stockpileSpace = (city as any).maxAmmoStockpile - (city as any).ammoStockpile;
+                    const toStockpile = Math.min(ammoToDistribute, stockpileSpace);
+                    
+                    if (toStockpile > 0) {
+                        (city as any).ammoStockpile += toStockpile;
+                        const cityX = cityPositions[i];
+                        createUpgradeEffect(cityX, 750, `+${toStockpile} AMMO (STORED)`, '#ff0');
+                    }
+                    
+                    // Try to dispatch trucks if stockpile has ammo
+                    if ((city as any).ammoStockpile > 0) {
+                        // Find turrets that need ammo
+                        const turretsNeedingAmmo = launchers
+                            .map((launcher, index) => ({ launcher, index }))
+                            .filter(({launcher}) => launcher.missiles < launcher.maxMissiles)
+                            .sort((a, b) => a.launcher.missiles - b.launcher.missiles); // Prioritize emptiest turrets
+                        
+                        if (turretsNeedingAmmo.length > 0) {
+                            // Dispatch truck to neediest turret (1 ammo per truck for balance)
+                            const target = turretsNeedingAmmo[0];
+                            const ammoToSend = 1; // Always send exactly 1 ammo per truck
+                            
+                            if (ammoToSend > 0 && (city as any).ammoStockpile >= ammoToSend) {
+                                const truck = createAmmoTruck(i, target.index, ammoToSend);
+                                if (truck) {
+                                    (city as any).ammoStockpile -= ammoToSend;
+                                    
+                                    const cityX = cityPositions[i];
+                                    createUpgradeEffect(cityX, 720, `🚚 DISPATCHED`, '#ff8');
+                                } else {
+                                    // No trucks available - ammo stays in stockpile
+                                    const cityX = cityPositions[i];
+                                    createUpgradeEffect(cityX, 720, `⏳ WAITING FOR TRUCK`, '#f80');
+                                }
+                            }
+                        } else {
+                            // All turrets are full - check for ammo recycling upgrade
+                            const globalUpgrades = (window as any).globalUpgrades;
+                            if (globalUpgrades?.ammoRecycling?.level > 0) {
+                                // Convert stockpiled ammo to scrap
+                                const scrapFromRecycling = (city as any).ammoStockpile * 2; // 2 scrap per ammo
+                                const cityX = cityPositions[i];
+                                createUpgradeEffect(cityX, 720, `+${scrapFromRecycling} SCRAP (RECYCLED)`, '#f80');
+                                gameState.scrap += scrapFromRecycling;
+                                (city as any).ammoStockpile = 0;
+                            }
                         }
                     }
                 }
@@ -234,12 +316,12 @@ export function repairCity(cityIndex: number): boolean {
 // Reset all city data
 export function resetCityData(): void {
     cityData = [
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 },
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 },
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 },
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 }
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any
     ];
     
     cityUpgrades = [0, 0, 0, 0, 0, 0];

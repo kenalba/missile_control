@@ -34,7 +34,9 @@ export let globalUpgrades: GlobalUpgrades = {
     scrapMultiplier: { level: 0, cost: 80 },
     salvage: { level: 0, cost: 60 },
     efficiency: { level: 0, cost: 90 },
-    research: { level: 0, cost: 50 } // Unlocks science production
+    research: { level: 0, cost: 50 }, // Unlocks science production
+    ammoRecycling: { level: 0, cost: 70 }, // Converts excess ammo to scrap
+    truckFleet: { level: 0, cost: 100 } // +1 truck per city
 };
 
 // Unlocked turret upgrade paths (spent science to unlock)
@@ -86,7 +88,9 @@ export function resetUpgrades(): void {
         scrapMultiplier: { level: 0, cost: 80 },
         salvage: { level: 0, cost: 60 },
         efficiency: { level: 0, cost: 90 },
-        research: { level: 0, cost: 50 }
+        research: { level: 0, cost: 50 },
+        ammoRecycling: { level: 0, cost: 70 },
+        truckFleet: { level: 0, cost: 100 }
     };
     
     unlockedUpgradePaths = {

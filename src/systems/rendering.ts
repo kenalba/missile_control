@@ -8,7 +8,8 @@ import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities, cityUpgrades } from '@/entities/cities';
 import { cityData } from '@/core/cities';
 import { particles, upgradeEffects } from '@/entities/particles';
-import { launcherUpgrades } from '@/core/upgrades';
+import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
+import { ammoTrucks } from '@/entities/trucks';
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -121,6 +122,11 @@ export function render(): void {
     // Draw ground
     drawGround();
     
+    // Draw city info panels on top of ground
+    if (gameState.currentMode === 'command') {
+        drawCityInfoPanels();
+    }
+    
     // Draw launchers
     drawLaunchers();
     
@@ -142,6 +148,9 @@ export function render(): void {
     
     // Draw upgrade effects
     drawUpgradeEffects();
+    
+    // Draw ammo trucks
+    drawAmmoTrucks();
     
     // Draw pause indicator
     if (gameState.paused) {
@@ -332,9 +341,184 @@ function drawCommandModeCityInfo(): void {
             const fillWidth = (city.population / city.maxPopulation) * barWidth;
             ctx.fillStyle = populationPercent > 75 ? '#0f0' : populationPercent > 50 ? '#ff0' : '#f80';
             ctx.fillRect(barX, barY, fillWidth, barHeight);
+            
         } else if (destroyedCities.includes(i)) {
             ctx.fillStyle = '#f00';
             ctx.fillText('ABANDONED', x, 820);
+        }
+    });
+}
+
+function drawSimpleCityInfo(x: number, cityIndex: number, city: any): void {
+    // Simple city info to avoid infinite loops
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.lineWidth = 1;
+    
+    // Show production mode and simple info
+    const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
+    const modeColor = modeColors[city.productionMode] || '#fff';
+    
+    ctx.fillStyle = modeColor;
+    ctx.strokeStyle = '#000';
+    ctx.strokeText(city.productionMode.toUpperCase(), x, 842);
+    ctx.fillText(city.productionMode.toUpperCase(), x, 842);
+    
+    // Show ammo stockpile for ammo cities
+    if (city.productionMode === 'ammo' && city.ammoStockpile !== undefined) {
+        ctx.fillStyle = '#ff0';
+        ctx.strokeText(`AMMO: ${city.ammoStockpile}`, x, 852);
+        ctx.fillText(`AMMO: ${city.ammoStockpile}`, x, 852);
+    }
+}
+
+function drawCityLogisticsInfo(x: number, cityIndex: number, city: any): void {
+    // Ensure ammo stockpile exists for backward compatibility
+    if (city.ammoStockpile === undefined) city.ammoStockpile = 0;
+    if (city.maxAmmoStockpile === undefined) city.maxAmmoStockpile = 5;
+    
+    
+    // Production rate
+    const productionRate = (window as any).calculateCityProductionRate ? 
+        (window as any).calculateCityProductionRate(cityIndex) : '0.0';
+    
+    // Truck count - count active trucks for this city
+    const activeTrucks = ammoTrucks.filter(truck => truck.cityIndex === cityIndex).length;
+    const maxTrucks = (city.maxTrucks || 1) + (globalUpgrades?.truckFleet?.level || 0);
+    
+    ctx.font = 'bold 12px monospace';
+    ctx.textAlign = 'center';
+    
+    // Production rate display (move higher up)
+    ctx.fillStyle = '#0ff';
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 2;
+    ctx.strokeText(`${productionRate}/s`, x, 840);
+    ctx.fillText(`${productionRate}/s`, x, 840);
+    
+    // Ammo stockpile (only show for ammo-producing cities)
+    if (city.productionMode === 'ammo') {
+        const stockpilePercent = (city.ammoStockpile / city.maxAmmoStockpile);
+        const stockpileColor = stockpilePercent > 0.8 ? '#0f0' : stockpilePercent > 0.4 ? '#ff0' : '#f80';
+        
+        ctx.fillStyle = stockpileColor;
+        ctx.strokeText(`AMMO ${city.ammoStockpile}/${city.maxAmmoStockpile}`, x, 850);
+        ctx.fillText(`AMMO ${city.ammoStockpile}/${city.maxAmmoStockpile}`, x, 850);
+        
+        // Ammo stockpile bar
+        const stockpileBarWidth = 30;
+        const stockpileBarHeight = 3;
+        const stockpileBarX = x - stockpileBarWidth/2;
+        const stockpileBarY = 857;
+        
+        // Background
+        ctx.fillStyle = '#333';
+        ctx.fillRect(stockpileBarX, stockpileBarY, stockpileBarWidth, stockpileBarHeight);
+        
+        // Foreground
+        const stockpileFillWidth = stockpilePercent * stockpileBarWidth;
+        ctx.fillStyle = stockpileColor;
+        ctx.fillRect(stockpileBarX, stockpileBarY, stockpileFillWidth, stockpileBarHeight);
+    }
+    
+    // Truck status  
+    const truckColor = activeTrucks > 0 ? '#ff0' : '#888';
+    ctx.fillStyle = truckColor;
+    ctx.strokeText(`TRUCKS ${activeTrucks}/${maxTrucks}`, x, 860);
+    ctx.fillText(`TRUCKS ${activeTrucks}/${maxTrucks}`, x, 860);
+    
+    // Truck status indicators (small dots)
+    for (let i = 0; i < maxTrucks; i++) {
+        const dotX = x - (maxTrucks * 3) + (i * 6);
+        const dotY = 868;
+        
+        if (i < activeTrucks) {
+            // Active truck - yellow
+            ctx.fillStyle = '#ff0';
+        } else {
+            // Available truck - dark gray
+            ctx.fillStyle = '#444';
+        }
+        ctx.fillRect(dotX, dotY, 2, 2);
+    }
+}
+
+function drawCityInfoPanels(): void {
+    cityPositions.forEach((x, i) => {
+        if (!destroyedCities.includes(i) && cityData[i]) {
+            const city = cityData[i];
+            
+            // Compact icon-based city info panel
+            const panelWidth = 85;
+            const panelHeight = city.productionMode === 'ammo' ? 60 : 50; // Taller for ammo cities with truck row
+            const panelX = x - panelWidth/2;
+            const panelY = city.productionMode === 'ammo' ? 803 : 808;
+            
+            // Production mode colors and icons
+            const modeData = {
+                scrap: { color: '#0f0', icon: '⚒️' },
+                science: { color: '#0ff', icon: '🔬' }, // Using lighter cyan for better readability
+                ammo: { color: '#ff0', icon: '📦' }
+            };
+            const mode = modeData[city.productionMode] || { color: '#fff', icon: '?' };
+            
+            // Background with colored border
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
+            ctx.strokeStyle = mode.color;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
+            
+            // Row 1: Production icon + rate (more spacing between rows)
+            ctx.font = 'bold 12px monospace'; // Increased font size
+            ctx.textAlign = 'left';
+            ctx.fillStyle = mode.color;
+            const productionRate = (window as any).calculateCityProductionRate ? 
+                (window as any).calculateCityProductionRate(i) : '0.0';
+            ctx.fillText(`${mode.icon} ${productionRate}/s`, panelX + 4, panelY + 13);
+            
+            // Row 2: Population with icon (more spacing)
+            const popPercent = Math.floor((city.population / city.maxPopulation) * 100);
+            const popColor = popPercent > 75 ? '#0f0' : popPercent > 50 ? '#ff0' : '#f80';
+            ctx.fillStyle = popColor;
+            ctx.fillText(`👥 ${Math.floor(city.population)}/${city.maxPopulation}`, panelX + 4, panelY + 27);
+            
+            // Row 3: Mode-specific compact info (more spacing)
+            if (city.productionMode === 'ammo') {
+                // Ammo stockpile (rounded down for display, but actual value preserved)
+                const displayStockpile = Math.floor(city.ammoStockpile || 0);
+                const stockpilePercent = displayStockpile / (city.maxAmmoStockpile || 5);
+                const stockpileColor = stockpilePercent > 0.8 ? '#0f0' : stockpilePercent > 0.4 ? '#ff0' : '#f80';
+                ctx.fillStyle = stockpileColor;
+                ctx.fillText(`📦 ${displayStockpile}/${city.maxAmmoStockpile || 5}`, panelX + 4, panelY + 41);
+                
+                // Row 4: Truck availability on separate row for better spacing
+                const activeTrucks = ammoTrucks.filter(truck => truck.cityIndex === i).length;
+                const maxTrucks = (city.maxTrucks || 1) + (globalUpgrades?.truckFleet?.level || 0);
+                const availableTrucks = maxTrucks - activeTrucks; // Available = total - busy
+                const truckColor = availableTrucks > 0 ? '#0f0' : '#f80'; // Green if available, orange if all busy
+                ctx.fillStyle = truckColor;
+                ctx.textAlign = 'left'; // Left-align the truck info
+                ctx.fillText(`🚚 ${availableTrucks}/${maxTrucks}`, panelX + 4, panelY + 53);
+            } else if (city.productionMode === 'scrap') {
+                // Simple mining facility indicator
+                ctx.fillStyle = '#888';
+                ctx.fillText(`⚡ MINING`, panelX + 4, panelY + 41);
+            } else if (city.productionMode === 'science') {
+                // Research status
+                const researchUnlocked = globalUpgrades?.research?.level > 0;
+                ctx.fillStyle = researchUnlocked ? '#0f0' : '#f00';
+                ctx.fillText(`${researchUnlocked ? '✅' : '🔒'} ${researchUnlocked ? 'ON' : 'OFF'}`, panelX + 4, panelY + 41);
+            }
+            
+            // Efficiency level indicator (small number in top-right)
+            const efficiencyLevel = (window as any).cityProductivityUpgrades?.[city.productionMode]?.[i] || 0;
+            if (efficiencyLevel > 0) {
+                ctx.fillStyle = '#0ff';
+                ctx.font = 'bold 9px monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText(`+${efficiencyLevel}`, panelX + panelWidth - 2, panelY + 10);
+            }
         }
     });
 }
@@ -932,4 +1116,52 @@ function drawPauseOverlay(): void {
     ctx.font = 'bold 24px monospace';
     ctx.fillText('Press SPACEBAR to continue', canvas.width / 2, canvas.height / 2 + 30);
     ctx.textAlign = 'left';
+}
+
+function drawAmmoTrucks(): void {
+    ammoTrucks.forEach(truck => {
+        // Draw truck body
+        const truckColor = truck.status === 'delivering' ? '#ff0' : 
+                          truck.status === 'returning' ? '#f80' : '#fff';
+        ctx.fillStyle = truckColor;
+        ctx.fillRect(truck.currentX - 6, truck.currentY - 3, 12, 6);
+        
+        // Draw cargo (only when delivering with ammo)
+        if (truck.status === 'delivering' && truck.ammoAmount > 0) {
+            ctx.fillStyle = '#f80';
+            ctx.fillRect(truck.currentX - 4, truck.currentY - 5, 8, 3);
+        }
+        
+        // Draw wheels
+        ctx.fillStyle = '#333';
+        ctx.fillRect(truck.currentX - 4, truck.currentY + 2, 2, 2);
+        ctx.fillRect(truck.currentX + 2, truck.currentY + 2, 2, 2);
+        
+        // Draw status indicator
+        if (truck.status === 'delivering' && truck.ammoAmount > 0) {
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 10px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(truck.ammoAmount.toString(), truck.currentX, truck.currentY - 8);
+        } else if (truck.status === 'returning') {
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 8px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('←', truck.currentX, truck.currentY - 8);
+        }
+        
+        // Draw progress line to destination
+        if (truck.status === 'delivering') {
+            ctx.strokeStyle = '#ff0';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 2]);
+            ctx.beginPath();
+            ctx.moveTo(truck.currentX, truck.currentY);
+            ctx.lineTo(truck.targetX, truck.targetY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        }
+        
+        ctx.textAlign = 'left';
+    });
 }
