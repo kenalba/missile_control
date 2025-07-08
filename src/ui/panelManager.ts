@@ -1,7 +1,7 @@
 // Panel Management for Command Mode floating upgrade panel
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { cityData } from '@/core/cities';
-import { globalUpgrades } from '@/core/upgrades';
+import { globalUpgrades, launcherUpgrades } from '@/core/upgrades';
 
 let isDragging = false;
 let dragOffset = { x: 0, y: 0 };
@@ -235,57 +235,83 @@ export function markPanelDirty(): void {
   panelNeedsUpdate = true;
 }
 
-// Track population to detect changes that affect production display
-let lastPopulationCheck = 0;
-let lastScrapCheck = 0;
-let lastScienceCheck = 0;
-
-// Update Command panel content
+// Update Command panel content (simplified with observable state)
 export function updateCommandPanel(): void {
   if (gameState.currentMode !== 'command') return;
   
   const panelBody = document.getElementById('commandPanelBody');
   if (!panelBody) return;
   
-  // Check if population changed (affects production rate display)
-  let currentPopulation = 0;
-  for (let i = 0; i < cityData.length; i++) {
-    currentPopulation += cityData[i].population;
-  }
-  
-  // Mark dirty if population changed significantly (more than 0.5 total)
-  if (Math.abs(currentPopulation - lastPopulationCheck) > 0.5) {
-    panelNeedsUpdate = true;
-    lastPopulationCheck = currentPopulation;
-  }
-  
-  // Check if scrap/science changed significantly (affects button affordability)
-  if (Math.abs(gameState.scrap - lastScrapCheck) >= 5) { // Less frequent updates
-    panelNeedsUpdate = true;
-    lastScrapCheck = gameState.scrap;
-  }
-  
-  if (Math.abs(gameState.science - lastScienceCheck) >= 2) { // Less frequent updates
-    panelNeedsUpdate = true;
-    lastScienceCheck = gameState.science;
-  }
-  
-  // Always update lightweight header values
-  const panelScrap = document.getElementById('panel-scrap');
-  const panelScience = document.getElementById('panel-science');
+  // Header values are automatically updated by observable state
   const panelScienceRow = document.getElementById('panel-science-row');
-  
-  if (panelScrap) panelScrap.textContent = gameState.scrap.toString();
-  if (panelScience) panelScience.textContent = gameState.science.toString();
   if (panelScienceRow) {
     panelScienceRow.style.display = (globalUpgrades.research && globalUpgrades.research.level > 0) ? 'block' : 'none';
   }
   
-  // Always rebuild both tabs and content when panel needs update
-  if (panelNeedsUpdate) {
-    updatePanelTabbedContent();
-    panelNeedsUpdate = false;
-  }
+  // Always rebuild content when explicitly requested
+  updatePanelTabbedContent();
+}
+
+// Update button affordability states without full rebuild
+function updateButtonAffordability(): void {
+  const commandPanelBody = document.getElementById('commandPanelBody');
+  if (!commandPanelBody) return;
+  
+  // Find all upgrade buttons and update their affordability states
+  const upgradeButtons = commandPanelBody.querySelectorAll('[data-action]');
+  
+  upgradeButtons.forEach(button => {
+    const actionElement = button as HTMLElement;
+    const action = actionElement.getAttribute('data-action');
+    const actionData = actionElement.getAttribute('data-action-data');
+    
+    // Only update buttons that have cost implications
+    if (!action) return;
+    
+    let canAfford = true;
+    let cost = 0;
+    
+    try {
+      if (action === 'upgrade-turret' && actionData) {
+        const [upgradeType, launcherIndex] = actionData.split(',');
+        const launcherIdx = parseInt(launcherIndex);
+        if (launcherIdx >= 0 && launcherUpgrades[launcherIdx] && launcherUpgrades[launcherIdx][upgradeType]) {
+          const upgrade = launcherUpgrades[launcherIdx][upgradeType];
+          const actualCost = Math.floor(upgrade.cost * (globalUpgrades.efficiency?.level > 0 ? 0.85 : 1.0));
+          cost = actualCost;
+          canAfford = gameState.scrap >= actualCost;
+        }
+      } else if (action === 'purchase-global' && actionData) {
+        const upgrade = globalUpgrades[actionData];
+        if (upgrade) {
+          cost = upgrade.cost;
+          canAfford = gameState.scrap >= upgrade.cost;
+        }
+      } else if (action === 'emergency-ammo') {
+        cost = 3;
+        canAfford = gameState.scrap >= 3;
+      } else if (action === 'unlock-upgrade-path' && actionData) {
+        const [, costStr] = actionData.split(',');
+        cost = parseInt(costStr);
+        canAfford = gameState.science >= cost;
+      }
+      
+      // Update button styling based on affordability
+      if (cost > 0) {
+        if (canAfford) {
+          actionElement.style.opacity = '1';
+          actionElement.style.color = actionElement.style.color.replace('rgb(102, 102, 102)', '#0ff');
+          (actionElement as HTMLButtonElement).disabled = false;
+        } else {
+          actionElement.style.opacity = '0.5';
+          actionElement.style.color = '#666';
+          (actionElement as HTMLButtonElement).disabled = true;
+        }
+      }
+    } catch (error) {
+      // Ignore parsing errors for buttons that don't need cost updates
+    }
+  });
 }
 
 // Update panel tabbed content (full recreation)
@@ -332,6 +358,7 @@ export function updatePanelTabbedContent(): void {
     button.onclick = () => {
       (window as any).currentUpgradeTab = tabInfo.id;
       markPanelDirty(); // Rebuild tabs and content
+      updateCommandPanel(); // Force immediate update
     };
     
     // Add hover effect for inactive tabs

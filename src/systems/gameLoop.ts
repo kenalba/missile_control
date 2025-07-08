@@ -1,5 +1,6 @@
 // Main game loop and update logic
-import { gameState, updateScreenShake } from '@/core/gameState';
+import { updateScreenShake } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { updateEntities } from '@/entities';
 import { spawnEnemyMissile } from '@/entities/missiles';
 import { spawnPlane } from '@/entities/planes';

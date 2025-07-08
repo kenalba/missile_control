@@ -1,6 +1,6 @@
 // Unified Upgrade System - TypeScript Implementation
 import type { GameState } from '@/types/gameTypes';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
 import { cityData } from '@/core/cities';

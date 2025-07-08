@@ -19,6 +19,7 @@ import '@/systems/upgradeLogic'; // Legacy upgrade support
 import '@/ui/uiUtils'; // UI utilities
 import '@/ui/panelManager'; // Panel management
 import '@/ui/upgradeContent'; // Upgrade content generation
+import { observableGameState, uiUpdateSystem } from '@/systems/observableState'; // Observable state system
 
 // Initialize TypeScript systems
 console.log('🚀 Initializing Missile Control TypeScript systems...');
@@ -28,12 +29,17 @@ console.log('💾 Save system loaded:', saveSystem.hasHighScores() ? 'with exist
 // Initialize input system
 initializeInput();
 
+// Initialize observable state system
+uiUpdateSystem.initialize();
+
 // Make our TypeScript systems globally available for any remaining legacy code
 (window as any).audioSystem = audioSystem;
 (window as any).saveSystem = saveSystem;
 (window as any).modeManager = modeManager;
 (window as any).initializeRenderer = initializeRenderer;
 (window as any).startGame = startGame;
+(window as any).observableGameState = observableGameState;
+(window as any).gameState = observableGameState; // Make observable state the global gameState
 
 // Initialize the game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
