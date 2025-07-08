@@ -2,7 +2,7 @@
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityData } from '@/core/cities';
-import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
+import { destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
 import { createSectionHeader, createCompactUpgradeButton, COLORS } from '@/ui/uiUtils';
 

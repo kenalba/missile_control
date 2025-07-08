@@ -3,18 +3,18 @@ import { audioSystem } from '@/systems/audio';
 import { timeManager } from '@/systems/timeManager';
 
 export let launchers: Launcher[] = [
-    { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-    { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 }, // Middle turret starts upgraded
-    { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+    { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1500 },
+    { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 1000 }, // Middle turret starts upgraded
+    { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1500 }
 ];
 
 export let destroyedLaunchers: number[] = [];
 
 export function resetLaunchers(): void {
     launchers = [
-        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 },
-        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1500 },
+        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 1000 },
+        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1500 }
     ];
     resetLauncherTimestamps();
 }

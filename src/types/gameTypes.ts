@@ -176,6 +176,7 @@ export interface LauncherUpgrades {
   rate: UpgradeLevel;
   capacity: UpgradeLevel;
   autopilot: UpgradeLevel;
+  [key: string]: UpgradeLevel;
 }
 
 export interface GlobalUpgrades {
@@ -188,6 +189,7 @@ export interface GlobalUpgrades {
   research: UpgradeLevel;
   ammoRecycling: UpgradeLevel;
   truckFleet: UpgradeLevel;
+  [key: string]: UpgradeLevel;
 }
 
 export interface UnlockedUpgradePaths {
@@ -196,6 +198,7 @@ export interface UnlockedUpgradePaths {
   explosion: boolean;
   capacity: boolean;
   autopilot: boolean;
+  [key: string]: boolean;
 }
 
 export interface CityData {
@@ -203,16 +206,20 @@ export interface CityData {
   maxPopulation: number;
   productionMode: 'scrap' | 'science' | 'ammo';
   baseProduction: number;
-  stockpile: {
+  stockpile?: {
     scrap: number;
     science: number;
     ammo: number;
   };
-  maxStockpile: {
+  maxStockpile?: {
     scrap: number;
     science: number;
     ammo: number;
   };
+  // Simplified ammo-only stockpile system (backward compatible)
+  ammoStockpile?: number;
+  maxAmmoStockpile?: number;
+  maxTrucks?: number;
 }
 
 export interface AmmoTruck {

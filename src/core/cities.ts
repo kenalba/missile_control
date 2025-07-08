@@ -10,12 +10,12 @@ import { createAmmoTruck } from '@/entities/trucks';
 export let cityData: CityData[] = [
     // Each city has: population, maxPopulation, productionMode, baseProduction
     // Ammo stockpiles are added dynamically for backward compatibility
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.6 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.6 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.6 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.6 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.6 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.6 } as any
 ];
 
 // City upgrade levels (legacy system for Arcade Mode)
@@ -316,12 +316,12 @@ export function repairCity(cityIndex: number): boolean {
 // Reset all city data
 export function resetCityData(): void {
     cityData = [
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 } as any
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.6 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.6 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.6 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.6 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.6 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.6 } as any
     ];
     
     cityUpgrades = [0, 0, 0, 0, 0, 0];

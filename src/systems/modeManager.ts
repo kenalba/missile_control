@@ -186,7 +186,10 @@ export class ModeManager {
             population: 100,
             maxPopulation: 100,
             productionMode: productionModes[index % 2] as 'scrap' | 'ammo' | 'science', // Cycle through scrap, ammo
-            baseProduction: 1 // All produce 1 resource per tick (balanced for 3-second intervals)
+            baseProduction: 0.6, // Slower production: 0.6 resource per tick (every 3 seconds)
+            ammoStockpile: 0,
+            maxAmmoStockpile: 5,
+            maxTrucks: 1
         })));
         
         // Initialize science resource - starts at 0, must be unlocked

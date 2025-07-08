@@ -10,6 +10,7 @@ import { cityData } from '@/core/cities';
 import { particles, upgradeEffects } from '@/entities/particles';
 import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
 import { ammoTrucks } from '@/entities/trucks';
+import { timeManager } from '@/systems/timeManager';
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -349,99 +350,6 @@ function drawCommandModeCityInfo(): void {
     });
 }
 
-function drawSimpleCityInfo(x: number, cityIndex: number, city: any): void {
-    // Simple city info to avoid infinite loops
-    ctx.font = 'bold 10px monospace';
-    ctx.textAlign = 'center';
-    ctx.lineWidth = 1;
-    
-    // Show production mode and simple info
-    const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
-    const modeColor = modeColors[city.productionMode] || '#fff';
-    
-    ctx.fillStyle = modeColor;
-    ctx.strokeStyle = '#000';
-    ctx.strokeText(city.productionMode.toUpperCase(), x, 842);
-    ctx.fillText(city.productionMode.toUpperCase(), x, 842);
-    
-    // Show ammo stockpile for ammo cities
-    if (city.productionMode === 'ammo' && city.ammoStockpile !== undefined) {
-        ctx.fillStyle = '#ff0';
-        ctx.strokeText(`AMMO: ${city.ammoStockpile}`, x, 852);
-        ctx.fillText(`AMMO: ${city.ammoStockpile}`, x, 852);
-    }
-}
-
-function drawCityLogisticsInfo(x: number, cityIndex: number, city: any): void {
-    // Ensure ammo stockpile exists for backward compatibility
-    if (city.ammoStockpile === undefined) city.ammoStockpile = 0;
-    if (city.maxAmmoStockpile === undefined) city.maxAmmoStockpile = 5;
-    
-    
-    // Production rate
-    const productionRate = (window as any).calculateCityProductionRate ? 
-        (window as any).calculateCityProductionRate(cityIndex) : '0.0';
-    
-    // Truck count - count active trucks for this city
-    const activeTrucks = ammoTrucks.filter(truck => truck.cityIndex === cityIndex).length;
-    const maxTrucks = (city.maxTrucks || 1) + (globalUpgrades?.truckFleet?.level || 0);
-    
-    ctx.font = 'bold 12px monospace';
-    ctx.textAlign = 'center';
-    
-    // Production rate display (move higher up)
-    ctx.fillStyle = '#0ff';
-    ctx.strokeStyle = '#000';
-    ctx.lineWidth = 2;
-    ctx.strokeText(`${productionRate}/s`, x, 840);
-    ctx.fillText(`${productionRate}/s`, x, 840);
-    
-    // Ammo stockpile (only show for ammo-producing cities)
-    if (city.productionMode === 'ammo') {
-        const stockpilePercent = (city.ammoStockpile / city.maxAmmoStockpile);
-        const stockpileColor = stockpilePercent > 0.8 ? '#0f0' : stockpilePercent > 0.4 ? '#ff0' : '#f80';
-        
-        ctx.fillStyle = stockpileColor;
-        ctx.strokeText(`AMMO ${city.ammoStockpile}/${city.maxAmmoStockpile}`, x, 850);
-        ctx.fillText(`AMMO ${city.ammoStockpile}/${city.maxAmmoStockpile}`, x, 850);
-        
-        // Ammo stockpile bar
-        const stockpileBarWidth = 30;
-        const stockpileBarHeight = 3;
-        const stockpileBarX = x - stockpileBarWidth/2;
-        const stockpileBarY = 857;
-        
-        // Background
-        ctx.fillStyle = '#333';
-        ctx.fillRect(stockpileBarX, stockpileBarY, stockpileBarWidth, stockpileBarHeight);
-        
-        // Foreground
-        const stockpileFillWidth = stockpilePercent * stockpileBarWidth;
-        ctx.fillStyle = stockpileColor;
-        ctx.fillRect(stockpileBarX, stockpileBarY, stockpileFillWidth, stockpileBarHeight);
-    }
-    
-    // Truck status  
-    const truckColor = activeTrucks > 0 ? '#ff0' : '#888';
-    ctx.fillStyle = truckColor;
-    ctx.strokeText(`TRUCKS ${activeTrucks}/${maxTrucks}`, x, 860);
-    ctx.fillText(`TRUCKS ${activeTrucks}/${maxTrucks}`, x, 860);
-    
-    // Truck status indicators (small dots)
-    for (let i = 0; i < maxTrucks; i++) {
-        const dotX = x - (maxTrucks * 3) + (i * 6);
-        const dotY = 868;
-        
-        if (i < activeTrucks) {
-            // Active truck - yellow
-            ctx.fillStyle = '#ff0';
-        } else {
-            // Available truck - dark gray
-            ctx.fillStyle = '#444';
-        }
-        ctx.fillRect(dotX, dotY, 2, 2);
-    }
-}
 
 function drawCityInfoPanels(): void {
     cityPositions.forEach((x, i) => {
@@ -838,7 +746,8 @@ function drawSegmentedProgressBar(launcher: Launcher): void {
 }
 
 function drawCooldownBar(launcher: Launcher): void {
-    const timeSinceLastFire = Date.now() - launcher.lastFire;
+    const currentGameTime = timeManager.getGameTime();
+    const timeSinceLastFire = currentGameTime - launcher.lastFire;
     const cooldownProgress = Math.min(timeSinceLastFire / launcher.fireRate, 1);
     
     // Background bar

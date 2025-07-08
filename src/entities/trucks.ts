@@ -44,7 +44,7 @@ export function createAmmoTruck(
   
   // Calculate delivery time based on horizontal distance only (ground travel)
   const distance = Math.abs(turretX - cityX);
-  const deliveryTime = Math.max(1500, distance * 3); // Minimum 1.5 seconds, 3ms per pixel
+  const deliveryTime = distance * 8 + 2000; // Consistent speed: 8ms per pixel + 2 second base time
   
   const truck: AmmoTruck = {
     id: `truck-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -94,7 +94,7 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
   const cityX = cityPositions[cityIndex];
   const turretX = launchers[target.index].x;
   const distance = Math.abs(turretX - cityX);
-  const deliveryTime = Math.max(1500, distance * 3);
+  const deliveryTime = distance * 8 + 2000; // Consistent speed: 8ms per pixel + 2 second base time
   
   // Reconfigure truck for new delivery
   returningTruck.startX = cityX;
@@ -119,7 +119,7 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
 }
 
 // Update all trucks
-export function updateTrucks(deltaTime: number): void {
+export function updateTrucks(): void {
   if (gameState.paused) return;
   
   const currentTime = Date.now();

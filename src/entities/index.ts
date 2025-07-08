@@ -330,7 +330,7 @@ export function updateEntities(deltaTime: number, canvas: HTMLCanvasElement): vo
     updateExplosions(deltaTime);
     updateParticles(deltaTime);
     updateUpgradeEffects(deltaTime);
-    updateTrucks(deltaTime);
+    updateTrucks();
 }
 
 // updateEntities function is already exported above
