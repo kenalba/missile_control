@@ -1,5 +1,5 @@
 // UI Utilities for consistent styling and component generation
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 
 // Standardized button styles for consistency across all tabs
 export const BUTTON_STYLES = {

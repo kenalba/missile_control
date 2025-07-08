@@ -1,5 +1,5 @@
 // Upgrade Content Generation for floating panels
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityData } from '@/core/cities';
 import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityProductivityUpgrades } from '@/entities/cities';

@@ -15,7 +15,7 @@ import { updatePlanes } from './planes';
 import { updateExplosions } from './explosions';
 import { launchers } from './launchers';
 import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { createExplosion } from './explosions';
 import { createParticle } from './particles';
 import { cityPositions, destroyedCities } from './cities';

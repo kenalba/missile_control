@@ -1,5 +1,5 @@
 import type { PlayerMissile, EnemyMissile, Launcher } from '@/types/gameTypes';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { launcherUpgrades } from '@/core/upgrades';
 import { audioSystem } from '@/systems/audio';
 import { cityPositions, destroyedCities } from './cities';

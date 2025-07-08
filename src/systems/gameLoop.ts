@@ -5,8 +5,12 @@ import { updateEntities } from '@/entities';
 import { spawnEnemyMissile } from '@/entities/missiles';
 import { spawnPlane } from '@/entities/planes';
 import { saveSystem } from '@/systems/saveSystem';
+import { timeManager } from '@/systems/timeManager';
 
 export function updateGame(deltaTime: number): void {
+    // Always update time manager (handles pause state internally)
+    timeManager.update();
+    
     // Skip updates if paused
     if (gameState.paused) {
         return;
@@ -196,6 +200,9 @@ export function startGame(mode: 'arcade' | 'command' = 'arcade'): void {
     if (saveSystem) {
         saveSystem.saveMode(mode);
     }
+    
+    // Initialize time manager
+    timeManager.initialize();
     
     // Initialize game using ModeManager
     const modeManager = (window as any).ModeManager;

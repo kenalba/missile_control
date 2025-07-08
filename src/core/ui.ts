@@ -1,5 +1,5 @@
 // UI State Management
-import { gameState } from './gameState';
+import { gameState } from '@/systems/observableState';
 
 // Update main game UI
 export function updateUI(): void {

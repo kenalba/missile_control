@@ -1,5 +1,5 @@
 import type { Plane } from '@/types/gameTypes';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { audioSystem } from '@/systems/audio';
 import { enemyMissiles } from './missiles';
 

@@ -20,6 +20,7 @@ import '@/ui/uiUtils'; // UI utilities
 import '@/ui/panelManager'; // Panel management
 import '@/ui/upgradeContent'; // Upgrade content generation
 import { observableGameState, uiUpdateSystem } from '@/systems/observableState'; // Observable state system
+import { timeManager } from '@/systems/timeManager'; // Time management system
 
 // Initialize TypeScript systems
 console.log('🚀 Initializing Missile Control TypeScript systems...');
@@ -40,6 +41,7 @@ uiUpdateSystem.initialize();
 (window as any).startGame = startGame;
 (window as any).observableGameState = observableGameState;
 (window as any).gameState = observableGameState; // Make observable state the global gameState
+(window as any).timeManager = timeManager;
 
 // Also export startGame directly for HTML onclick handlers
 (window as any).startGame = startGame;

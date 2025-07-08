@@ -11,6 +11,8 @@ export let gameState: GameState = {
     gameRunning: true,
     paused: false,
     lastTime: 0,
+    gameTime: 0, // Pause-aware game time (milliseconds)
+    pauseStartTime: 0,
     waveTimer: 0,
     nextWaveDelay: 3000,
     waveBreak: false,

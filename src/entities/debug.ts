@@ -1,7 +1,7 @@
 // Debug functions for testing game features
 import { enemyMissiles } from './missiles';
 import { calculateMissileSpeed } from './missiles';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { cityPositions, destroyedCities } from './cities';
 import { launchers } from './launchers';
 

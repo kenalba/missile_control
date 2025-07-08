@@ -141,6 +141,8 @@ export interface GameState {
   gameRunning: boolean;
   paused: boolean;
   lastTime: number;
+  gameTime: number; // Pause-aware game time (milliseconds)
+  pauseStartTime: number;
   waveTimer: number;
   nextWaveDelay: number;
   waveBreak: boolean;

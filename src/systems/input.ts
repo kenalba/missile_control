@@ -1,7 +1,7 @@
 // Input system for handling keyboard, mouse, and touch events
 import { gameState } from '@/systems/observableState';
 import { cityData } from '@/core/cities';
-import { launchers } from '@/entities/launchers';
+import { launchers, canLauncherFire } from '@/entities/launchers';
 import { cityPositions, destroyedCities } from '@/entities/cities';
 import { fireMissile } from '@/entities/missiles';
 import { createUpgradeEffect } from '@/entities/particles';
@@ -148,7 +148,7 @@ export function initializeInput(): void {
             if (launcher.missiles <= 0) {
                 // No ammo
                 audioSystem.playEmptyAmmo();
-            } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+            } else if (!canLauncherFire(launcher)) {
                 // Still on cooldown
                 audioSystem.playCooldown();
             } else {
@@ -241,7 +241,7 @@ export function initializeInput(): void {
                 if (launcher.missiles <= 0) {
                     // No ammo
                     audioSystem.playEmptyAmmo();
-                } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+                } else if (!canLauncherFire(launcher)) {
                     // Still on cooldown
                     audioSystem.playCooldown();
                 } else {
@@ -304,7 +304,7 @@ function handleTouchEnd(e: TouchEvent): void {
         if (launcher.missiles <= 0) {
             // No ammo
             audioSystem.playEmptyAmmo();
-        } else if (Date.now() - launcher.lastFire <= launcher.fireRate) {
+        } else if (!canLauncherFire(launcher)) {
             // Still on cooldown
             audioSystem.playCooldown();
         } else {

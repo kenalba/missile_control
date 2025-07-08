@@ -1,6 +1,6 @@
 // Legacy arcade mode upgrade system support
 import type { GameState } from '@/types/gameTypes';
-import { gameState } from '@/core/gameState';
+import { gameState } from '@/systems/observableState';
 import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
 import { createUpgradeEffect } from '@/systems/upgrades';
 import { updateUI } from '@/systems/ui';

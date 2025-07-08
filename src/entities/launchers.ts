@@ -1,5 +1,6 @@
 import type { Launcher } from '@/types/gameTypes';
 import { audioSystem } from '@/systems/audio';
+import { timeManager } from '@/systems/timeManager';
 
 export let launchers: Launcher[] = [
     { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
@@ -15,6 +16,15 @@ export function resetLaunchers(): void {
         { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 },
         { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
     ];
+    resetLauncherTimestamps();
+}
+
+export function resetLauncherTimestamps(): void {
+    const currentTime = timeManager.getGameTime();
+    launchers.forEach(launcher => {
+        // Set lastFire to allow immediate firing
+        launcher.lastFire = currentTime - launcher.fireRate;
+    });
 }
 
 export function getLauncher(index: number): Launcher | undefined {
@@ -44,14 +54,14 @@ export function isLauncherDestroyed(launcherIndex: number): boolean {
 }
 
 export function canLauncherFire(launcher: Launcher): boolean {
-    const now = Date.now();
-    return launcher.missiles > 0 && (now - launcher.lastFire) >= launcher.fireRate;
+    const gameTime = timeManager.getGameTime();
+    return launcher.missiles > 0 && (gameTime - launcher.lastFire) >= launcher.fireRate;
 }
 
 export function fireLauncher(launcher: Launcher): void {
     if (launcher.missiles > 0) {
         launcher.missiles--;
-        launcher.lastFire = Date.now();
+        launcher.lastFire = timeManager.getGameTime();
         audioSystem.playMissileLaunch();
     }
 }

@@ -2,7 +2,7 @@
 import { gameState } from '@/systems/observableState';
 import { destroyedCities, cityUpgrades, cityPositions } from '@/entities/cities';
 import { cityData } from '@/core/cities';
-import { launchers, destroyedLaunchers } from '@/entities/launchers';
+import { launchers, destroyedLaunchers, resetLauncherTimestamps } from '@/entities/launchers';
 import { launcherUpgrades } from '@/core/upgrades';
 import { updateUpgradeUI } from '@/systems/ui';
 
@@ -134,6 +134,9 @@ export class ModeManager {
         destroyedLaunchers.length = 0;
         launchers.length = 0;
         launchers.push(...config.launcherPositions.map(launcher => ({...launcher}))); // Deep copy
+        
+        // Reset launcher timestamps to work with game time system
+        resetLauncherTimestamps();
         
         launcherUpgrades.length = 0;
         launcherUpgrades.push(...config.initialUpgrades.map(upgrade => {
