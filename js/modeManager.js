@@ -101,6 +101,13 @@ const ModeManager = {
             
             // Initialize science resource - starts at 0, must be unlocked
             gameState.science = 0;
+            
+            // Open Command Center by default in Command Mode
+            setTimeout(() => {
+                if (typeof window.openCommandPanel === 'function') {
+                    window.openCommandPanel();
+                }
+            }, 100); // Small delay to ensure DOM is ready
         } else {
             // Arcade Mode: Wave-based gameplay
             gameState.enemiesToSpawn = config.initialEnemies;

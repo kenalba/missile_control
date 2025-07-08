@@ -53,6 +53,12 @@ function handleUpgradePanelActions(event) {
                 markPanelDirty(); // Force immediate update
                 break;
                 
+            case 'unlock-upgrade-path':
+                const [pathType, pathCost] = actionData.split(',');
+                window.unlockUpgradePath(pathType, parseInt(pathCost));
+                markPanelDirty(); // Force immediate update
+                break;
+                
             case 'purchase-global':
                 window.purchaseGlobalUpgrade(actionData);
                 markPanelDirty(); // Force immediate update

@@ -78,6 +78,15 @@ let cityData = [
 // Ammo accumulator for precise fractional ammo production
 let ammoAccumulator = 0;
 
+// Unlocked turret upgrade paths (spent science to unlock)
+let unlockedUpgradePaths = {
+    rate: true,      // Available from start
+    speed: false,    // Requires science purchase
+    explosion: false,
+    capacity: false,
+    autopilot: false
+};
+
 // Global upgrades
 let globalUpgrades = {
     cityShield: { level: 0, cost: 100 },
@@ -427,6 +436,13 @@ function restartGame() {
         ammo: [0, 0, 0, 0, 0, 0]
     };
     ammoAccumulator = 0;
+    unlockedUpgradePaths = {
+        rate: true,      // Available from start
+        speed: false,    // Requires science purchase
+        explosion: false,
+        capacity: false,
+        autopilot: false
+    };
     
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('waveBreak').style.display = 'none';

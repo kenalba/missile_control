@@ -154,6 +154,12 @@ function initializeInput() {
             return;
         }
         
+        // Cheat code: [ key gives 100 science (works anytime)
+        if (e.key === '[') {
+            gameState.science += 100;
+            return;
+        }
+        
         
         // Debug controls (work anytime during game)
         if (gameState.gameRunning && !gameState.waveBreak) {

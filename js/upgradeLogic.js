@@ -101,27 +101,19 @@ window.upgrade = function(type, launcherIndex) {
     
     if (!upgrade) return;
     
-    // Check science requirements in Command Mode
+    // Check if upgrade path is unlocked in Command Mode
     if (gameState.currentMode === 'command') {
-        const scienceUnlocks = {
-            rate: { required: 0 },
-            speed: { required: 10 },
-            explosion: { required: 25 },
-            capacity: { required: 50 },
-            autopilot: { required: 100 }
-        };
-        
-        const unlockReq = scienceUnlocks[type];
-        if (unlockReq && gameState.science < unlockReq.required) {
-            // Visual feedback for insufficient science
+        if (!unlockedUpgradePaths[type]) {
+            // Visual feedback for locked upgrade path
             const launcher = launchers[launcherIndex];
             if (launcher) {
-                createUpgradeEffect(launcher.x, launcher.y - 30, `Need ${unlockReq.required} Science!`, '#f00');
+                createUpgradeEffect(launcher.x, launcher.y - 30, `Upgrade path locked!`, '#f00');
             }
             return;
         }
     }
     
+    // All modes: upgrades cost scrap
     const cost = getActualUpgradeCost(upgrade.cost);
     if (gameState.scrap < cost) return;
     
@@ -351,6 +343,23 @@ window.upgradeCityProductivity = function(cityIndex, productionType) {
     const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
     const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
     createUpgradeEffect(cityPositions[cityIndex], 750, `${modeIcons[productionType]} +25% EFFICIENCY!`, modeColors[productionType]);
+    
+    updateUI();
+    if (gameState.currentMode === 'command') {
+        window.updateCommandPanel();
+    }
+};
+
+// Unlock upgrade path function
+window.unlockUpgradePath = function(upgradeType, cost) {
+    if (gameState.science < cost) return;
+    if (unlockedUpgradePaths[upgradeType]) return; // Already unlocked
+    
+    gameState.science -= cost;
+    unlockedUpgradePaths[upgradeType] = true;
+    
+    // Visual feedback
+    createUpgradeEffect(canvas.width / 2, 300, `${upgradeType.toUpperCase()} PATH UNLOCKED!`, '#00f');
     
     updateUI();
     if (gameState.currentMode === 'command') {

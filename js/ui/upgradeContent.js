@@ -140,49 +140,54 @@ function getTurretsUpgradesHTML() {
     const selectedTurret = gameState.commandMode.selectedEntityType === 'turret' 
         ? gameState.commandMode.selectedEntity : 0;
     
-    // Global science unlock system - applies to all turrets (always show first)
+    // Science requirements to unlock upgrade paths
     const scienceUnlocks = {
-        rate: { required: 0, description: 'Available from start' },
-        speed: { required: 10, description: 'Requires 10 science to unlock velocity research' },
-        explosion: { required: 25, description: 'Requires 25 science to unlock explosive technology' },
-        capacity: { required: 50, description: 'Requires 50 science to unlock storage engineering' },
-        autopilot: { required: 100, description: 'Requires 100 science to unlock AI targeting systems' }
+        rate: 0,      // Available from start
+        speed: 10,    // Requires 10 science to unlock
+        explosion: 25,
+        capacity: 50,
+        autopilot: 100
     };
-    
-    // Add global science unlock section first
-    html += `
-        <div style="margin-bottom: 15px;">
-            ${createSectionHeader('Research Unlocks (Global)', 'rgb(100, 200, 255)')}
-            <div class="compact-grid-2" style="gap: 8px;">
-    `;
-    
-    // Show science unlock buttons for locked upgrades
-    const unlockedUpgrades = [];
-    Object.entries(scienceUnlocks).forEach(([key, unlock]) => {
-        if (gameState.science >= unlock.required) {
-            unlockedUpgrades.push(key);
-        } else {
-            // Show unlock button for this upgrade path
-            const cost = unlock.required;
-            const canAfford = gameState.science >= cost;
-            const upgradeType = { key, name: key.charAt(0).toUpperCase() + key.slice(1), icon: '🔬' };
-            
-            html += `
-                <div class="upgrade-btn-compact tooltip" 
-                     style="color: rgb(100, 200, 255); border-color: rgb(100, 200, 255); background: rgba(100, 200, 255, 0.1); cursor: default;"
-                     data-tooltip="${unlock.description}">
-                    <strong>🔒 ${upgradeType.name}</strong><br>
-                    <small>Need ${cost} 🔬</small>
-                </div>
-            `;
-        }
-    });
-    
-    html += '</div></div>';
 
     if (selectedTurret !== null && launchers[selectedTurret]) {
         const turretUpgrades = launcherUpgrades[selectedTurret];
         const launcher = launchers[selectedTurret];
+        
+        // Show science upgrade path unlocks first
+        html += `
+            <div style="margin-bottom: 15px;">
+                ${createSectionHeader('Upgrade Path Unlocks', 'rgb(100, 200, 255)')}
+                <div class="compact-grid-2" style="gap: 8px;">
+        `;
+        
+        // Show upgrade path unlock buttons for locked paths
+        const upgradePathsToUnlock = [
+            { key: 'speed', name: 'Speed Path', cost: 10, description: 'Unlock missile velocity research upgrades' },
+            { key: 'explosion', name: 'Blast Path', cost: 25, description: 'Unlock explosive technology upgrades' },
+            { key: 'capacity', name: 'Ammo Path', cost: 50, description: 'Unlock storage engineering upgrades' },
+            { key: 'autopilot', name: 'Auto Path', cost: 100, description: 'Unlock AI targeting system upgrades' }
+        ];
+        
+        // Show only the 2 cheapest locked paths
+        const lockedPaths = upgradePathsToUnlock.filter(path => !unlockedUpgradePaths[path.key]);
+        const cheapestLockedPaths = lockedPaths.sort((a, b) => a.cost - b.cost).slice(0, 2);
+        
+        cheapestLockedPaths.forEach(path => {
+            const canAfford = gameState.science >= path.cost;
+            
+            html += createCompactUpgradeButton({
+                name: `🔬 ${path.name}`,
+                description: `${path.description}. Spend ${path.cost} science to unlock this upgrade path permanently.`,
+                cost: path.cost,
+                canAfford: canAfford,
+                color: COLORS.blue,
+                action: 'unlock-upgrade-path',
+                actionData: `${path.key},${path.cost}`,
+                additionalInfo: `${path.cost} 🔬`
+            });
+        });
+        
+        html += '</div></div>';
         
         // Always show turret selector when a turret is selected
         html += `
@@ -229,50 +234,88 @@ function getTurretsUpgradesHTML() {
                 </div>
             </div>
             
-            <div class="compact-grid-2" style="gap: 10px;">
         `;
         
-        // Generate compact upgrade buttons with science gating
-        const upgradeTypes = [
-            { key: 'rate', name: 'Rate', icon: '🔥', description: 'Faster reload time between shots. Reduces cooldown for rapid firing.' },
-            { key: 'speed', name: 'Speed', icon: '⚡', description: 'Faster missile travel speed. Higher levels dramatically increase projectile velocity.' },
-            { key: 'explosion', name: 'Blast', icon: '💥', description: 'Larger explosion radius. Increases area of effect for destroying enemy missiles.' },
-            { key: 'capacity', name: 'Ammo', icon: '📦', description: 'More ammunition per turret. Increases maximum missile storage capacity.' },
-            { key: 'autopilot', name: 'Auto', icon: '🎯', description: 'Automatic targeting system. Turret will fire at nearest threats automatically.' }
+        // FTL-style upgrade grid - replace the compact-grid with our own layout
+        html += `
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+        `;
+        
+        // Define upgrade types in static order (2-column grid, only show unlocked)
+        const ftlUpgradeLayout = [
+            { key: 'rate', name: 'Rate', icon: '🔥', description: 'Fire rate' },
+            { key: 'speed', name: 'Speed', icon: '⚡', description: 'Missile velocity' },
+            { key: 'explosion', name: 'Blast', icon: '💥', description: 'Explosion radius' },
+            { key: 'capacity', name: 'Ammo', icon: '📦', description: 'Missile capacity' },
+            { key: 'autopilot', name: 'Auto', icon: '🎯', description: 'Auto-targeting' }
         ];
         
-        upgradeTypes.forEach(upgradeType => {
-            const upgrade = turretUpgrades[upgradeType.key];
-            const unlockReq = scienceUnlocks[upgradeType.key];
-            const isUnlocked = gameState.science >= unlockReq.required;
-            const cost = getActualUpgradeCost(upgrade.cost);
-            const canAfford = gameState.scrap >= cost && isUnlocked;
-            
-            if (isUnlocked) {
-                html += createCompactUpgradeButton({
-                    name: `${upgradeType.icon} ${upgradeType.name}`,
-                    description: `${upgradeType.description} Current: Level ${upgrade.level}`,
-                    cost: cost,
-                    canAfford: gameState.scrap >= cost,
-                    color: COLORS.cyan,
-                    action: 'upgrade-turret',
-                    actionData: `${upgradeType.key},${selectedTurret}`,
-                    additionalInfo: `Level ${upgrade.level} → ${upgrade.level + 1}`
-                });
-            } else {
-                // Show locked upgrade with science requirement
-                html += `
-                    <div class="upgrade-btn-compact tooltip" 
-                         style="color: #555; border-color: #555; background: rgba(85, 85, 85, 0.1); cursor: default;"
-                         data-tooltip="${unlockReq.description}">
-                        <strong>🔒 ${upgradeType.icon} ${upgradeType.name}</strong><br>
-                        <small>Need ${unlockReq.required} 🔬</small>
-                    </div>
-                `;
-            }
+        // Only show unlocked upgrade paths
+        const unlockedUpgradeTypes = ftlUpgradeLayout.filter(upgradeType => {
+            return unlockedUpgradePaths[upgradeType.key];
         });
         
-        html += '</div>';
+        unlockedUpgradeTypes.forEach((upgradeType, index) => {
+                const upgrade = turretUpgrades[upgradeType.key];
+                const scrapCost = getActualUpgradeCost(upgrade.cost);
+                const canAfford = gameState.scrap >= scrapCost;
+                const currentLevel = upgrade.level;
+                
+                // Calculate tier and visual properties based on level
+                let tier, tierColor, tierName, barsInTier, levelInTier;
+                
+                if (currentLevel <= 5) {
+                    tier = 1; tierColor = '#0ff'; tierName = 'BASIC'; barsInTier = 5; levelInTier = currentLevel;
+                } else if (currentLevel <= 10) {
+                    tier = 2; tierColor = '#0f0'; tierName = 'ADVANCED'; barsInTier = 5; levelInTier = currentLevel - 5;
+                } else if (currentLevel <= 25) {
+                    tier = 3; tierColor = '#ff0'; tierName = 'EXPERT'; barsInTier = 15; levelInTier = currentLevel - 10;
+                } else if (currentLevel <= 50) {
+                    tier = 4; tierColor = '#f80'; tierName = 'MASTER'; barsInTier = 25; levelInTier = currentLevel - 25;
+                } else {
+                    tier = 5; tierColor = '#f0f'; tierName = 'LEGENDARY'; barsInTier = 50; levelInTier = currentLevel - 50;
+                }
+                
+                // FTL-style upgrade row with dynamic coloring
+                html += `
+                    <div style="border: 1px solid ${tierColor}; border-radius: 3px; padding: 8px; background: rgba(${tier === 1 ? '0, 255, 255' : tier === 2 ? '0, 255, 0' : tier === 3 ? '255, 255, 0' : tier === 4 ? '255, 136, 0' : '255, 0, 255'}, 0.05);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <span style="color: ${tierColor}; font-weight: bold; font-size: 12px;">
+                                ${upgradeType.icon} ${upgradeType.name.toUpperCase()}
+                            </span>
+                            <span style="color: #aaa; font-size: 10px;">LV ${currentLevel} ${tierName}</span>
+                        </div>
+                        
+                        <!-- Progress bar showing current tier progress -->
+                        <div style="display: flex; gap: 1px; margin-bottom: 5px; height: 8px;">
+                `;
+                
+                // Draw progress bars with tier-appropriate subdivision
+                const actualBars = Math.min(barsInTier, tier <= 2 ? 5 : tier === 3 ? 10 : tier === 4 ? 15 : 20); // Visual limit
+                for (let i = 1; i <= actualBars; i++) {
+                    const isFilled = i <= levelInTier;
+                    const color = isFilled ? tierColor : '#333';
+                    html += `<div style="flex: 1; background: ${color}; border-radius: 1px; min-width: 2px;"></div>`;
+                }
+                
+                html += `
+                        </div>
+                        
+                        <!-- Upgrade button -->
+                        <button data-action="upgrade-turret" 
+                                data-action-data="${upgradeType.key},${selectedTurret}"
+                                style="width: 100%; padding: 4px 8px; background: ${canAfford ? 'rgba(0, 255, 255, 0.2)' : 'rgba(102, 102, 102, 0.2)'}; 
+                                       border: 1px solid ${canAfford ? '#0ff' : '#666'}; color: ${canAfford ? '#0ff' : '#666'}; 
+                                       border-radius: 2px; font-size: 11px; cursor: ${canAfford ? 'pointer' : 'default'};"
+                                ${canAfford ? '' : 'disabled'}>
+                            ${scrapCost} 💰
+                        </button>
+                    </div>
+                `;
+        });
+        
+        html += '</div>'; // Close FTL grid
+        
     } else {
         // Show all available turrets for selection
         html += `
@@ -432,7 +475,7 @@ function getCitiesUpgradesHTML() {
             
             const productionModes = [
                 { id: 'scrap', name: 'Scrap', icon: '💰', description: 'Produces scrap for purchasing upgrades and repairs' },
-                { id: 'science', name: 'Science', icon: '🔬', description: 'Produces science for advanced research (requires Science unlock)' },
+                { id: 'science', name: 'Science', icon: '🔬', description: 'Produces science for purchasing turret upgrades (requires Science unlock)' },
                 { id: 'ammo', name: 'Ammo', icon: '📦', description: 'Produces ammunition for turret resupply' }
             ];
             
