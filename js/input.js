@@ -132,7 +132,7 @@ function initializeInput() {
         
         // Fire from selected launcher (Arcade Mode only)
         const launcher = launchers[selectedLauncher];
-        if (launcher && !destroyedLaunchers.includes(selectedLauncher)) {
+        if (launcher) {
             if (launcher.missiles <= 0) {
                 // No ammo
                 audioSystem.playEmptyAmmo();
@@ -202,7 +202,7 @@ function initializeInput() {
             updateLauncherSelection();
             
             const launcher = launchers[launcherIndex];
-            if (launcher && !destroyedLaunchers.includes(launcherIndex)) {
+            if (launcher) {
                 if (launcher.missiles <= 0) {
                     // No ammo
                     audioSystem.playEmptyAmmo();
@@ -259,7 +259,7 @@ function handleTouchEnd(e) {
     
     // Fire from selected launcher
     const launcher = launchers[selectedLauncher];
-    if (!destroyedLaunchers.includes(selectedLauncher)) {
+    if (launcher) {
         if (launcher.missiles <= 0) {
             // No ammo
             audioSystem.playEmptyAmmo();

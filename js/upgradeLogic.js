@@ -6,9 +6,9 @@ window.emergencyAmmoPurchase = function() {
     if (gameState.scrap >= cost) {
         gameState.scrap -= cost;
         
-        // Add ammo to the first available launcher
+        // Add ammo to the first launcher that needs it
         for (let i = 0; i < launchers.length; i++) {
-            if (!destroyedLaunchers.includes(i)) {
+            if (launchers[i].missiles < launchers[i].maxMissiles) {
                 launchers[i].missiles = Math.min(launchers[i].missiles + 1, launchers[i].maxMissiles);
                 
                 // Visual feedback
@@ -231,6 +231,36 @@ window.repairCity = function(cityIndex) {
     }
 };
 
+// Generate a unique position for a new city
+function generateCityPosition() {
+    const minX = 200; // Minimum X position
+    const maxX = 1000; // Maximum X position  
+    const minDistance = 80; // Minimum distance between cities and from launchers
+    const maxAttempts = 50; // Maximum attempts to find a position
+    
+    // Get all existing positions (cities + launchers)
+    const existingPositions = [
+        ...cityPositions,
+        ...launchers.map(l => l.x)
+    ];
+    
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        const newX = minX + Math.random() * (maxX - minX);
+        
+        // Check if this position is far enough from all existing positions
+        const isValidPosition = existingPositions.every(existingX => 
+            Math.abs(newX - existingX) >= minDistance
+        );
+        
+        if (isValidPosition) {
+            return Math.floor(newX);
+        }
+    }
+    
+    // Fallback: use a position based on city count if we can't find a good spot
+    return 250 + (cityData.length * 120);
+}
+
 // Build new city function
 window.buildCity = function() {
     const maxCities = 6;
@@ -243,12 +273,16 @@ window.buildCity = function() {
     
     gameState.scrap -= cost;
     
+    // Generate unique position for new city
+    const newCityX = generateCityPosition();
+    cityPositions.push(newCityX);
+    
     // Add new city to cityData
     const newCity = {
         population: 50, // Start with partial population
         maxPopulation: 100,
         productionMode: 'scrap', // Default production mode
-        baseProduction: 1
+        baseProduction: 1.5 // Slightly higher production for built cities
     };
     
     cityData.push(newCity);
@@ -264,8 +298,7 @@ window.buildCity = function() {
     if (cityProductivityUpgrades.ammo) cityProductivityUpgrades.ammo.push(0);
     
     // Visual feedback
-    const newCityX = cityPositions[currentCities]; // Use the position for the new city
-    createUpgradeEffect(newCityX || canvas.width / 2, 750, 'NEW CITY BUILT!', '#ff0');
+    createUpgradeEffect(newCityX, 750, 'NEW CITY BUILT!', '#ff0');
     
     updateUI();
     if (gameState.currentMode === 'command') {
@@ -286,11 +319,10 @@ window.upgradeCityPopulation = function(cityIndex) {
     gameState.scrap -= cost;
     cityPopulationUpgrades[cityIndex]++;
     
-    // Increase max population and current population
+    // Increase max population only - let population grow naturally over time
     const city = cityData[cityIndex];
     const populationIncrease = 50;
     city.maxPopulation += populationIncrease;
-    city.population = Math.min(city.population + populationIncrease, city.maxPopulation);
     
     // Visual feedback
     createUpgradeEffect(cityPositions[cityIndex], 750, `+${populationIncrease} POPULATION!`, '#0f0');

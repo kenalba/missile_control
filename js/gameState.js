@@ -75,6 +75,9 @@ let cityData = [
     { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1 }
 ];
 
+// Ammo accumulator for precise fractional ammo production
+let ammoAccumulator = 0;
+
 // Global upgrades
 let globalUpgrades = {
     cityShield: { level: 0, cost: 100 },
@@ -339,8 +342,7 @@ function continueGame() {
     // Check for wave milestone celebrations
     checkWaveMilestones();
     
-    // Respawn destroyed launchers
-    destroyedLaunchers = [];
+    // Note: Launchers no longer get destroyed, only run out of ammo
 }
 
 function restartGame() {
@@ -424,6 +426,7 @@ function restartGame() {
         science: [0, 0, 0, 0, 0, 0],
         ammo: [0, 0, 0, 0, 0, 0]
     };
+    ammoAccumulator = 0;
     
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('waveBreak').style.display = 'none';

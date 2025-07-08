@@ -194,10 +194,10 @@ function getTurretsUpgradesHTML() {
         // Add all turrets as selection buttons
         for (let i = 0; i < launchers.length; i++) {
             const turretInfo = launchers[i];
-            const isTurretDestroyed = destroyedLaunchers.includes(i);
+            const hasAmmo = turretInfo.missiles > 0;
             const isSelected = i === selectedTurret;
-            const statusColor = isTurretDestroyed ? '#f00' : '#0f0';
-            const status = isTurretDestroyed ? 'DESTROYED' : 'OPERATIONAL';
+            const statusColor = hasAmmo ? '#0f0' : '#ff0';
+            const status = hasAmmo ? 'OPERATIONAL' : 'NO AMMO';
             
             const tooltipText = `Ammo: ${turretInfo.missiles}/${turretInfo.maxMissiles} • Status: ${status}`;
             
@@ -283,9 +283,9 @@ function getTurretsUpgradesHTML() {
         
         for (let i = 0; i < launchers.length; i++) {
             const launcher = launchers[i];
-            const isDestroyed = destroyedLaunchers.includes(i);
-            const status = isDestroyed ? 'DESTROYED' : 'OPERATIONAL';
-            const statusColor = isDestroyed ? '#f00' : '#0f0';
+            const hasAmmo = launcher.missiles > 0;
+            const status = hasAmmo ? 'OPERATIONAL' : 'NO AMMO';
+            const statusColor = hasAmmo ? '#0f0' : '#ff0';
             
             html += `
                 <button data-action="select-turret" 

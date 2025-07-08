@@ -52,8 +52,9 @@ function isMissileThreatening(missile) {
     
     // Check if impact threatens any live launchers (40px range)
     for (let launcherIndex = 0; launcherIndex < launchers.length; launcherIndex++) {
-        if (!destroyedLaunchers.includes(launcherIndex)) {
-            const launcherX = launchers[launcherIndex].x;
+        const launcher = launchers[launcherIndex];
+        if (launcher.missiles > 0) {
+            const launcherX = launcher.x;
             if (Math.abs(impactX - launcherX) < 40) {
                 return true;
             }

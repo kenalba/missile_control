@@ -80,13 +80,13 @@ function calculateCityProductionRate(cityIndex) {
     const city = cityData[cityIndex];
     if (city.population <= 0) return 0;
     
-    // Same calculation as generateCityResources but for display
+    // Use floating-point calculation for better precision
     const populationMultiplier = city.population / city.maxPopulation;
-    let baseProduction = Math.floor(city.baseProduction * populationMultiplier);
+    const baseProduction = city.baseProduction * populationMultiplier;
     
     const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
     const productivityMultiplier = 1 + (productivityLevel * 0.25);
-    const finalProduction = Math.floor(baseProduction * productivityMultiplier);
+    const finalProduction = baseProduction * productivityMultiplier;
     
     // Convert from per-3-seconds to per-second
     return (finalProduction / 3).toFixed(1);
@@ -106,7 +106,7 @@ function generateCityResources() {
         
         // Calculate production based on population percentage and base production
         const populationMultiplier = city.population / city.maxPopulation;
-        let baseProduction = Math.floor(city.baseProduction * populationMultiplier);
+        const baseProduction = city.baseProduction * populationMultiplier;
         
         // Apply productivity upgrades for this specific production type
         const productivityLevel = cityProductivityUpgrades[city.productionMode][i];
@@ -118,8 +118,8 @@ function generateCityResources() {
         } else if (city.productionMode === 'science' && globalUpgrades.research && globalUpgrades.research.level > 0) {
             gameState.science += finalProduction;
         } else if (city.productionMode === 'ammo') {
-            // Distribute ammo to launchers that need it
-            distributeAmmo(finalProduction);
+            // Add to ammo accumulator for precise distribution
+            ammoAccumulator += baseProduction * productivityMultiplier;
         }
         
         // Visual feedback for resource generation
@@ -140,6 +140,41 @@ function generateCityResources() {
             });
         }
     }
+    
+    // Distribute accumulated ammo with precision
+    distributeAccumulatedAmmo();
+}
+
+// Distribute accumulated ammo with precise fractional handling
+function distributeAccumulatedAmmo() {
+    if (ammoAccumulator >= 1.0) {
+        const ammoToDistribute = Math.floor(ammoAccumulator);
+        ammoAccumulator -= ammoToDistribute;
+        
+        distributeAmmo(ammoToDistribute);
+        
+        // Visual feedback for ammo generation when whole units are distributed
+        if (ammoToDistribute > 0) {
+            // Find a random ammo-producing city for visual feedback
+            const ammoCities = cityData.map((city, index) => ({ city, index }))
+                .filter(({ city, index }) => city.productionMode === 'ammo' && !destroyedCities.includes(index));
+            
+            if (ammoCities.length > 0) {
+                const randomAmmoCity = ammoCities[Math.floor(Math.random() * ammoCities.length)];
+                const cityX = cityPositions[randomAmmoCity.index];
+                
+                upgradeEffects.push({
+                    x: cityX,
+                    y: 750,
+                    text: `+${ammoToDistribute} ammo`,
+                    alpha: 0.8,
+                    vy: -0.5,
+                    life: 60,
+                    color: '#ff0'
+                });
+            }
+        }
+    }
 }
 
 // Distribute ammo to launchers that need it most
@@ -149,7 +184,7 @@ function distributeAmmo(ammoToDistribute) {
     // Find launchers that need ammo (not destroyed and below max)
     const launchersNeedingAmmo = [];
     for (let i = 0; i < launchers.length; i++) {
-        if (!destroyedLaunchers.includes(i) && launchers[i].missiles < launchers[i].maxMissiles) {
+        if (launchers[i].missiles < launchers[i].maxMissiles) {
             launchersNeedingAmmo.push({
                 index: i,
                 launcher: launchers[i],
@@ -247,7 +282,7 @@ function updateArcadeMode(deltaTime) {
             if (missile.isSeeker) {
                 // Check if there are any live cities or launchers
                 const hasLiveCities = cityPositions.some((_, index) => !destroyedCities.includes(index));
-                const hasLiveLaunchers = launchers.some((_, index) => !destroyedLaunchers.includes(index));
+                const hasLiveLaunchers = launchers.some(launcher => launcher.missiles > 0);
                 return hasLiveCities || hasLiveLaunchers;
             }
             
@@ -291,8 +326,8 @@ function updateArcadeMode(deltaTime) {
             const launcherIndex = gameState.missileBonusIndex;
             const launcher = launchers[launcherIndex];
             
-            // Only count if launcher wasn't destroyed
-            if (!destroyedLaunchers.includes(launcherIndex) && launcher.missiles > 0) {
+            // Only count if launcher has ammo
+            if (launcher.missiles > 0) {
                 const scrapPerMissile = 1; // 1 scrap per remaining missile
                 const totalMissileScrap = applyScrapBonus(launcher.missiles * scrapPerMissile);
                 

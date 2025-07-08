@@ -346,10 +346,7 @@ function render() {
     
     // Draw launchers
     launchers.forEach((launcher, index) => {
-        // Skip drawing if launcher is destroyed
-        if (destroyedLaunchers.includes(index)) {
-            return;
-        }
+        // Launchers are always drawn, but may look different when out of ammo
         
         
         // Get upgrade levels for visual indicators

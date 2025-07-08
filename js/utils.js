@@ -92,11 +92,18 @@ function checkCollisions() {
                 }
             });
             
-            // Check if launcher was hit
+            // Check if launcher was hit - disable by depleting ammo instead of destroying
             launchers.forEach((launcher, launcherIndex) => {
-                if (!destroyedLaunchers.includes(launcherIndex) && 
+                if (launcher.missiles > 0 && 
                     Math.abs(missile.x - launcher.x) < 40 && missile.y >= launcher.y - 20) {
-                    destroyedLaunchers.push(launcherIndex);
+                    // Deplete ammo instead of destroying launcher
+                    launcher.missiles = 0;
+                    
+                    // Visual feedback for launcher being disabled
+                    createUpgradeEffect(launcher.x, launcher.y - 30, 'AMMO DEPLETED!', '#f00');
+                    
+                    // Screen shake for launcher hit
+                    addScreenShake(4, 400);
                 }
             });
         }
