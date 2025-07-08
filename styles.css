@@ -195,7 +195,7 @@ body {
 }
 
 #ui {
-    position: absolute;
+    position: fixed;
     top: 10px;
     left: 10px;
     z-index: 10;
@@ -220,23 +220,57 @@ body {
     background: rgba(0, 255, 0, 0.1);
     border: 1px solid #0f0;
     border-radius: 3px;
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 15px;
     font-size: 12px;
 }
 
 .status-row {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .status-row:last-child {
     margin-bottom: 0;
 }
 
-.status-row div {
-    flex: 1;
+.status-row.resources {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.status-row.game-info {
+    justify-content: flex-start;
+    margin-bottom: 12px;
+}
+
+.status-row.controls {
+    justify-content: center;
+    border-top: 1px solid rgba(0, 255, 0, 0.3);
+    padding-top: 8px;
+    margin-top: 4px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-size: 14px;
+    color: #0f0;
+    font-weight: bold;
 }
 
 .upgrade-table {
@@ -607,7 +641,7 @@ body {
 
 .mode-button.recommended::before {
     content: "LAST PLAYED";
-    position: absolute;
+    position: fixed;
     top: -8px;
     right: -8px;
     background: currentColor;
@@ -642,7 +676,7 @@ body {
 }
 
 #gameOver {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -670,7 +704,7 @@ body {
 }
 
 #waveBreak {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -701,7 +735,7 @@ body {
 /* Mobile Controls */
 .mobile-controls {
     display: none;
-    position: absolute;
+    position: fixed;
     bottom: 10px;
     left: 50%;
     transform: translateX(-50%);
@@ -932,4 +966,309 @@ body {
     .desktop-instructions {
         display: none;
     }
+}
+
+/* Command Mode Floating Panel */
+.floating-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 400px;
+    max-height: calc(100vh - 40px);
+    background: #001100;
+    border: 2px solid #0f0;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    resize: both;
+    overflow: hidden;
+    min-width: 350px;
+    min-height: 200px;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 15px;
+    border-bottom: 1px solid #0f0;
+    background: #002200;
+    cursor: move;
+    user-select: none;
+}
+
+.panel-title h3 {
+    margin: 0 0 8px 0;
+    color: #0f0;
+    font-size: 18px;
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.5);
+}
+
+.panel-status {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #aaa;
+}
+
+.panel-status span {
+    color: #0f0;
+}
+
+.panel-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.panel-minimize, .panel-close {
+    background: rgba(255, 255, 0, 0.2);
+    color: #ff0;
+    border: 1px solid #ff0;
+    padding: 4px 8px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+    min-width: 24px;
+}
+
+.panel-close {
+    background: rgba(255, 0, 0, 0.2);
+    color: #f00;
+    border-color: #f00;
+}
+
+.panel-minimize:hover, .panel-close:hover {
+    background: rgba(255, 255, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.panel-close:hover {
+    background: rgba(255, 0, 0, 0.4);
+}
+
+.panel-body {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Status Upgrade Toggle */
+.status-upgrade-toggle {
+    background: rgba(0, 255, 0, 0.2);
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 11px;
+    transition: all 0.2s ease;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    min-width: 120px;
+    text-align: center;
+}
+
+.status-upgrade-toggle:hover {
+    background: rgba(0, 255, 0, 0.4);
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+}
+
+/* Tooltip System */
+.tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000000 !important;
+    background-color: #000000 !important;
+    color: #0f0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none;
+    border: 2px solid #0f0;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+    min-width: 180px;
+    max-width: 320px;
+    white-space: normal;
+    text-align: left;
+    line-height: 1.4;
+    font-weight: normal;
+    word-wrap: break-word;
+    margin-bottom: 8px;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* Tooltip positioning adjustments for edge cases */
+.tooltip:hover::after {
+    opacity: 1 !important;
+    visibility: visible;
+}
+
+/* For tooltips on the right edge, shift left */
+.compact-grid-2 .tooltip:nth-child(even)::after,
+.compact-grid-3 .tooltip:nth-child(3n)::after,
+.compact-grid-4 .tooltip:nth-child(4n)::after {
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
+/* For tooltips on the left edge, shift right */
+.compact-grid-2 .tooltip:nth-child(odd)::after,
+.compact-grid-3 .tooltip:nth-child(3n-2)::after,
+.compact-grid-4 .tooltip:nth-child(4n-3)::after {
+    left: 0;
+    transform: none;
+}
+
+/* For middle tooltips in 3-column grid */
+.compact-grid-3 .tooltip:nth-child(3n-1)::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(2px);
+    border: 6px solid transparent;
+    border-top-color: #0f0;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.tooltip:hover::after,
+.tooltip:hover::before {
+    opacity: 1 !important;
+    visibility: visible;
+}
+
+/* Fix opacity inheritance from disabled buttons */
+.upgrade-btn-compact:disabled.tooltip:hover::after,
+button:disabled.tooltip:hover::after {
+    opacity: 2 !important;
+}
+
+/* JavaScript will position the tooltip dynamically to prevent clipping */
+
+/* Compact upgrade buttons */
+.upgrade-btn-compact {
+    padding: 8px 12px;
+    border-radius: 3px;
+    font-weight: bold;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid;
+    background: rgba(0, 0, 0, 0.3);
+    color: inherit;
+    min-width: 80px;
+    text-align: center;
+}
+
+.upgrade-btn-compact:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 8px currentColor;
+}
+
+.upgrade-btn-compact:disabled {
+    filter: opacity(0.5);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Grid layouts for compact design */
+.compact-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.compact-grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+.compact-grid-4 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 6px;
+}
+
+/* Panel animations */
+.floating-panel {
+    animation: panelSlideIn 0.3s ease-out;
+}
+
+@keyframes panelSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Minimized state */
+.floating-panel.minimized .panel-body {
+    display: none;
+}
+
+.floating-panel.minimized {
+    height: auto;
+    resize: none;
+}
+
+/* Responsive design for floating panel */
+@media (max-width: 768px) {
+    .floating-panel {
+        width: calc(100vw - 40px);
+        max-width: 350px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .panel-header {
+        padding: 12px;
+    }
+    
+    .panel-title h3 {
+        font-size: 16px;
+    }
+    
+    .panel-status {
+        flex-direction: column;
+        gap: 5px;
+        font-size: 12px;
+    }
+    
 }

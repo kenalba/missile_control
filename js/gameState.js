@@ -165,25 +165,63 @@ function updateUI() {
 }
 
 function updateUpgradeUI() {
-    // Command Mode uses selection-based UI
+    // Command Mode uses floating panel UI
     if (gameState.currentMode === 'command') {
-        // Show selection panel and hide traditional upgrade table
+        // Hide traditional upgrade table and sections
         const upgradeTable = document.querySelector('.upgrade-table');
         if (upgradeTable) {
             upgradeTable.style.display = 'none';
         }
         
-        // Initialize selection panel if needed
-        if (typeof updateSelectionUpgradePanel === 'function') {
-            updateSelectionUpgradePanel();
+        // Hide economic and tactical upgrade sections
+        const globalUpgradeSections = document.querySelectorAll('.global-upgrades');
+        globalUpgradeSections.forEach(section => {
+            section.style.display = 'none';
+        });
+        
+        // Hide old nested tabbed panel if it exists
+        const tabbedPanel = document.getElementById('tabbedUpgradePanel');
+        if (tabbedPanel) {
+            tabbedPanel.style.display = 'none';
         }
+        
+        // Show the toggle button for Command Mode
+        const toggleButton = document.getElementById('command-upgrade-toggle');
+        if (toggleButton) {
+            toggleButton.style.display = 'block';
+        }
+        
+        // Command mode uses floating panel - no auto-initialization here
+        // Panel is opened manually when needed
         return;
     }
     
-    // Arcade Mode: Traditional upgrade table
+    // Arcade Mode: Traditional upgrade table and global upgrades
     const upgradeTable = document.querySelector('.upgrade-table');
     if (upgradeTable) {
         upgradeTable.style.display = '';
+    }
+    
+    // Show economic and tactical upgrade sections in Arcade Mode
+    const globalUpgradeSections = document.querySelectorAll('.global-upgrades');
+    globalUpgradeSections.forEach(section => {
+        section.style.display = '';
+    });
+    
+    // Hide Command Mode components in Arcade Mode
+    const tabbedPanel = document.getElementById('tabbedUpgradePanel');
+    if (tabbedPanel) {
+        tabbedPanel.style.display = 'none';
+    }
+    
+    const toggleButton = document.getElementById('command-upgrade-toggle');
+    if (toggleButton) {
+        toggleButton.style.display = 'none';
+    }
+    
+    const commandPanel = document.getElementById('commandUpgradePanel');
+    if (commandPanel) {
+        commandPanel.style.display = 'none';
     }
     
     // Update UI for all available launchers (dynamic based on current mode)

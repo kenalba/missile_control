@@ -3,15 +3,17 @@ let mouseX = 0;
 let mouseY = 0;
 let selectedLauncher = 0; // Default to left launcher for mobile
 
-// Selection system for Command Mode
-function selectEntity(type, index) {
+// Selection system for Command Mode - make globally accessible
+window.selectEntity = function(type, index) {
     if (gameState.currentMode !== 'command') return;
     
     gameState.commandMode.selectedEntityType = type;
     gameState.commandMode.selectedEntity = index;
     
     // Update upgrade panel based on selection
-    updateSelectionUpgradePanel();
+    if (gameState.currentMode === 'command') {
+        window.openCommandPanel();
+    }
     
     // Visual feedback
     if (type && index !== null) {
@@ -140,6 +142,17 @@ function initializeInput() {
                 gameState.paused = !gameState.paused;
             }
             return;
+        }
+        
+        // Close Command Mode panel with Escape key
+        if (e.code === 'Escape') {
+            if (gameState.currentMode === 'command') {
+                const panel = document.getElementById('commandUpgradePanel');
+                if (panel && panel.style.display !== 'none') {
+                    window.closeCommandPanel();
+                    return;
+                }
+            }
         }
         
         if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
