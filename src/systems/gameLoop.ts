@@ -6,6 +6,7 @@ import { spawnEnemyMissile } from '@/entities/missiles';
 import { spawnPlane } from '@/entities/planes';
 import { saveSystem } from '@/systems/saveSystem';
 import { timeManager } from '@/systems/timeManager';
+import { generateCityResources, updateCityPopulation } from '@/core/cities';
 
 export function updateGame(deltaTime: number): void {
     // Always update time manager (handles pause state internally)
@@ -76,6 +77,16 @@ function updateCommandMode(deltaTime: number): void {
             spawnPlane(canvas);
         }
     }
+    
+    // Update resource tick system for city production
+    gameState.commandMode.lastResourceTick += deltaTime;
+    if (gameState.commandMode.lastResourceTick >= gameState.commandMode.resourceTickInterval) {
+        generateCityResources();
+        gameState.commandMode.lastResourceTick = 0;
+    }
+    
+    // Update city population growth
+    updateCityPopulation(deltaTime);
     
     // Update UI for Command Mode
     (window as any).updateUI?.();

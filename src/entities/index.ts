@@ -30,7 +30,7 @@ export function updateEntities(deltaTime: number, canvas: HTMLCanvasElement): vo
         
         // Very long trails - cover entire screen diagonal plus extra for visual appeal
         // Screen diagonal ~1500px, so 500 points should cover any visible trail
-        if (missile.trail.length > 1000) {
+        if (missile.trail.length > 2000) {
             missile.trail.shift();
         }
         missile.timeAlive += deltaTime;
@@ -126,7 +126,7 @@ export function updateEntities(deltaTime: number, canvas: HTMLCanvasElement): vo
         
         // Very long trails - cover entire screen diagonal plus extra for visual appeal
         // Screen diagonal ~1500px, so 500 points should cover any visible trail
-        if (missile.trail.length > 1000) {
+        if (missile.trail.length > 21000) {
             missile.trail.shift();
         }
         
