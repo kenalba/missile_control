@@ -293,6 +293,7 @@ function drawLevel3City(x: number): void {
 function drawCommandModeCityInfo(): void {
     ctx.font = '12px monospace';
     ctx.textAlign = 'center';
+    
     cityPositions.forEach((x, i) => {
         if (!destroyedCities.includes(i) && cityData[i]) {
             const city = cityData[i];
