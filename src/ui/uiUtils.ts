@@ -11,6 +11,7 @@ export const BUTTON_STYLES = {
 export const COLORS = {
   green: '0, 255, 0',
   blue: '100, 200, 255', // Lighter blue for better readability
+  scienceBlue: '64, 128, 255', // Distinct science blue - darker and more saturated for better readability
   yellow: '255, 255, 0',
   cyan: '0, 255, 255',
   orange: '255, 128, 0',
@@ -31,6 +32,7 @@ interface UpgradeButtonConfig {
   actionData?: string;
   additionalInfo?: string;
   compact?: boolean;
+  currencyIcon?: string; // Custom currency icon (defaults to 💰)
 }
 
 // Create a consistent upgrade button
@@ -46,7 +48,8 @@ export function createUpgradeButton(config: UpgradeButtonConfig): string {
     action,
     actionData,
     additionalInfo = null,
-    compact = false
+    compact = false,
+    currencyIcon = '💰'
   } = config;
 
   if (isOwned) {
@@ -80,7 +83,7 @@ export function createUpgradeButton(config: UpgradeButtonConfig): string {
               ${disabled}
               ${tooltip}>
           <strong>${name}</strong><br>
-          <small>${cost}💰</small>
+          <small>${cost}${currencyIcon}</small>
       </button>
     `;
   }

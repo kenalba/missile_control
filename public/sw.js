@@ -26,6 +26,12 @@ self.addEventListener('install', (event) => {
 
 // Serve cached content when offline
 self.addEventListener('fetch', (event) => {
+  // During development, always fetch from network to avoid caching issues
+  if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
   event.respondWith(
     caches.match(event.request)
       .then((response) => {

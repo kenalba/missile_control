@@ -66,6 +66,7 @@ function updateEconomicUpgradeButton(buttonId: string, upgrade: { cost: number; 
 }
 
 export function updateUpgradeUI(): void {
+    console.log('🎮 Updating upgrade UI for mode:', gameState.currentMode);
     if (gameState.currentMode === 'command') {
         showCommandModeUI();
     } else {
@@ -74,44 +75,36 @@ export function updateUpgradeUI(): void {
 }
 
 function showCommandModeUI(): void {
-    // Hide traditional upgrade table and sections
-    const upgradeTable = document.querySelector('.upgrade-table') as HTMLElement;
-    if (upgradeTable) upgradeTable.style.display = 'none';
+    // Set body class for command mode
+    document.body.classList.add('command-mode');
+    document.body.classList.remove('arcade-mode');
     
-    const globalUpgradeSections = document.querySelectorAll('.global-upgrades');
-    globalUpgradeSections.forEach(section => {
-        (section as HTMLElement).style.display = 'none';
-    });
-    
+    // Hide traditional upgrade table and sections (done via CSS now)
     const tabbedPanel = document.getElementById('tabbedUpgradePanel');
     if (tabbedPanel) tabbedPanel.style.display = 'none';
     
-    // Show Command Mode toggle button
-    const toggleButton = document.getElementById('command-upgrade-toggle');
-    if (toggleButton) {
-        toggleButton.style.display = 'block';
-    }
+    // Old command upgrade toggle button removed
+    
+    // Sidebar expand/collapse buttons are managed by sidebarManager
 }
 
 function showArcadeModeUI(): void {
-    // Show traditional upgrade table and global upgrades
-    const upgradeTable = document.querySelector('.upgrade-table') as HTMLElement;
-    if (upgradeTable) upgradeTable.style.display = '';
+    // Set body class for arcade mode
+    document.body.classList.add('arcade-mode');
+    document.body.classList.remove('command-mode');
     
-    const globalUpgradeSections = document.querySelectorAll('.global-upgrades');
-    globalUpgradeSections.forEach(section => {
-        (section as HTMLElement).style.display = '';
-    });
+    // Show traditional upgrade table and global upgrades (done via CSS now)
     
     // Hide Command Mode components
     const tabbedPanel = document.getElementById('tabbedUpgradePanel');
     if (tabbedPanel) tabbedPanel.style.display = 'none';
     
-    const toggleButton = document.getElementById('command-upgrade-toggle');
-    if (toggleButton) toggleButton.style.display = 'none';
+    // Old command upgrade toggle button removed
     
     const commandPanel = document.getElementById('commandUpgradePanel');
     if (commandPanel) commandPanel.style.display = 'none';
+    
+    // Sidebar expand/collapse buttons are managed by sidebarManager
     
     // Update launcher upgrade UI
     updateLauncherUpgradeUI();

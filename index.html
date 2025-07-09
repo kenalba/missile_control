@@ -54,6 +54,11 @@
         </div>
         
         <div id="upgradePanel">
+        <!-- Sidebar Toggle Button (attached to left edge) -->
+        <button id="sidebar-toggle-btn" class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+            ▶
+        </button>
+        
         <div class="mobile-panel-header">
             <h3>UPGRADES</h3>
             <button class="mobile-close-btn" onclick="toggleMobileUpgrades()">✕</button>
@@ -82,9 +87,7 @@
                 </div>
             </div>
             <div class="status-row controls">
-                <div id="command-upgrade-toggle" class="status-upgrade-toggle" style="display: none;" onclick="openCommandPanel()">
-                    ⚙️ UPGRADES
-                </div>
+                <!-- Old upgrade toggle button removed -->
             </div>
         </div>
         
@@ -203,10 +206,11 @@
             </div>
         </div>
         
-        <div style="margin-top: 15px; font-size: 11px; color: #888;">
-            Press P for 100 scrap (cheat)<br>
-            Debug: 0=Spawn Plane, 9=Spawn Seeker
+        <!-- Command Center Content (Always Visible) -->
+        <div class="command-center-content" id="commandCenterContent">
+            <!-- Tabbed interface will be inserted here -->
         </div>
+        
         </div>
     </div>
     
@@ -258,25 +262,6 @@
         </div>
     </div>
 
-    <!-- Command Mode Floating Upgrade Panel -->
-    <div id="commandUpgradePanel" class="floating-panel" style="display: none;">
-        <div class="panel-header" id="panelHeader">
-            <div class="panel-title">
-                <h3>COMMAND CENTER</h3>
-                <div class="panel-status">
-                    <span>Scrap: <span id="panel-scrap">0</span></span>
-                    <span id="panel-science-row" style="display: none;">Science: <span id="panel-science">0</span></span>
-                </div>
-            </div>
-            <div class="panel-controls">
-                <button class="panel-minimize" onclick="toggleCommandPanel()">−</button>
-                <button class="panel-close" onclick="closeCommandPanel()">✕</button>
-            </div>
-        </div>
-        <div class="panel-body" id="commandPanelBody">
-            <!-- Tabbed interface will be inserted here -->
-        </div>
-    </div>
 
     <div id="gameOver">
         <h2>GAME OVER</h2>

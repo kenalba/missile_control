@@ -30,54 +30,61 @@ function calculateCityProductionRate(cityIndex: number): string {
 export function getGlobalUpgradesHTML(): string {
   let html = `
     <div>
-    <h4 style="color: #0f0; margin-top: 0; margin-bottom: 15px;">Global Command</h4>
   `;
   
-  // Emergency Actions - Compact single row
-  html += `
-    <div style="margin-bottom: 15px;">
-        ${createSectionHeader('Emergency', '#ff0')}
-        <div class="compact-grid-2">
-  `;
-  
-  // Emergency Ammo Purchase Button
-  const ammoExchangeRate = 3;
-  const canAffordAmmo = gameState.scrap >= ammoExchangeRate;
-  html += createCompactUpgradeButton({
-    name: 'Emergency Ammo',
-    description: 'Buy 1 ammo for 3 scrap. Adds ammunition to first available turret.',
-    cost: ammoExchangeRate,
-    canAfford: canAffordAmmo,
-    color: COLORS.yellow,
-    action: 'emergency-ammo'
-  });
-  
-  // Research unlock in same row if not unlocked
+  // Scientific Research - Only show Unlock Science
   const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
   const researchCost = globalUpgrades.research.cost;
   const canAffordResearch = gameState.scrap >= researchCost;
   
   if (!researchUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+          ${createSectionHeader('Scientific', `rgb(${COLORS.scienceBlue})`)}
+          <div class="compact-grid-1">
+    `;
+    
     html += createCompactUpgradeButton({
       name: 'Unlock Science',
       description: 'Enable science production in cities. Required for advanced research.',
       cost: researchCost,
       canAfford: canAffordResearch,
-      color: COLORS.blue,
+      color: COLORS.scienceBlue,
       action: 'purchase-global',
       actionData: 'research'
     });
-  } else {
-    html += `
-      <div class="upgrade-btn-compact tooltip" 
-           style="color: rgb(0, 0, 255); border-color: rgb(0, 0, 255); background: rgba(0, 0, 255, 0.1);"
-           data-tooltip="Science production unlocked in all cities">
-          <strong>Science ✓</strong>
-      </div>
-    `;
+    
+    html += '</div></div>';
   }
   
-  html += '</div></div>';
+  // Show Civilian Industry if science is unlocked
+  if (researchUnlocked) {
+    const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
+    
+    if (!civilianIndustryUnlocked) {
+      html += `
+        <div style="margin-bottom: 15px;">
+            ${createSectionHeader('Scientific', `rgb(${COLORS.scienceBlue})`)}
+            <div class="compact-grid-1">
+      `;
+      
+      const civilianIndustryCost = globalUpgrades.civilianIndustry?.cost || 10;
+      const canAffordCivilianIndustry = gameState.science >= civilianIndustryCost;
+      
+      html += createCompactUpgradeButton({
+        name: 'Civilian Industry',
+        description: 'Unlock specialized production facilities for cities. Required for advanced city improvements.',
+        cost: civilianIndustryCost,
+        canAfford: canAffordCivilianIndustry,
+        color: COLORS.scienceBlue,
+        action: 'purchase-global',
+        actionData: 'civilianIndustry',
+        currencyIcon: '🔬'
+      });
+      
+      html += '</div></div>';
+    }
+  }
   
   // Economic Upgrades - Compact 3-column grid
   html += `
@@ -158,6 +165,27 @@ export function getGlobalUpgradesHTML(): string {
     </div>
   `;
   
+  html += '</div></div>';
+  
+  // Emergency Actions - Move to bottom
+  html += `
+    <div style="margin-top: 15px;">
+        ${createSectionHeader('Emergency', '#ff0')}
+        <div class="compact-grid-1">
+  `;
+  
+  // Emergency Ammo Purchase Button
+  const ammoExchangeRate = 3;
+  const canAffordAmmo = gameState.scrap >= ammoExchangeRate;
+  html += createCompactUpgradeButton({
+    name: 'Emergency Ammo',
+    description: 'Buy 1 ammo for 3 scrap. Adds ammunition to first available turret.',
+    cost: ammoExchangeRate,
+    canAfford: canAffordAmmo,
+    color: COLORS.yellow,
+    action: 'emergency-ammo'
+  });
+  
   html += '</div></div></div>';
   
   return html;
@@ -167,7 +195,6 @@ export function getGlobalUpgradesHTML(): string {
 export function getTurretsUpgradesHTML(): string {
   let html = `
     <div>
-    <h4 style="color: #0ff; margin-top: 0; margin-bottom: 15px;">Turret Upgrades</h4>
   `;
   
   // Get selected turret or default to 0
@@ -206,10 +233,10 @@ export function getTurretsUpgradesHTML(): string {
         description: `${path.description}. Spend ${path.cost} science to unlock this upgrade path permanently.`,
         cost: path.cost,
         canAfford: canAfford,
-        color: COLORS.blue,
+        color: COLORS.scienceBlue,
         action: 'unlock-upgrade-path',
         actionData: `${path.key},${path.cost}`,
-        additionalInfo: `${path.cost} 🔬`
+        currencyIcon: '🔬'
       });
     });
     
@@ -431,33 +458,26 @@ export function getTurretsUpgradesHTML(): string {
 export function getCitiesUpgradesHTML(): string {
   let html = `
     <div>
-    <h4 style="color: #ff0; margin-top: 0; margin-bottom: 15px;">City Management</h4>
-  `;
+Plan  `;
   
-  // Science upgrades section - only show if research is unlocked
+  // Science upgrades section - only show if research is unlocked and civilian industry is unlocked
   const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
-  if (researchUnlocked) {
+  const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
+  
+  if (researchUnlocked && civilianIndustryUnlocked) {
     html += `
       <div style="margin-bottom: 15px;">
-          ${createSectionHeader('Technology Research', '#00f')}
+          ${createSectionHeader('Technology Research', `rgb(${COLORS.scienceBlue})`)}
           <div class="compact-grid-2">
     `;
     
-    // Always show civilian industry first
+    // Show specialized tech
     const scienceUpgrades = [
-      { id: 'civilianIndustry', name: 'Civilian Industry', description: 'Unlock specialized production facilities for cities. Required for advanced city improvements.' }
+      { id: 'populationTech', name: 'Civil Defense', description: 'Unlock bunkers and fallout shelters to protect civilian populations' },
+      { id: 'arsenalTech', name: 'Arms Manufacturing', description: 'Unlock military-grade ammunition production facilities' },
+      { id: 'miningTech', name: 'Strategic Mining', description: 'Unlock deep mining operations for critical military materials' },
+      { id: 'researchTech', name: 'Defense Research', description: 'Unlock classified research laboratories for advanced weapons technology' }
     ];
-    
-    // Only show specialized tech if civilian industry is unlocked
-    const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
-    if (civilianIndustryUnlocked) {
-      scienceUpgrades.push(
-        { id: 'populationTech', name: 'Civil Defense', description: 'Unlock bunkers and fallout shelters to protect civilian populations' },
-        { id: 'arsenalTech', name: 'Arms Manufacturing', description: 'Unlock military-grade ammunition production facilities' },
-        { id: 'miningTech', name: 'Strategic Mining', description: 'Unlock deep mining operations for critical military materials' },
-        { id: 'researchTech', name: 'Defense Research', description: 'Unlock classified research laboratories for advanced weapons technology' }
-      );
-    }
     
     scienceUpgrades.forEach(upgrade => {
       const upgradeData = globalUpgrades[upgrade.id];
@@ -475,10 +495,10 @@ export function getCitiesUpgradesHTML(): string {
         cost: cost,
         isOwned: isOwned,
         canAfford: canAfford,
-        color: COLORS.blue,
+        color: COLORS.scienceBlue,
         action: 'purchase-global',
         actionData: upgrade.id,
-        additionalInfo: `${cost} 🔬`
+        currencyIcon: '🔬'
       });
     });
     
@@ -488,7 +508,7 @@ export function getCitiesUpgradesHTML(): string {
     if (civilianIndustryUnlocked) {
       html += `
         <div style="margin-bottom: 15px;">
-            ${createSectionHeader('City Science', '#00f')}
+            ${createSectionHeader('City Science', `rgb(${COLORS.scienceBlue})`)}
             <div class="compact-grid-2">
       `;
       
@@ -513,10 +533,10 @@ export function getCitiesUpgradesHTML(): string {
           cost: cost,
           isOwned: isOwned,
           canAfford: canAfford,
-          color: COLORS.blue,
+          color: COLORS.scienceBlue,
           action: 'purchase-global',
           actionData: upgrade.id,
-          additionalInfo: `${cost} 🔬`
+          currencyIcon: '🔬'
         });
       });
       
@@ -752,7 +772,7 @@ export function getCitiesUpgradesHTML(): string {
           description: `${modeDescriptions[currentMode]} Level ${prodLevel} → ${prodLevel + 1}. Only affects ${currentMode} production.`,
           cost: prodCost,
           canAfford: canAffordProd,
-          color: currentMode === 'scrap' ? COLORS.green : currentMode === 'science' ? COLORS.blue : COLORS.yellow,
+          color: currentMode === 'scrap' ? COLORS.green : currentMode === 'science' ? COLORS.scienceBlue : COLORS.yellow,
           action: 'upgrade-city-productivity',
           actionData: `${selectedCity},${currentMode}`,
           additionalInfo: `${currentMode.charAt(0).toUpperCase() + currentMode.slice(1)} efficiency +25%`
@@ -763,7 +783,7 @@ export function getCitiesUpgradesHTML(): string {
       if (!civilianIndustryUnlocked) {
         html += `
           <div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: #888; font-size: 12px;">
-              Research Civilian Industry to unlock city improvements
+              Research Civilian Industry in Global tab to unlock city improvements
           </div>
         `;
       } else if (!popTechUnlocked && !techUnlocked) {

@@ -57,9 +57,9 @@ function updateCommandMode(deltaTime: number): void {
     // Update game time and difficulty
     gameState.commandMode.gameTime += deltaTime;
     
-    // Gradually increase difficulty over time (every 30 seconds)
-    const difficultyIncreaseInterval = 30000; // 30 seconds
-    gameState.commandMode.difficulty = 1 + Math.floor(gameState.commandMode.gameTime / difficultyIncreaseInterval) * 0.2;
+    // Gradually increase difficulty over time (every 45 seconds)
+    const difficultyIncreaseInterval = 45000; // 45 seconds (was 30s)
+    gameState.commandMode.difficulty = 1 + Math.floor(gameState.commandMode.gameTime / difficultyIncreaseInterval) * 0.15;
     
     // Track last enemy spawn time
     gameState.commandMode.lastEnemySpawn += deltaTime;
@@ -72,8 +72,8 @@ function updateCommandMode(deltaTime: number): void {
         spawnEnemyMissile(canvas);
         gameState.commandMode.lastEnemySpawn = 0;
         
-        // Occasionally spawn planes (10% chance)
-        if (Math.random() < 0.1) {
+        // Occasionally spawn planes (10% chance, but only after 3 minutes)
+        if (gameState.commandMode.gameTime >= 180000 && Math.random() < 0.1) {
             spawnPlane(canvas);
         }
     }
@@ -99,8 +99,8 @@ function updateArcadeMode(deltaTime: number): void {
     gameState.waveTimer += deltaTime;
     
     // Spawn enemies during wave
-    const waveLength = 10000 + (gameState.wave * 2000); // Longer waves as game progresses
-    const enemiesPerWave = Math.min(8 + gameState.wave, 25); // Cap at 25 enemies per wave
+    const waveLength = 12000 + (gameState.wave * 2000); // Longer waves as game progresses (was 10s base)
+    const enemiesPerWave = Math.min(6 + gameState.wave, 25); // Cap at 25 enemies per wave (was 8 + wave)
     const spawnInterval = waveLength / enemiesPerWave;
     
     if (gameState.enemiesSpawned < enemiesPerWave && 
@@ -111,12 +111,13 @@ function updateArcadeMode(deltaTime: number): void {
         gameState.enemiesSpawned++;
     }
     
-    // Handle plane spawning (guaranteed timing: 25%, 50%, 75% through wave)
+    // Handle plane spawning (guaranteed timing: 25%, 50%, 75% through wave, but only after 3 minutes total game time)
+    const totalGameTime = (gameState.wave - 1) * (10000 + ((gameState.wave - 1) * 2000)) + gameState.waveTimer;
     const planeSpawnTimes = [0.25, 0.5, 0.75];
     const waveProgress = gameState.waveTimer / waveLength;
     
     planeSpawnTimes.forEach((spawnTime, index) => {
-        if (waveProgress >= spawnTime && gameState.planesSpawned <= index && gameState.wave >= 5) {
+        if (waveProgress >= spawnTime && gameState.planesSpawned <= index && totalGameTime >= 180000) {
             const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
             spawnPlane(canvas);
             gameState.planesSpawned++;

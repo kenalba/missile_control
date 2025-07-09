@@ -5,6 +5,7 @@ import { cityData } from '@/core/cities';
 import { launchers, destroyedLaunchers, resetLauncherTimestamps } from '@/entities/launchers';
 import { launcherUpgrades } from '@/core/upgrades';
 import { updateUpgradeUI } from '@/systems/ui';
+import { handleModeChange } from '@/ui/sidebarManager';
 
 interface ModeConfig {
     name: string;
@@ -158,7 +159,10 @@ export class ModeManager {
         // Reset selected launcher for mobile
         this.selectedLauncher = 0;
         
-        // Update UI
+        // Handle sidebar mode change BEFORE updating UI to prevent flicker
+        handleModeChange(mode);
+        
+        // Update UI after sidebar state is set
         this.updateUI();
         
         console.log(`${config.name} initialized: ${config.initialLaunchers} turret(s), ${config.initialCities} cities`);
@@ -197,9 +201,9 @@ export class ModeManager {
         
         // Open Command Center by default in Command Mode
         setTimeout(() => {
-            const openCommandPanel = (window as any).openCommandPanel;
-            if (typeof openCommandPanel === 'function') {
-                openCommandPanel();
+            const expandSidebar = (window as any).expandSidebar;
+            if (typeof expandSidebar === 'function') {
+                expandSidebar();
             }
         }, 100); // Small delay to ensure DOM is ready
     }

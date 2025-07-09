@@ -9,11 +9,13 @@ Defend your cities from incoming missiles using strategic turret placements and 
 ## Game Modes
 
 ### Arcade Mode
+
 - **Classic Experience**: 6 cities, 3 turrets, traditional upgrade table
 - **Fast-Paced Action**: All turrets available from start, familiar Missile Command gameplay
 - **Global Upgrades**: Economic and tactical bonuses displayed in sidebar sections
 
-### Command Mode  
+### Command Mode
+
 - **Strategic Building**: Start with 1 turret, 2 cities - expand your base over time
 - **Floating Command Center**: Draggable upgrade panel with tabbed interface
 - **Entity Selection**: Click turrets/cities in-game or use selection buttons
@@ -29,6 +31,7 @@ Defend your cities from incoming missiles using strategic turret placements and 
 ## Game Mechanics
 
 ### Core Systems
+
 - **Cities**: Varies by mode (6 in Arcade, 2-6 in Command). Game ends when all destroyed
 - **Turrets**: 3 in Arcade, 1-3 in Command. Each starts with 10 missiles at 200px, 600px, 1000px
 - **Wave System**: Progressive difficulty with smart bombs (wave 3+), planes (wave 5+)
@@ -39,19 +42,24 @@ Defend your cities from incoming missiles using strategic turret placements and 
 The upgrade system features a progressive research tree with Cold War-era military themes. All modes use scrap as the primary currency, with science unlocking advanced technologies.
 
 #### Global Upgrades
+
 - **Emergency Ammo** (3 scrap): Purchase single ammo for first available turret
 - **Science Unlock** (50 scrap): Enable science production in cities (Command Mode)
 
 **Economic Upgrades**
+
 - **Resource Boost** (80 scrap): +25% bonus materials from all sources
 - **Wreckage Ops** (60 scrap): Extra 3 scrap when destroying enemy aircraft
 - **Arms Discount** (90 scrap): 15% discount on all turret upgrades
 
 **Tactical Upgrades**
+
 - **RADAR Warning** (75 scrap): Highlight dangerous enemy missiles with red glow
 
 #### Turret Upgrades (Per-Turret, Command Mode)
+
 Research paths must be unlocked with science before purchasing upgrades:
+
 - **Fire Rate** (20 scrap base, 1.5x multiplier): Available from start
 - **Missile Speed** (10 scrap + research, 1.3x multiplier): Faster projectile velocity
 - **Explosion Size** (15 scrap + research, 1.4x multiplier): Larger blast radius
@@ -59,23 +67,28 @@ Research paths must be unlocked with science before purchasing upgrades:
 - **Autopilot** (40 scrap + research): Smart targeting system for automatic interception
 
 #### City Management (Command Mode)
+
 **Technology Research** (science-based, progressive unlock system):
-- **Civilian Industry** (35 science): Required prerequisite for all specialized city improvements
-- **Civil Defense** (25 science): Unlock bunkers and population improvements
-- **Arms Manufacturing** (15 science): Unlock ammunition production facilities  
-- **Strategic Mining** (10 science): Unlock deep mining operations
-- **Defense Research** (30 science): Unlock classified research laboratories
+
+- **Civilian Industry** (10 science): Required prerequisite for all specialized city improvements
+- **Civil Defense** (50 science): Unlock bunkers and population improvements
+- **Arms Manufacturing** (15 science): Unlock ammunition production facilities
+- **Strategic Mining** (15 science): Unlock deep mining operations
+- **Defense Research** (15 science): Unlock classified research laboratories
 
 **City Science Upgrades**:
+
 - **Salvage Ops** (30 science): Convert excess ammunition to scrap materials
 - **Motor Pool** (20 science): Add +1 truck to all cities for faster delivery
 
 **City Upgrades** (requires Civilian Industry + specific tech):
+
 - **Urban Expansion**: Increase maximum population and housing capacity
 - **Bunker System**: Build underground bunkers (reduces missile damage)
 - **Production Facilities**: Specialized upgrades for Strategic Mining, Research Facility, or Arms Factory based on current production mode
 
 **City Features**:
+
 - **Production Modes**: Scrap, Ammo, Science (Science requires unlock)
 - **City Construction**: Build new cities at predefined strategic locations
 - **City Repair** (50 scrap): Restore destroyed cities
@@ -83,6 +96,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 ## Technical Details
 
 ### Architecture
+
 - **Modular Design**: Separated UI, logic, and content generation into focused modules
 - **Canvas Rendering**: 1200x900 internal resolution with responsive scaling
 - **Mode System**: Dynamic game mode switching with different UI layouts
@@ -94,6 +108,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 **Modern TypeScript + Vite Build System** with incremental migration from legacy JavaScript.
 
 #### TypeScript Modules (Phase 1 ✅)
+
 - `src/main.ts` - TypeScript entry point and system initialization
 - `src/types/gameTypes.ts` - Comprehensive type definitions for all game entities
 - `src/config/constants.ts` - Game constants and configuration with type safety
@@ -104,6 +119,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 - `src/utils/index.ts` - Clean utility exports and convenience functions
 
 #### Legacy JavaScript Modules (Phase 2 - Pending Migration)
+
 - `js/main.js` - Core game loop and initialization
 - `js/modeManager.js` - Game mode switching and configuration
 - `js/gameState.js` - Game state management and UI updates
@@ -118,12 +134,14 @@ Research paths must be unlocked with science before purchasing upgrades:
 - `js/utils.js` - Legacy utility functions (being replaced by TypeScript versions)
 
 #### Build & Deployment
+
 - `vite.config.ts` - Modern build configuration with TypeScript support
 - `tsconfig.json` - TypeScript compiler configuration with strict settings
 - `.github/workflows/deploy.yml` - Automated CI/CD pipeline for GitHub Pages
 - `package.json` - Node.js dependencies and build scripts
 
 ### Key Functions
+
 - `fireMissile(launcher, targetX, targetY)`: Launches player missile
 - `spawnEnemyMissile()`: Creates enemy missiles from random positions
 - `createExplosion(x, y, isPlayer)`: Handles explosion effects and collision detection
@@ -134,6 +152,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 - `createCompactUpgradeButton(config)`: Generates tooltip-enabled upgrade buttons
 
 ### Game State
+
 - Score, scrap, science, wave, cities tracked in `gameState` object
 - Mode-specific data in `gameState.currentMode` and `gameState.commandMode`
 - Upgrade levels stored in `launcherUpgrades`, `globalUpgrades`, `cityUpgrades`
@@ -142,6 +161,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 ## Recent Improvements (Latest Session)
 
 ### UI Architecture Overhaul (Current)
+
 - **Modular UI System**: Extracted upgrade generation into focused modules (`uiUtils.js`, `panelManager.js`, `upgradeContent.js`)
 - **Space-Efficient Design**: Redesigned Command Center with compact grids (2-col, 3-col, 4-col layouts)
 - **Comprehensive Tooltip System**: Hover-based descriptions replace verbose inline text
@@ -150,6 +170,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 - **Streamlined Core**: Reduced main `upgrades.js` from 1000+ lines to focused controller
 
 ### Command Mode Implementation
+
 - **Dual Game Modes**: Mode selection screen with Arcade (classic) and Command (strategic) options
 - **Entity Selection**: Click turrets/cities in-game or use selection buttons in panel
 - **Mode-Specific UI**: Different interfaces optimized for each gameplay style
@@ -157,6 +178,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 - **Entity-Specific Tabs**: Dynamic content based on selected turret or city
 
 ### Visual & UX Polish
+
 - **Ground Redesign**: Moved ground higher with textured brown design replacing gray
 - **City Upgrade UI**: Canvas-rendered upgrade buttons with sophisticated click detection
 - **Turret Visualizations**: Detailed upgrade representations (exhaust, vents, ammo drums, radar)
@@ -165,6 +187,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 - **Status Section Redesign**: Improved readability with organized stat displays
 
 ### Gameplay Balance
+
 - **Wave Break Control**: Disabled missile launching between rounds for smoother transitions
 - **Middle Turret Enhancement**: Starts at level 2 (matches original Missile Command balance)
 - **Economic System**: Comprehensive scrap multipliers, salvage bonuses, efficiency discounts
@@ -175,20 +198,24 @@ Research paths must be unlocked with science before purchasing upgrades:
 ## Priority Todo List
 
 ### Current Known Issues
+
 1. **BUG: Tooltip Opacity Inheritance**: Tooltips on disabled buttons inherit 50% opacity making text hard to read
 
 ### Medium Priority
+
 2. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
 3. **Seekers**: Enemy missiles that actively track and follow player missiles
 4. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
 5. **Bunker Damage Reduction**: Implement actual damage reduction mechanics for bunker upgrades
 
 ### Low Priority
+
 6. **Celebration Effects**: Visual rewards for wave milestones and achievements
 7. **Mobile Haptics**: Haptic feedback on explosions and firing
 8. **Code Cleanup**: Remove old modal code and legacy upgrade system remnants
 
 ## Completed Issues
+
 - ✅ **Upgrade System Reorganization**: Moved city tech to Cities tab, added Cold War themes
 - ✅ **Progressive Research Tree**: Civilian Industry prerequisite system with science-based unlocks
 - ✅ **Bunker System**: Separate upgrade from population expansion with damage reduction
@@ -214,11 +241,13 @@ Research paths must be unlocked with science before purchasing upgrades:
 ## Development Setup
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Modern browser with HTML5 Canvas support
 - Git for version control
 
 ### Getting Started
+
 ```bash
 # Clone the repository
 git clone https://github.com/kenalba/missile_control.git
@@ -241,17 +270,20 @@ npm run preview
 ```
 
 ### Development Commands
+
 - `npm run dev` - Start Vite development server with hot reload
 - `npm run build` - Build optimized production bundle
 - `npm run type-check` - Run TypeScript type checking
 - `npm run preview` - Preview production build locally
 
 ### TypeScript Migration Status
+
 - ✅ **Phase 1 Complete**: Build system, types, audio, save system, utilities
 - 🚧 **Phase 2 Next**: Game state, entities, input system with event bus
 - 📋 **Phase 3 Planned**: UI components, rendering system, main game loop
 
 ## Browser Compatibility
+
 - Requires modern browser with HTML5 Canvas support
 - Uses ES2020 features with TypeScript compilation
 - Progressive Web App (PWA) with offline support

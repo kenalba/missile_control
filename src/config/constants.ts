@@ -71,9 +71,9 @@ export const WAVE_CONFIG = {
 
 export const COMMAND_MODE_CONFIG = {
   resourceTickInterval: 3000, // 3 seconds
-  enemySpawnInterval: 2000, // 2 seconds base
-  difficultyIncreaseInterval: 30000, // 30 seconds
-  difficultyIncrement: 0.2,
+  enemySpawnInterval: 4000, // 4 seconds base (was 2s - much slower start)
+  difficultyIncreaseInterval: 45000, // 45 seconds (was 30s - slower ramp)
+  difficultyIncrement: 0.15, // smaller increment (was 0.2)
   populationGrowthRate: 0.33, // per second
 } as const;
 

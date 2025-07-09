@@ -138,8 +138,11 @@ export function spawnEnemyMissile(canvas: HTMLCanvasElement): void {
     const splitterChance = gameState.wave >= 3 ? Math.min(0.25, 0.05 + (gameState.wave - 3) * 0.03) : 0;
     const isSplitter = Math.random() < splitterChance;
     
-    // Seekers: start at wave 5, low frequency, smart AI missiles
-    const seekerChance = gameState.wave >= 5 ? Math.min(0.15, 0.02 + (gameState.wave - 5) * 0.02) : 0;
+    // Seekers: start after 5 minutes of game time, low frequency, smart AI missiles
+    const totalGameTime = gameState.currentMode === 'command' ? 
+        gameState.commandMode.gameTime : 
+        (gameState.wave - 1) * (12000 + ((gameState.wave - 1) * 2000)) + gameState.waveTimer;
+    const seekerChance = totalGameTime >= 300000 ? Math.min(0.15, 0.02 + ((totalGameTime - 300000) / 60000) * 0.02) : 0;
     const isSeeker = !isSplitter && Math.random() < seekerChance; // Seekers and splitters are mutually exclusive
     
     // For seekers, always target a city or launcher

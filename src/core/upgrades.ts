@@ -36,11 +36,11 @@ export let globalUpgrades: GlobalUpgrades = {
     efficiency: { level: 0, cost: 90 },
     research: { level: 0, cost: 50 }, // Unlocks science production
     // Science-based unlock upgrades (unlocks advanced city improvements)
-    civilianIndustry: { level: 0, cost: 35 }, // Unlocks specialized city production tech (science cost)
-    populationTech: { level: 0, cost: 25 }, // Unlocks population improvements (science cost)
+    civilianIndustry: { level: 0, cost: 10 }, // Unlocks specialized city production tech (science cost)
+    populationTech: { level: 0, cost: 50 }, // Unlocks population improvements (science cost)
     arsenalTech: { level: 0, cost: 15 }, // Unlocks arsenal improvements (science cost)
-    miningTech: { level: 0, cost: 10 }, // Unlocks scrap mining improvements (science cost)
-    researchTech: { level: 0, cost: 30 }, // Unlocks research lab improvements (science cost)
+    miningTech: { level: 0, cost: 15 }, // Unlocks scrap mining improvements (science cost)
+    researchTech: { level: 0, cost: 15 }, // Unlocks research lab improvements (science cost)
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
     truckFleet: { level: 0, cost: 20 } // +1 truck per city (science cost)

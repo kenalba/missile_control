@@ -16,13 +16,13 @@ export function initializeGlobalEventDelegation(): void {
 // Handle all upgrade panel actions through event delegation
 function handleUpgradePanelActions(event: Event): void {
   const target = event.target as HTMLElement;
-  const panel = document.getElementById('commandUpgradePanel');
+  const sidebar = document.getElementById('upgradePanel');
   
   const button = target.closest('[data-action]') as HTMLElement;
   if (!button) return;
   
-  // Only handle clicks within the command upgrade panel
-  if (!panel || !panel.contains(button)) return;
+  // Only handle clicks within the sidebar (either regular content or expanded content)
+  if (!sidebar || !sidebar.contains(button)) return;
   
   event.preventDefault();
   event.stopPropagation();
@@ -227,7 +227,11 @@ export function toggleCommandPanel(): void {
 
 // Mark panel as needing update (called by actions that change the UI)
 export function markPanelDirty(): void {
-  // Panel content is dynamically generated on each update
+  // Update sidebar content instead of panel content
+  const updateSidebarContent = (window as any).updateSidebarContent;
+  if (typeof updateSidebarContent === 'function') {
+    updateSidebarContent();
+  }
 }
 
 // Update Command panel content (simplified with observable state)

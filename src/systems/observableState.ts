@@ -240,9 +240,9 @@ class UIUpdateSystem {
   private refreshCommandPanel(): void {
     // Only refresh if we're in command mode and panel is visible
     if (observableGameState.currentMode === 'command') {
-      const updateCommandPanel = (window as any).updateCommandPanel;
-      if (typeof updateCommandPanel === 'function') {
-        updateCommandPanel();
+      const updateSidebarContent = (window as any).updateSidebarContent;
+      if (typeof updateSidebarContent === 'function') {
+        updateSidebarContent();
       }
     }
   }

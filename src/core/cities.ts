@@ -51,7 +51,12 @@ export function calculateCityProductionRate(cityIndex: number): string {
     
     const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
     const productivityMultiplier = 1 + (productivityLevel * 0.25);
-    const finalProduction = baseProduction * productivityMultiplier;
+    let finalProduction = baseProduction * productivityMultiplier;
+    
+    // Double science production rate to match actual generation
+    if (city.productionMode === 'science') {
+        finalProduction *= 2;
+    }
     
     // Convert from per-3-seconds to per-second
     return (finalProduction / 3).toFixed(1);
@@ -121,8 +126,8 @@ export function generateCityResources(): void {
                 break;
                 
             case 'science':
-                // Accumulate fractional science production
-                scienceAccumulator += finalProduction;
+                // Accumulate fractional science production (doubled rate for faster progression)
+                scienceAccumulator += finalProduction * 2;
                 
                 // Convert to integer science when we have enough
                 const scienceToAward = Math.floor(scienceAccumulator);

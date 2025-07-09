@@ -19,6 +19,7 @@ import '@/systems/upgradeLogic'; // Legacy upgrade support
 import '@/ui/uiUtils'; // UI utilities
 import '@/ui/panelManager'; // Panel management
 import '@/ui/upgradeContent'; // Upgrade content generation
+import '@/ui/sidebarManager'; // Sidebar state management
 import { observableGameState, uiUpdateSystem } from '@/systems/observableState'; // Observable state system
 import { timeManager } from '@/systems/timeManager'; // Time management system
 
@@ -50,6 +51,10 @@ uiUpdateSystem.initialize();
 // Initialize the game when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
   console.log('🎮 DOM ready, initializing game...');
+  
+  // Initialize sidebar manager after DOM is ready
+  (window as any).initializeSidebar();
+  
   initGame();
 });
 
