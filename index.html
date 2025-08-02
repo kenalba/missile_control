@@ -244,19 +244,27 @@
             
             <!-- Mode Selection -->
             <div class="mode-selection">
-                <h3>SELECT MODE</h3>
                 <div class="mode-buttons">
-                    <button id="arcadeModeBtn" class="mode-button arcade-mode" onclick="startGame('arcade')">
-                        <div class="mode-title">ARCADE MODE</div>
-                        <div class="mode-subtitle">Classic Missile Command</div>
-                        <div class="mode-description">Defend 6 cities with 3 turrets<br>Fast-paced action gameplay</div>
-                    </button>
-                    <button id="commandModeBtn" class="mode-button command-mode" onclick="startGame('command')">
+                    <div class="mode-button command-mode single-mode">
                         <div class="mode-title">COMMAND MODE</div>
-                        <div class="mode-subtitle">Strategic Base Building</div>
-                        <div class="mode-description">Start with 1 turret, 2 cities<br>Build and expand your defenses</div>
+                        <div class="mode-subtitle">Strategic Defense System</div>
+                        <div class="mode-description">
+                            Start with 1 turret and 2 cities<br>
+                            Research technology and expand your base<br>
+                            Build the ultimate missile defense network
+                        </div>
+                    </div>
+                    <!-- Arcade Mode hidden for now -->
+                    <button id="arcadeModeBtn" class="mode-button arcade-mode" onclick="startGame('arcade')" style="display: none;">
+                        <div class="mode-title">ARCADE MODE</div>
+                        <div class="mode-subtitle">Classic Fast-Paced Action</div>
+                        <div class="mode-description">Defend 6 cities with 3 turrets<br>Traditional Missile Command gameplay</div>
                     </button>
                 </div>
+                
+                <button class="start-button" onclick="startGame('command')">
+                    ▶ START GAME
+                </button>
             </div>
             <p class="cheat-hint">Press P during game for 100 scrap<br>Debug: 0=Spawn Plane, 9=Spawn Seeker</p>
         </div>

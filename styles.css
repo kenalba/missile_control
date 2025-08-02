@@ -771,7 +771,69 @@ body.command-mode .global-upgrades {
     color: #ff9;
 }
 
-/* Recommended mode styling (last selected) */
+/* Single mode styling (when only one mode is shown) */
+.mode-button.single-mode {
+    border-color: #ff0;
+    color: #ff0;
+    background: #220200;
+    border-width: 3px;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.mode-button.single-mode:hover {
+    background: #440400;
+    transform: translateY(-2px);
+}
+
+/* Separate START button */
+.start-button {
+    background: #004400;
+    color: #0f0;
+    border: 2px solid #0f0;
+    padding: 15px 40px;
+    font-size: 20px;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-top: 30px;
+    transition: all 0.2s ease;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.start-button:hover {
+    background: #006600;
+    box-shadow: 0 0 15px #0f0;
+    transform: scale(1.05);
+}
+
+/* Locked mode styling (Arcade Mode when locked) */
+.mode-button.locked-mode {
+    border-color: #666;
+    color: #666;
+    background: #111;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.mode-button.locked-mode:hover {
+    background: #111;
+    box-shadow: none;
+    transform: none;
+}
+
+.mode-button.locked-mode .mode-description {
+    color: #888;
+}
+
+.mode-button.locked-mode .mode-description strong {
+    color: #f84;
+}
+
+/* Recommended mode styling (when unlocked) */
 .mode-button.recommended {
     box-shadow: 0 0 20px currentColor;
     border-width: 3px;
