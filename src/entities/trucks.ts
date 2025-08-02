@@ -89,7 +89,7 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
   // Reuse the returning truck for immediate dispatch
   const target = turretsNeedingAmmo[0];
   const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
-  const ammoAvailable = Math.min(city.ammoStockpile, 2); // Trucks can carry up to 2 ammo
+  const ammoAvailable = Math.min(city.ammoStockpile, 1); // Trucks start carrying 1 ammo
   const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
   
   // Calculate delivery parameters
@@ -126,6 +126,63 @@ export function updateTrucks(): void {
   
   const currentTime = Date.now();
   
+  // First pass: identify trucks completing delivery this frame
+  const completingDeliveries: number[] = [];
+  ammoTrucks.forEach((truck, index) => {
+    if (truck.status === 'delivering') {
+      const elapsed = currentTime - truck.startTime;
+      const progress = Math.min(1, elapsed / truck.deliveryTime);
+      if (progress >= 1) {
+        completingDeliveries.push(index);
+      }
+    }
+  });
+  
+  // Process deliveries in order to avoid race conditions
+  completingDeliveries.forEach(index => {
+    const truck = ammoTrucks[index];
+    if (truck && truck.status === 'delivering') {
+      // Deliver ammo to turret (this updates the turret state immediately)
+      const turret = launchers[truck.targetTurretIndex];
+      let undeliveredAmmo = 0;
+      
+      if (turret) {
+        const actualDelivery = Math.min(truck.ammoAmount, turret.maxMissiles - turret.missiles);
+        turret.missiles += actualDelivery;
+        undeliveredAmmo = truck.ammoAmount - actualDelivery;
+        
+        if (actualDelivery > 0) {
+          console.log(`📦 Ammo delivered: ${actualDelivery} to turret ${truck.targetTurretIndex} (${turret.missiles}/${turret.maxMissiles})`);
+        }
+        if (undeliveredAmmo > 0) {
+          console.log(`🔄 Returning ${undeliveredAmmo} undelivered ammo to city ${truck.cityIndex} (turret was full)`);
+        }
+      } else {
+        // Turret doesn't exist - return all ammo
+        undeliveredAmmo = truck.ammoAmount;
+        console.log(`❌ Turret ${truck.targetTurretIndex} not found - returning ${undeliveredAmmo} ammo to city ${truck.cityIndex}`);
+      }
+      
+      // Store undelivered ammo for return to city
+      if (undeliveredAmmo > 0) {
+        truck.returnAmmo = undeliveredAmmo;
+      }
+      
+      // Start return journey
+      truck.status = 'returning';
+      truck.returnStartTime = currentTime;
+      truck.returnTime = truck.deliveryTime; // Same time to return
+      truck.progress = 0;
+      
+      // Swap start and target for return trip
+      const tempX = truck.startX;
+      truck.startX = truck.targetX;
+      truck.targetX = tempX;
+      truck.currentX = truck.startX;
+    }
+  });
+  
+  // Second pass: update all truck positions and handle other logic
   ammoTrucks.forEach((truck, index) => {
     if (truck.status === 'delivering') {
       // Calculate delivery progress
@@ -136,28 +193,7 @@ export function updateTrucks(): void {
       truck.currentX = truck.startX + (truck.targetX - truck.startX) * truck.progress;
       truck.currentY = 800; // Always stay on ground
       
-      // Check if delivery is complete
-      if (truck.progress >= 1) {
-        // Deliver ammo to turret
-        const turret = launchers[truck.targetTurretIndex];
-        if (turret) {
-          const actualDelivery = Math.min(truck.ammoAmount, turret.maxMissiles - turret.missiles);
-          turret.missiles += actualDelivery;
-          console.log(`📦 Ammo delivered: ${actualDelivery} to turret ${truck.targetTurretIndex}`);
-        }
-        
-        // Start return journey
-        truck.status = 'returning';
-        truck.returnStartTime = currentTime;
-        truck.returnTime = truck.deliveryTime; // Same time to return
-        truck.progress = 0;
-        
-        // Swap start and target for return trip
-        const tempX = truck.startX;
-        truck.startX = truck.targetX;
-        truck.targetX = tempX;
-        truck.currentX = truck.startX;
-      }
+      // Delivery completion is handled in first pass to avoid race conditions
     } else if (truck.status === 'returning') {
       // Calculate return progress
       const elapsed = currentTime - (truck.returnStartTime || currentTime);
@@ -169,8 +205,33 @@ export function updateTrucks(): void {
       
       // Check if return is complete
       if (truck.progress >= 1) {
-        // Truck is back at city - check for immediate redispatch
+        // Truck is back at city
         const cityIndex = truck.cityIndex;
+        const cityData = (window as any).cityData;
+        
+        // Return any undelivered ammo to city stockpile
+        if (truck.returnAmmo && truck.returnAmmo > 0 && cityData && cityData[cityIndex]) {
+          const city = cityData[cityIndex] as any;
+          if (city.ammoStockpile !== undefined) {
+            const stockpileSpace = city.maxAmmoStockpile - city.ammoStockpile;
+            const ammoToReturn = Math.min(truck.returnAmmo, stockpileSpace);
+            
+            if (ammoToReturn > 0) {
+              city.ammoStockpile += ammoToReturn;
+              console.log(`🏠 Returned ${ammoToReturn} ammo to city ${cityIndex} stockpile`);
+              
+              // If we couldn't return all ammo due to stockpile limits, log it
+              if (ammoToReturn < truck.returnAmmo) {
+                console.log(`⚠️  City ${cityIndex} stockpile full - lost ${truck.returnAmmo - ammoToReturn} ammo`);
+              }
+            } else {
+              console.log(`⚠️  City ${cityIndex} stockpile full - lost ${truck.returnAmmo} ammo`);
+            }
+          }
+          truck.returnAmmo = 0; // Clear the return ammo
+        }
+        
+        // Check for immediate redispatch
         const shouldRedispatch = tryRedispatchTruck(cityIndex, truck);
         
         if (shouldRedispatch) {

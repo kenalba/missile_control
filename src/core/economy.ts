@@ -82,7 +82,7 @@ export function spendCurrency(cost: number, currency: 'scrap' | 'science' = 'scr
 
 // Emergency ammo purchase
 export function emergencyAmmoPurchase(): boolean {
-    const cost = 3;
+    const cost = 2;
     if (!canAfford(cost)) {
         return false;
     }

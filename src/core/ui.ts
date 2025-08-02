@@ -15,9 +15,19 @@ export function updateUI(): void {
     
     // Command Mode specific UI updates
     if (gameState.currentMode === 'command') {
-        // Show Science resource
+        // Always update science value when in Command Mode
         if (scienceElement) scienceElement.textContent = gameState.science.toString();
-        if (scienceRowElement) scienceRowElement.style.display = 'block';
+        
+        // Only show Science resource if research is unlocked AND user has at least 1 science
+        const globalUpgrades = (window as any).globalUpgrades;
+        const researchUnlocked = globalUpgrades?.research?.level > 0;
+        const hasScience = gameState.science > 0;
+        
+        if (researchUnlocked && hasScience) {
+            if (scienceRowElement) scienceRowElement.style.display = 'block';
+        } else {
+            if (scienceRowElement) scienceRowElement.style.display = 'none';
+        }
         
         // Show continuous time and difficulty instead of wave
         const timeMinutes = Math.floor(gameState.commandMode.gameTime / 60000);

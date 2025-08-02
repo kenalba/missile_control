@@ -244,6 +244,7 @@ export interface AmmoTruck {
   status: 'delivering' | 'returning' | 'idle';
   returnStartTime?: number;
   returnTime?: number;
+  returnAmmo?: number; // Ammo that couldn't be delivered and needs to be returned
 }
 
 export interface CityProductivityUpgrades {

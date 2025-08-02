@@ -241,7 +241,7 @@ body {
     border-right: none; /* No right border since it's at screen edge */
     width: 350px; /* Fixed width - larger than minimum to use available space */
     height: 100vh; /* Full height */
-    overflow-y: auto;
+    overflow-y: auto; /* Vertical scrolling only */
     flex-shrink: 0;
     position: relative; /* Needed for absolute positioning of toggle button */
     display: flex;
@@ -249,6 +249,13 @@ body {
     box-sizing: border-box;
     margin: 20px 0; /* Top and bottom margin matching game container */
     height: calc(100vh - 40px); /* Adjust for margin */
+}
+
+/* Override overflow for tooltip containers */
+#upgradePanel .tooltip,
+#commandCenterContent .tooltip,
+.command-center-content .tooltip {
+    overflow: visible !important;
 }
 
 .game-status {
@@ -1223,13 +1230,13 @@ body.command-mode .global-upgrades {
     bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-    background: #000000 !important;
-    background-color: #000000 !important;
-    color: #0f0;
+    background: rgba(0, 0, 0, 0.95) !important;
+    background-color: rgba(0, 0, 0, 0.95) !important;
+    color: #0f0 !important;
     padding: 10px 14px;
     border-radius: 6px;
     font-size: 12px;
-    z-index: 9999;
+    z-index: 99999; /* Higher z-index to appear above everything */
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -1277,22 +1284,7 @@ body.command-mode .global-upgrades {
     transform: translateX(-50%);
 }
 
-.tooltip::before {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(2px);
-    border: 6px solid transparent;
-    border-top-color: #0f0;
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-}
-
-.tooltip:hover::after,
-.tooltip:hover::before {
+.tooltip:hover::after {
     opacity: 1 !important;
     visibility: visible;
 }
@@ -1301,9 +1293,30 @@ body.command-mode .global-upgrades {
 .upgrade-btn-compact:disabled.tooltip:hover::after,
 button:disabled.tooltip:hover::after {
     opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.95) !important;
+    background-color: rgba(0, 0, 0, 0.95) !important;
+    color: #0f0 !important;
+    filter: none !important; /* Override filter: opacity() from disabled buttons */
 }
 
+/* Ensure disabled tooltip elements themselves don't inherit parent opacity */
+.upgrade-btn-compact:disabled.tooltip::after,
+button:disabled.tooltip::after {
+    filter: none !important; /* Override filter: opacity() from disabled buttons */
+}
+
+
 /* JavaScript will position the tooltip dynamically to prevent clipping */
+
+/* Command Center content overflow handling */
+#commandCenterContent {
+    overflow: visible; /* Allow content to overflow container */
+}
+
+.command-center-tabs,
+.command-center-content {
+    overflow: visible; /* Allow tabs and content to overflow */
+}
 
 /* Compact upgrade buttons */
 .upgrade-btn-compact {

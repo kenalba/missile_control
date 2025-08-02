@@ -267,6 +267,29 @@ export function initializeInput(): void {
             }
         }
         
+        // Tab switching hotkeys (Command Mode only)
+        if (gameState.currentMode === 'command') {
+            if (e.key.toLowerCase() === 'c') {
+                (window as any).setSidebarTab?.('cities');
+                return;
+            }
+            if (e.key.toLowerCase() === 's') {
+                const globalUpgrades = (window as any).globalUpgrades;
+                const gameState = (window as any).gameState;
+                if (globalUpgrades?.research?.level > 0 && gameState?.science > 0) {
+                    (window as any).setSidebarTab?.('science');
+                }
+                return;
+            }
+            if (e.key.toLowerCase() === 't') {
+                const globalUpgrades = (window as any).globalUpgrades;
+                if (globalUpgrades?.ammoResearch?.level > 0) {
+                    (window as any).setSidebarTab?.('turrets');
+                }
+                return;
+            }
+        }
+        
         if (!gameState.gameRunning || gameState.waveBreak || gameState.paused) return;
         
         let launcherIndex = -1;

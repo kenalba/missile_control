@@ -2,7 +2,7 @@
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityBunkerUpgrades, cityProductivityUpgrades } from '@/entities/cities';
-import { cityData } from '@/core/cities';
+import { cityData, ammoAccumulators, scrapAccumulators, scienceAccumulators } from '@/core/cities';
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
 import { upgradeEffects } from '@/entities/particles';
 import { updateUI } from '@/systems/ui';
@@ -56,21 +56,55 @@ export function emergencyAmmoPurchase(): void {
 // Purchase global upgrades
 export function purchaseGlobalUpgrade(upgradeType: string): void {
   const upgrade = globalUpgrades[upgradeType];
-  if (!upgrade || upgrade.level > 0) return;
+  if (!upgrade) return;
   
-  // Science-based upgrades
-  const scienceUpgrades = ['civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech', 'ammoRecycling', 'truckFleet'];
-  const isScience = scienceUpgrades.includes(upgradeType);
+  // Multi-level upgrades are now the tiered sub-upgrades
+  const multiLevelUpgrades = ['enhancedAmmoProduction', 'enhancedScrapMining', 'enhancedResearch', 'residentialEfficiency'];
+  const isMultiLevel = multiLevelUpgrades.includes(upgradeType);
   
-  if (isScience) {
-    if (gameState.science < upgrade.cost) return;
-    gameState.science -= upgrade.cost;
-  } else {
-    if (gameState.scrap < upgrade.cost) return;
-    gameState.scrap -= upgrade.cost;
+  // Check if already at max level
+  if (!isMultiLevel && upgrade.level > 0) {
+    return; // One-time upgrades can't be purchased again
   }
   
-  upgrade.level = 1;
+  if (isMultiLevel && upgrade.level >= 3) {
+    return; // Research branches max at level 3
+  }
+  
+  // Science-based upgrades (must match the list in core/upgrades.ts)
+  const scienceUpgrades = [
+    'civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech',
+    'ammoRecycling', 'truckFleet', 'ammoHotkey',
+    // New tech tree upgrades - Research branches and sub-upgrades
+    'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',
+    'enhancedAmmoProduction', 'rapidProcurement', 'advancedLogistics', 'ammunitionStockpiles',
+    'enhancedScrapMining', 'resourceEfficiency', 'salvageOperations',
+    'enhancedResearch', 'viewTechTree', 'researchAnalytics',
+    'residentialEfficiency', 'urbanPlanning1', 'urbanPlanning2', 'urbanPlanning3', 'urbanPlanning4', 'populationGrowth', 'civilDefense'
+  ];
+  const isScience = scienceUpgrades.includes(upgradeType);
+  
+  // Calculate actual cost for multi-level upgrades
+  let actualCost = upgrade.cost;
+  if (isMultiLevel && upgrade.level > 0) {
+    // Each level costs 1.5x more than base cost
+    actualCost = Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
+  }
+  
+  if (isScience) {
+    if (gameState.science < actualCost) return;
+    gameState.science -= actualCost;
+  } else {
+    if (gameState.scrap < actualCost) return;
+    gameState.scrap -= actualCost;
+  }
+  
+  // Apply upgrade
+  if (isMultiLevel) {
+    upgrade.level += 1; // Multi-level upgrades increment
+  } else {
+    upgrade.level = 1; // One-time upgrades set to 1
+  }
   
   // Visual feedback
   const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
@@ -298,16 +332,13 @@ function getNextCityPosition(): number | null {
 // Build new city function
 export function buildCity(): void {
   if (gameState.currentMode === 'command') {
-    // Command Mode: Use predefined positions and config
-    const config = (window as any).ModeManager?.getCurrentConfig();
-    if (!config || !config.availableCityPositions) return;
-    
-    const maxCities = config.availableCityPositions.length;
+    // Command Mode: Use research-based limits
+    const maxCities = (window as any).getMaxAllowedCities ? (window as any).getMaxAllowedCities() : 2;
     const currentCities = cityData.length;
     
     if (currentCities >= maxCities) return;
     
-    const cost = 100 + (currentCities * 50); // Increasing cost per city
+    const cost = currentCities === 2 ? 100 : currentCities === 3 ? 150 : 200; // 100/150/200 progression
     if (gameState.scrap < cost) return;
     
     // Get next available predefined position
@@ -323,7 +354,7 @@ export function buildCity(): void {
     
     if (currentCities >= maxCities) return;
     
-    const cost = 100 + (currentCities * 50); // Increasing cost per city
+    const cost = currentCities === 2 ? 100 : currentCities === 3 ? 150 : 200; // 100/150/200 progression
     if (gameState.scrap < cost) return;
     
     gameState.scrap -= cost;
@@ -353,6 +384,11 @@ export function buildCity(): void {
   if (cityProductivityUpgrades.scrap) cityProductivityUpgrades.scrap.push(0);
   if (cityProductivityUpgrades.science) cityProductivityUpgrades.science.push(0);
   if (cityProductivityUpgrades.ammo) cityProductivityUpgrades.ammo.push(0);
+  
+  // CRITICAL: Initialize accumulator arrays for new city to prevent production bugs
+  ammoAccumulators.push(0);
+  scrapAccumulators.push(0);
+  scienceAccumulators.push(0);
   
   // Visual feedback
   const newCityX = cityPositions[cityPositions.length - 1];

@@ -31,10 +31,10 @@ export let cityProductivityUpgrades: CityProductivityUpgrades = {
     ammo: [0, 0, 0, 0, 0, 0]
 };
 
-// Resource accumulators for precise fractional production
-export let ammoAccumulator = 0;
-export let scrapAccumulator = 0;
-export let scienceAccumulator = 0;
+// Resource accumulators for precise fractional production (per-city)
+export let ammoAccumulators: number[] = [0, 0, 0, 0, 0, 0];
+export let scrapAccumulators: number[] = [0, 0, 0, 0, 0, 0];
+export let scienceAccumulators: number[] = [0, 0, 0, 0, 0, 0];
 
 // Calculate production rate per second for a specific city
 export function calculateCityProductionRate(cityIndex: number): string {
@@ -51,7 +51,8 @@ export function calculateCityProductionRate(cityIndex: number): string {
     
     const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
     const productivityMultiplier = 1 + (productivityLevel * 0.25);
-    let finalProduction = baseProduction * productivityMultiplier;
+    const researchMultiplier = getResearchMultiplier(city.productionMode);
+    let finalProduction = baseProduction * productivityMultiplier * researchMultiplier;
     
     // Double science production rate to match actual generation
     if (city.productionMode === 'science') {
@@ -75,19 +76,79 @@ function ensureAmmoStockpile(city: any): void {
     }
 }
 
+// Get research branch multiplier for production
+function getResearchMultiplier(productionMode: 'scrap' | 'science' | 'ammo'): number {
+    const globalUpgrades = (window as any).globalUpgrades;
+    if (!globalUpgrades) return 1.0;
+    
+    switch (productionMode) {
+        case 'ammo':
+            // Ammo Research Level 1+ gives +50% per level
+            return 1 + ((globalUpgrades.ammoResearch?.level || 0) * 0.5);
+        case 'scrap':
+            // Scrap Research Level 1+ gives +50% per level  
+            return 1 + ((globalUpgrades.scrapResearch?.level || 0) * 0.5);
+        case 'science':
+            // Science Research Level 1+ gives +50% per level
+            return 1 + ((globalUpgrades.scienceResearch?.level || 0) * 0.5);
+        default:
+            return 1.0;
+    }
+}
+
+// Get maximum population based on research upgrades
+function getMaxPopulationForCity(): number {
+    const globalUpgrades = (window as any).globalUpgrades;
+    if (!globalUpgrades) return 100;
+    
+    // Base population: 100
+    let maxPop = 100;
+    
+    // Population Research Level 1: +25 (single unlock)
+    if (globalUpgrades.populationResearch?.level > 0) {
+        maxPop += 25; // Now 125
+    }
+    
+    // Residential Efficiency can add more population bonus per level
+    const residentialLevel = globalUpgrades.residentialEfficiency?.level || 0;
+    maxPop += residentialLevel * 5; // +5 per residential efficiency level
+    
+    return maxPop;
+}
+
+// Apply research upgrades to all existing cities (called when research is purchased)
+export function applyResearchUpgradesToCities(): void {
+    const newMaxPopulation = getMaxPopulationForCity();
+    
+    for (let i = 0; i < cityData.length; i++) {
+        const city = cityData[i];
+        // Update max population if it's higher than current
+        if (newMaxPopulation > city.maxPopulation) {
+            city.maxPopulation = newMaxPopulation;
+        }
+    }
+    
+    console.log(`Applied research upgrades: max population updated to ${newMaxPopulation}`);
+}
+
 // Generate resources from cities based on population and production mode
 export function generateCityResources(): void {
     if (!gameState || !launchers || launchers.length === 0) {
         return;
     }
     
+    // Console logging for production tracking
+    const productionLog: string[] = [];
+    
     for (let i = 0; i < cityData.length; i++) {
         if (destroyedCities.includes(i)) {
+            productionLog.push(`City ${i + 1}: DESTROYED`);
             continue;
         }
         
         const city = cityData[i];
         if (city.population <= 0) {
+            productionLog.push(`City ${i + 1}: NO POPULATION`);
             continue;
         }
         
@@ -101,17 +162,24 @@ export function generateCityResources(): void {
         
         const productivityLevel = cityProductivityUpgrades[city.productionMode][i];
         const productivityMultiplier = 1 + (productivityLevel * 0.25);
-        const finalProduction = baseProduction * productivityMultiplier;
+        const researchMultiplier = getResearchMultiplier(city.productionMode);
+        const finalProduction = baseProduction * productivityMultiplier * researchMultiplier;
+        
+        // Log production calculation for this city
+        const accumulator = city.productionMode === 'ammo' ? ammoAccumulators[i] : 
+                           city.productionMode === 'scrap' ? scrapAccumulators[i] : 
+                           scienceAccumulators[i];
+        productionLog.push(`City ${i + 1}: ${finalProduction.toFixed(2)} ${city.productionMode.toUpperCase()} (pop: ${city.population.toFixed(0)}/${city.maxPopulation}, mult: ${productivityMultiplier.toFixed(2)}, research: ${researchMultiplier.toFixed(2)}, acc: ${accumulator.toFixed(2)})`);
         
         switch (city.productionMode) {
             case 'scrap':
                 // Accumulate fractional scrap production
-                scrapAccumulator += finalProduction;
+                scrapAccumulators[i] += finalProduction;
                 
                 // Convert to integer scrap when we have enough
-                const scrapToAward = Math.floor(scrapAccumulator);
+                const scrapToAward = Math.floor(scrapAccumulators[i]);
                 if (scrapToAward > 0) {
-                    scrapAccumulator -= scrapToAward;
+                    scrapAccumulators[i] -= scrapToAward;
                     
                     // Visual feedback for scrap production
                     const cityX = cityPositions[i];
@@ -127,12 +195,12 @@ export function generateCityResources(): void {
                 
             case 'science':
                 // Accumulate fractional science production (doubled rate for faster progression)
-                scienceAccumulator += finalProduction * 2;
+                scienceAccumulators[i] += finalProduction * 2;
                 
                 // Convert to integer science when we have enough
-                const scienceToAward = Math.floor(scienceAccumulator);
+                const scienceToAward = Math.floor(scienceAccumulators[i]);
                 if (scienceToAward > 0) {
-                    scienceAccumulator -= scienceToAward;
+                    scienceAccumulators[i] -= scienceToAward;
                     
                     // Visual feedback for science production
                     const cityX = cityPositions[i];
@@ -148,16 +216,18 @@ export function generateCityResources(): void {
                 
             case 'ammo':
                 // Accumulate fractional ammo production
-                ammoAccumulator += finalProduction;
+                ammoAccumulators[i] += finalProduction;
                 
                 // Convert to integer ammo when we have enough
-                const ammoToDistribute = Math.floor(ammoAccumulator);
+                const ammoToDistribute = Math.floor(ammoAccumulators[i]);
                 if (ammoToDistribute > 0) {
-                    ammoAccumulator -= ammoToDistribute;
+                    ammoAccumulators[i] -= ammoToDistribute;
                     
                     // Add to city ammo stockpile
                     const stockpileSpace = (city as any).maxAmmoStockpile - (city as any).ammoStockpile;
                     const toStockpile = Math.min(ammoToDistribute, stockpileSpace);
+                    
+                    console.log(`City ${i + 1}: Generated ${ammoToDistribute} ammo, stockpile space: ${stockpileSpace}, storing: ${toStockpile}, current stockpile: ${(city as any).ammoStockpile}`);
                     
                     if (toStockpile > 0) {
                         (city as any).ammoStockpile += toStockpile;
@@ -174,10 +244,10 @@ export function generateCityResources(): void {
                             .sort((a, b) => a.launcher.missiles - b.launcher.missiles); // Prioritize emptiest turrets
                         
                         if (turretsNeedingAmmo.length > 0) {
-                            // Dispatch truck to neediest turret (up to 2 ammo per truck)
+                            // Dispatch truck to neediest turret (starts at 1 ammo per truck)
                             const target = turretsNeedingAmmo[0];
                             const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
-                            const ammoAvailable = Math.min((city as any).ammoStockpile, 2); // Trucks can carry up to 2 ammo
+                            const ammoAvailable = Math.min((city as any).ammoStockpile, 1); // Trucks start carrying 1 ammo
                             const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
                             
                             if (ammoToSend > 0 && (city as any).ammoStockpile >= ammoToSend) {
@@ -209,6 +279,11 @@ export function generateCityResources(): void {
                 }
                 break;
         }
+    }
+    
+    // Output production log if any cities are producing
+    if (productionLog.length > 0) {
+        console.log(`PRODUCTION: ${productionLog.join(' \\ ')}`);
     }
 }
 
@@ -323,12 +398,12 @@ export function repairCity(cityIndex: number): boolean {
 // Reset all city data
 export function resetCityData(): void {
     cityData = [
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any
     ];
     
     cityUpgrades = [0, 0, 0, 0, 0, 0];
@@ -338,7 +413,9 @@ export function resetCityData(): void {
         science: [0, 0, 0, 0, 0, 0],
         ammo: [0, 0, 0, 0, 0, 0]
     };
-    ammoAccumulator = 0;
+    ammoAccumulators = [0, 0, 0, 0, 0, 0];
+    scrapAccumulators = [0, 0, 0, 0, 0, 0];
+    scienceAccumulators = [0, 0, 0, 0, 0, 0];
 }
 
 // Make globally available for legacy compatibility
@@ -346,7 +423,9 @@ export function resetCityData(): void {
 (window as any).cityUpgrades = cityUpgrades;
 (window as any).cityPopulationUpgrades = cityPopulationUpgrades;
 (window as any).cityProductivityUpgrades = cityProductivityUpgrades;
-(window as any).ammoAccumulator = ammoAccumulator;
+(window as any).ammoAccumulators = ammoAccumulators;
+(window as any).scrapAccumulators = scrapAccumulators;
+(window as any).scienceAccumulators = scienceAccumulators;
 (window as any).calculateCityProductionRate = calculateCityProductionRate;
 (window as any).generateCityResources = generateCityResources;
 (window as any).updateCityPopulation = updateCityPopulation;
@@ -355,3 +434,4 @@ export function resetCityData(): void {
 (window as any).upgradeCityProductivity = upgradeCityProductivity;
 (window as any).repairCity = repairCity;
 (window as any).resetCityData = resetCityData;
+(window as any).applyResearchUpgradesToCities = applyResearchUpgradesToCities;

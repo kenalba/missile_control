@@ -67,6 +67,14 @@ function handleUpgradePanelActions(event: Event): void {
       case 'purchase-global':
         if (actionData) {
           (window as any).purchaseGlobalUpgrade(actionData);
+          
+          // Check if this purchase should auto-select a research branch
+          const autoSelectId = target.getAttribute('data-auto-select');
+          if (autoSelectId) {
+            // Auto-select the newly purchased research branch
+            (window as any).selectResearchBranch(autoSelectId);
+          }
+          
           markPanelDirty(); // Force immediate update
         }
         break;
@@ -231,6 +239,12 @@ export function markPanelDirty(): void {
   const updateSidebarContent = (window as any).updateSidebarContent;
   if (typeof updateSidebarContent === 'function') {
     updateSidebarContent();
+  }
+  
+  // Also update main UI to refresh resource displays
+  const updateUI = (window as any).updateUI;
+  if (typeof updateUI === 'function') {
+    updateUI();
   }
 }
 

@@ -167,19 +167,20 @@ export function getSidebarTab(): string {
 // Check which tabs should be visible based on unlock conditions
 function getVisibleTabs(): Array<{id: string, label: string}> {
   const tabs = [
-    { id: 'cities', label: 'CITIES' } // Always visible
+    { id: 'cities', label: '<u>C</u>ITIES' } // Always visible, C underlined for hotkey
   ];
   
   const globalUpgrades = (window as any).globalUpgrades;
   
-  // Science tab unlocked by "research" upgrade (Unlock Science)
-  if (globalUpgrades?.research?.level > 0) {
-    tabs.push({ id: 'science', label: 'SCIENCE' });
+  // Science tab unlocked by "research" upgrade (Unlock Science) AND having at least 1 science
+  const gameState = (window as any).gameState;
+  if (globalUpgrades?.research?.level > 0 && gameState?.science > 0) {
+    tabs.push({ id: 'science', label: '<u>S</u>CIENCE' }); // S underlined for hotkey
   }
   
-  // Turrets tab unlocked by "unlockTurretUpgrades" upgrade
-  if (globalUpgrades?.unlockTurretUpgrades?.level > 0) {
-    tabs.push({ id: 'turrets', label: 'TURRETS' });
+  // Turrets tab unlocked by "ammoResearch" upgrade
+  if (globalUpgrades?.ammoResearch?.level > 0) {
+    tabs.push({ id: 'turrets', label: '<u>T</u>URRETS' }); // T underlined for hotkey
   }
   
   return tabs;

@@ -45,36 +45,36 @@ export let globalUpgrades: GlobalUpgrades = {
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
     truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
     ammoHotkey: { level: 0, cost: 20 }, // Enables 'A' key for emergency ammo purchase (science cost)
-    // Progressive disclosure tech tree - Research Branches
-    ammoResearch: { level: 0, cost: 20 }, // Unlocks ammo-related upgrades (science cost)
-    scrapResearch: { level: 0, cost: 25 }, // Unlocks scrap-related upgrades (science cost)
-    scienceResearch: { level: 0, cost: 20 }, // Unlocks science-related upgrades (science cost)
-    populationResearch: { level: 0, cost: 25 }, // Unlocks population-related upgrades (science cost)
+    // Progressive disclosure tech tree - Research Branches (Single-level unlocks)
+    ammoResearch: { level: 0, cost: 20 }, // +50% ammo production + unlocks Turrets tab (science cost)
+    scrapResearch: { level: 0, cost: 25 }, // Enables scrap production + 50% scrap production (science cost)
+    scienceResearch: { level: 0, cost: 20 }, // +50% science production (science cost)
+    populationResearch: { level: 0, cost: 25 }, // Max city size +25 (to 125) + unlocks residential zones (science cost)
     
-    // Ammo Research Branch
-    unlockTurretUpgrades: { level: 0, cost: 15 }, // Enables Turrets tab (science cost)
-    enhancedAmmoProduction: { level: 0, cost: 20 }, // Unlocks per-city ammo production upgrades (science cost)
-    rapidProcurement: { level: 0, cost: 15 }, // 'A' key emergency ammo hotkey (science cost)
-    advancedLogistics: { level: 0, cost: 30 }, // Truck improvements (science cost)
-    ammunitionStockpiles: { level: 0, cost: 35 }, // Unlocks per-city ammo storage upgrades (science cost)
+    // Ammo Research Branch - Tiered Sub-Upgrades
+    enhancedAmmoProduction: { level: 0, cost: 20 }, // Level 1-3: improves ammo factory efficiency (science cost)
+    rapidProcurement: { level: 0, cost: 15 }, // 'A' key emergency ammo hotkey (unlocks after Enhanced Ammo) (science cost)
+    advancedLogistics: { level: 0, cost: 30 }, // Truck improvements (unlocks after Rapid Procurement) (science cost)
+    ammunitionStockpiles: { level: 0, cost: 35 }, // Storage upgrades (unlocks after Advanced Logistics) (science cost)
     
-    // Scrap Research Branch
-    enhancedScrapMining: { level: 0, cost: 20 }, // Unlocks per-city scrap production upgrades (science cost)
-    resourceEfficiency: { level: 0, cost: 25 }, // 15% discount on city upgrades (science cost)
-    salvageOperations: { level: 0, cost: 15 }, // Auto-convert excess ammo to scrap (science cost)
+    // Scrap Research Branch - Tiered Sub-Upgrades
+    enhancedScrapMining: { level: 0, cost: 20 }, // Level 1-3: improves mining efficiency (science cost)
+    resourceEfficiency: { level: 0, cost: 25 }, // 15% city upgrade discount (unlocks after Enhanced Scrap) (science cost)
+    salvageOperations: { level: 0, cost: 15 }, // Auto-convert excess ammo (unlocks after Resource Efficiency) (science cost)
     
-    // Science Research Branch
-    viewTechTree: { level: 0, cost: 10 }, // Show complete technology roadmap (science cost)
-    enhancedResearch: { level: 0, cost: 20 }, // Unlocks per-city science production upgrades (science cost)
-    researchAnalytics: { level: 0, cost: 25 }, // Show upgrade statistics (science cost)
+    // Science Research Branch - Tiered Sub-Upgrades
+    enhancedResearch: { level: 0, cost: 20 }, // Level 1-3: improves lab efficiency (science cost)
+    viewTechTree: { level: 0, cost: 10 }, // Shows roadmap (unlocks after Enhanced Research) (science cost)
+    researchAnalytics: { level: 0, cost: 25 }, // Upgrade statistics (unlocks after View Tech Tree) (science cost)
     
-    // Population Research Branch
-    urbanPlanning1: { level: 0, cost: 30 }, // Unlock 3rd city slot (science cost)
-    urbanPlanning2: { level: 0, cost: 40 }, // Unlock 4th city slot (science cost)
-    urbanPlanning3: { level: 0, cost: 50 }, // Unlock 5th city slot (science cost)
-    urbanPlanning4: { level: 0, cost: 60 }, // Unlock 6th city slot (science cost)
-    populationGrowth: { level: 0, cost: 20 }, // Unlocks per-city population growth upgrades (science cost)
-    civilDefense: { level: 0, cost: 25 } // Unlocks per-city bunker construction (science cost)
+    // Population Research Branch - Tiered Sub-Upgrades
+    residentialEfficiency: { level: 0, cost: 15 }, // Level 1-3: +1 pop bonus per residential zone level (science cost)
+    urbanPlanning1: { level: 0, cost: 30 }, // Unlock 3rd city slot (unlocks after Residential Efficiency Level 2) (science cost)
+    urbanPlanning2: { level: 0, cost: 40 }, // Unlock 4th city slot (unlocks after Urban Planning 1) (science cost)
+    urbanPlanning3: { level: 0, cost: 50 }, // Unlock 5th city slot (unlocks after Urban Planning 2) (science cost)
+    urbanPlanning4: { level: 0, cost: 60 }, // Unlock 6th city slot (unlocks after Urban Planning 3) (science cost)
+    populationGrowth: { level: 0, cost: 20 }, // Growth rate upgrades (unlocks after Urban Planning 2) (science cost)
+    civilDefense: { level: 0, cost: 25 } // Bunker construction (unlocks after Urban Planning 2) (science cost)
 };
 
 // Unlocked turret upgrade paths (spent science to unlock)
@@ -141,7 +141,6 @@ export function resetUpgrades(): void {
         scienceResearch: { level: 0, cost: 20 },
         populationResearch: { level: 0, cost: 25 },
         // Ammo Research Branch
-        unlockTurretUpgrades: { level: 0, cost: 15 },
         enhancedAmmoProduction: { level: 0, cost: 20 },
         rapidProcurement: { level: 0, cost: 15 },
         advancedLogistics: { level: 0, cost: 30 },
@@ -151,10 +150,11 @@ export function resetUpgrades(): void {
         resourceEfficiency: { level: 0, cost: 25 },
         salvageOperations: { level: 0, cost: 15 },
         // Science Research Branch
-        viewTechTree: { level: 0, cost: 10 },
         enhancedResearch: { level: 0, cost: 20 },
+        viewTechTree: { level: 0, cost: 10 },
         researchAnalytics: { level: 0, cost: 25 },
         // Population Research Branch
+        residentialEfficiency: { level: 0, cost: 15 },
         urbanPlanning1: { level: 0, cost: 30 },
         urbanPlanning2: { level: 0, cost: 40 },
         urbanPlanning3: { level: 0, cost: 50 },
@@ -210,25 +210,66 @@ export function purchaseLauncherUpgrade(launcherIndex: number, upgradeType: keyo
 export function purchaseGlobalUpgrade(upgradeType: keyof GlobalUpgrades): boolean {
     const upgrade = globalUpgrades[upgradeType];
     
-    // Check if already owned
-    if (upgrade.level > 0) {
-        return false;
+    // Multi-level upgrades are now the tiered sub-upgrades
+    const multiLevelUpgrades = ['enhancedAmmoProduction', 'enhancedScrapMining', 'enhancedResearch', 'residentialEfficiency'];
+    const isMultiLevel = multiLevelUpgrades.includes(upgradeType as string);
+    
+    // Check if already at max level
+    if (!isMultiLevel && upgrade.level > 0) {
+        return false; // One-time upgrades can't be purchased again
+    }
+    
+    if (isMultiLevel && upgrade.level >= 3) {
+        return false; // Research branches max at level 3
+    }
+    
+    // Determine currency type - science-based upgrades use science, others use scrap
+    const scienceBasedUpgrades = [
+        'civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech',
+        'ammoRecycling', 'truckFleet', 'ammoHotkey',
+        // New tech tree upgrades - Research branches and sub-upgrades
+        'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',
+        'enhancedAmmoProduction', 'rapidProcurement', 'advancedLogistics', 'ammunitionStockpiles',
+        'enhancedScrapMining', 'resourceEfficiency', 'salvageOperations',
+        'enhancedResearch', 'viewTechTree', 'researchAnalytics',
+        'residentialEfficiency', 'urbanPlanning1', 'urbanPlanning2', 'urbanPlanning3', 'urbanPlanning4', 'populationGrowth', 'civilDefense'
+    ];
+    
+    const currency: 'scrap' | 'science' = scienceBasedUpgrades.includes(upgradeType as string) ? 'science' : 'scrap';
+    
+    // Calculate actual cost for multi-level upgrades
+    let actualCost = upgrade.cost;
+    if (isMultiLevel && upgrade.level > 0) {
+        // Each level costs 1.5x more than base cost
+        actualCost = Math.floor(upgrade.cost * Math.pow(1.5, upgrade.level));
     }
     
     // Check if can afford
-    if (!(window as any).canAfford?.(upgrade.cost)) {
+    if (!(window as any).canAfford?.(actualCost, currency)) {
         return false;
     }
     
     // Spend currency
-    if (!(window as any).spendCurrency?.(upgrade.cost)) {
+    if (!(window as any).spendCurrency?.(actualCost, currency)) {
         return false;
     }
     
     // Apply upgrade
-    upgrade.level = 1; // Global upgrades are typically one-time purchases
+    if (isMultiLevel) {
+        upgrade.level += 1; // Multi-level upgrades increment
+    } else {
+        upgrade.level = 1; // One-time upgrades set to 1
+    }
     
-    console.log(`Purchased global upgrade: ${upgradeType}`);
+    // Apply research effects to cities if this is a research branch upgrade
+    if (['populationResearch', 'ammoResearch', 'scrapResearch', 'scienceResearch', 'residentialEfficiency'].includes(upgradeType as string)) {
+        const applyResearchUpgrades = (window as any).applyResearchUpgradesToCities;
+        if (typeof applyResearchUpgrades === 'function') {
+            applyResearchUpgrades();
+        }
+    }
+    
+    console.log(`Purchased global upgrade: ${upgradeType} level ${upgrade.level} for ${actualCost} ${currency}`);
     return true;
 }
 
@@ -256,6 +297,18 @@ export function unlockUpgradePath(pathType: keyof UnlockedUpgradePaths, cost: nu
     return true;
 }
 
+// Calculate maximum allowed cities based on Urban Planning research
+export function getMaxAllowedCities(): number {
+    let maxCities = 2; // Base: start with 2 cities
+    
+    if (globalUpgrades.urbanPlanning1?.level > 0) maxCities = 3;
+    if (globalUpgrades.urbanPlanning2?.level > 0) maxCities = 4;
+    if (globalUpgrades.urbanPlanning3?.level > 0) maxCities = 5;
+    if (globalUpgrades.urbanPlanning4?.level > 0) maxCities = 6;
+    
+    return maxCities;
+}
+
 // Make globally available for legacy compatibility
 (window as any).launcherUpgrades = launcherUpgrades;
 (window as any).globalUpgrades = globalUpgrades;
@@ -265,3 +318,4 @@ export function unlockUpgradePath(pathType: keyof UnlockedUpgradePaths, cost: nu
 (window as any).purchaseLauncherUpgrade = purchaseLauncherUpgrade;
 (window as any).purchaseGlobalUpgrade = purchaseGlobalUpgrade;
 (window as any).unlockUpgradePath = unlockUpgradePath;
+(window as any).getMaxAllowedCities = getMaxAllowedCities;

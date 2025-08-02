@@ -180,17 +180,16 @@ export class ModeManager {
         gameState.commandMode.difficulty = 1;
         gameState.commandMode.lastResourceTick = 0;
         gameState.commandMode.lastEnemySpawn = 0;
-        gameState.commandMode.selectedEntity = null;
-        gameState.commandMode.selectedEntityType = null;
+        gameState.commandMode.selectedEntity = 0; // Start with first city selected
+        gameState.commandMode.selectedEntityType = 'city';
         
-        // Initialize city data for Command Mode - start with scrap and ammo only
-        const productionModes = ['scrap', 'ammo']; // Science production must be unlocked
+        // Initialize city data for Command Mode - start with ammo only
         cityData.length = 0;
-        cityData.push(...config.cityPositions.map((_, index) => ({
+        cityData.push(...config.cityPositions.map(() => ({
             population: 100,
             maxPopulation: 100,
-            productionMode: productionModes[index % 2] as 'scrap' | 'ammo' | 'science', // Cycle through scrap, ammo
-            baseProduction: 0.8, // Balanced production: 0.8 resource per tick (every 3 seconds)
+            productionMode: 'ammo' as 'scrap' | 'ammo' | 'science', // All cities start producing ammo
+            baseProduction: 0.5, // Lower initial production - research upgrades increase this
             ammoStockpile: 0,
             maxAmmoStockpile: 5,
             maxTrucks: 1

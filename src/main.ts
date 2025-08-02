@@ -18,7 +18,8 @@ import '@/systems/upgrades'; // Upgrade system
 import '@/systems/upgradeLogic'; // Legacy upgrade support
 import '@/ui/uiUtils'; // UI utilities
 import '@/ui/panelManager'; // Panel management
-import '@/ui/upgradeContent'; // Upgrade content generation
+import '@/ui/upgrades/modes/command'; // Command mode upgrade content
+import '@/ui/upgrades/modes/arcade'; // Arcade mode upgrade content
 import '@/ui/sidebarManager'; // Sidebar state management
 import { observableGameState, uiUpdateSystem } from '@/systems/observableState'; // Observable state system
 import { timeManager } from '@/systems/timeManager'; // Time management system

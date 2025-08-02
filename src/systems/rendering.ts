@@ -1035,8 +1035,11 @@ function drawAmmoTrucks(): void {
         ctx.fillStyle = truckColor;
         ctx.fillRect(truck.currentX - 6, truck.currentY - 3, 12, 6);
         
-        // Draw cargo (only when delivering with ammo)
-        if (truck.status === 'delivering' && truck.ammoAmount > 0) {
+        // Draw cargo (when delivering with ammo OR returning with undelivered ammo)
+        const hasAmmo = (truck.status === 'delivering' && truck.ammoAmount > 0) ||
+                        (truck.status === 'returning' && truck.returnAmmo && truck.returnAmmo > 0);
+        
+        if (hasAmmo) {
             ctx.fillStyle = '#f80';
             ctx.fillRect(truck.currentX - 4, truck.currentY - 5, 8, 3);
         }
@@ -1047,11 +1050,14 @@ function drawAmmoTrucks(): void {
         ctx.fillRect(truck.currentX + 2, truck.currentY + 2, 2, 2);
         
         // Draw status indicator
-        if (truck.status === 'delivering' && truck.ammoAmount > 0) {
+        const ammoCount = truck.status === 'delivering' ? truck.ammoAmount : 
+                         truck.status === 'returning' ? (truck.returnAmmo || 0) : 0;
+        
+        if (ammoCount > 0) {
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 10px monospace';
             ctx.textAlign = 'center';
-            ctx.fillText(truck.ammoAmount.toString(), truck.currentX, truck.currentY - 8);
+            ctx.fillText(ammoCount.toString(), truck.currentX, truck.currentY - 8);
         } else if (truck.status === 'returning') {
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 8px monospace';

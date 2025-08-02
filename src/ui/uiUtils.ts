@@ -15,7 +15,12 @@ export const COLORS = {
   yellow: '255, 255, 0',
   cyan: '0, 255, 255',
   orange: '255, 128, 0',
-  red: '255, 0, 0'
+  red: '255, 0, 0',
+  // Upgrade tree colors
+  ammoTree: '255, 140, 0',    // 🎯 Ammo Research - Orange/amber for targeting
+  scrapTree: '255, 215, 0',   // 💰 Scrap Research - Gold for wealth/materials  
+  scienceTree: '100, 200, 255', // 🔬 Science Research - Light blue for research
+  populationTree: '144, 238, 144' // 🏘️ Population Research - Light green for growth
 };
 
 // Configuration interface for upgrade buttons
@@ -159,6 +164,7 @@ export function createTabButton(tabInfo: TabInfo, currentTab: string, onClickHan
   
   return button;
 }
+
 
 // Export all functions for global compatibility
 (window as any).createUpgradeButton = createUpgradeButton;

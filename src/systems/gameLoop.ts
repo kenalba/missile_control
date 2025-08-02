@@ -178,26 +178,14 @@ function showSplashScreen(): void {
     highlightLastSelectedMode();
 }
 
-// Highlight the last selected mode on the splash screen
+// Remove any mode highlighting on the splash screen
 function highlightLastSelectedMode(): void {
-    const saveSystem = (window as any).saveSystem;
-    if (saveSystem) {
-        const lastMode = saveSystem.getLastSelectedMode();
-        
-        // Remove previous highlights
-        const arcadeBtn = document.getElementById('arcadeModeBtn');
-        const commandBtn = document.getElementById('commandModeBtn');
-        
-        if (arcadeBtn) arcadeBtn.classList.remove('recommended');
-        if (commandBtn) commandBtn.classList.remove('recommended');
-        
-        // Add highlight to last selected mode
-        if (lastMode === 'command' && commandBtn) {
-            commandBtn.classList.add('recommended');
-        } else if (arcadeBtn) {
-            arcadeBtn.classList.add('recommended');
-        }
-    }
+    // Always remove highlights - no auto-highlighting of any mode
+    const arcadeBtn = document.getElementById('arcadeModeBtn');
+    const commandBtn = document.getElementById('commandModeBtn');
+    
+    if (arcadeBtn) arcadeBtn.classList.remove('recommended');
+    if (commandBtn) commandBtn.classList.remove('recommended');
 }
 
 // Start the actual game
