@@ -150,16 +150,16 @@ export function createCityProductivityWidget(cityIndex: number, productionType: 
   const canAfford = gameState.scrap >= scrapCost;
   
   // Calculate tier and visual properties based on level
-  let tier: number, tierColor: string, tierName: string, barsInTier: number, levelInTier: number;
+  let tierColor: string, tierName: string, barsInTier: number, levelInTier: number;
   
   if (currentLevel <= 3) {
-    tier = 1; tierColor = '#0ff'; tierName = 'BASIC'; barsInTier = 3; levelInTier = currentLevel;
+    tierColor = '#0ff'; tierName = 'BASIC'; barsInTier = 3; levelInTier = currentLevel;
   } else if (currentLevel <= 6) {
-    tier = 2; tierColor = '#0f0'; tierName = 'ADVANCED'; barsInTier = 3; levelInTier = currentLevel - 3;
+    tierColor = '#0f0'; tierName = 'ADVANCED'; barsInTier = 3; levelInTier = currentLevel - 3;
   } else if (currentLevel <= 10) {
-    tier = 3; tierColor = '#ff0'; tierName = 'EXPERT'; barsInTier = 4; levelInTier = currentLevel - 6;
+    tierColor = '#ff0'; tierName = 'EXPERT'; barsInTier = 4; levelInTier = currentLevel - 6;
   } else {
-    tier = 4; tierColor = '#f80'; tierName = 'MASTER'; barsInTier = 10; levelInTier = currentLevel - 10;
+    tierColor = '#f80'; tierName = 'MASTER'; barsInTier = 10; levelInTier = currentLevel - 10;
   }
   
   // Progress bars
