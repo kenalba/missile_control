@@ -282,6 +282,38 @@ npm run preview
 - 🚧 **Phase 2 Next**: Game state, entities, input system with event bus
 - 📋 **Phase 3 Planned**: UI components, rendering system, main game loop
 
+## Current Development Status
+
+### Active Todo List
+
+#### High Priority
+- **Fix research roadmap not showing after purchase** - Research Roadmap upgrade not displaying purchased state
+- **Fix production stopping when third city is built** - Cities stop producing resources when expanding beyond 2 cities
+
+#### Medium Priority  
+- **Separate ammo production from turret upgrades into its own tech tree** - Create dedicated ammo production tech branch
+- **Implement comprehensive population research system** - Urban planning, residential efficiency, bunkers with proper science costs
+- **Implement auto-fire system for turrets with excess ammo** - Automatic defensive firing when ammo stockpiled
+- **Autofire improvements** - Faster firing, radar-based targeting, priority system for automated defense
+- **Visual improvements** - City facility representations, cleaner UI, better visual feedback
+
+#### Low Priority
+- **Add toggle for showing purchased upgrades on science tabs** - Option to show/hide completed research
+- **Abstract CSS from inline styles to dedicated CSS files** - Better code organization and maintainability
+- **Add alternative weapon types** - Laser weapons with wall-like trail effects
+- **Multi-city collaboration system** - Truck-based resource sharing between cities
+
+### Recently Completed
+- ✅ **Fix tooltips not showing at all** - Implemented Tippy.js tooltip system with proper positioning
+- ✅ **Fix Arcade Mode auto-highlight on landing page** - Redesigned landing page to focus on Command Mode
+- ✅ **Landing page redesign** - Made Command Mode the primary game experience
+
+### Development Priorities
+1. **Core Functionality** - Fix game-breaking issues first
+2. **UI/UX Polish** - Improve player experience and interface clarity
+3. **Feature Expansion** - Add new gameplay systems and mechanics
+4. **Code Quality** - Refactor and organize codebase for maintainability
+
 ## Browser Compatibility
 
 - Requires modern browser with HTML5 Canvas support

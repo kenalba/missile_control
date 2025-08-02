@@ -1,12 +1,14 @@
 # Missile Command - Upgrade Edition
 
-A modern web-based remake of the classic Missile Command arcade game with dual game modes, modular upgrade systems, and space-efficient UI design.
+A modern strategic defense game inspired by Missile Command, featuring comprehensive upgrade systems, resource management, and base building mechanics.
 
-⚡ **[Play the Game](https://kenalba.github.io/missile_control)**
+⚡ **[Play the Game](https://kenalba.github.io/missile_control)** | 📋 **[Development Status](CLAUDE.md)**
 
 ## Game Overview
 
-Choose your strategy: **Arcade Mode** for classic fast-paced action with 6 cities and 3 turrets, or **Command Mode** for strategic base building starting with 1 turret and 2 cities. Defend against incoming missiles, earn scrap from destroyed enemies, and invest in upgrades to survive increasingly difficult waves.
+**Command Mode** is the primary game experience - start with 1 turret and 2 cities, then expand your defensive network through research and strategic upgrades. Manage resources (scrap, science), unlock technology trees, and build the ultimate missile defense system.
+
+*Arcade Mode (classic 6 cities, 3 turrets) is temporarily hidden while Command Mode is being refined as the core experience.*
 
 ![Missile Command Screenshot](https://via.placeholder.com/600x400/001122/00ff00?text=Missile+Command)
 
@@ -187,16 +189,25 @@ npm run build
 - Touch events support (for mobile)
 - Service Worker support (for PWA features)
 
-### Recent Improvements
-- **Modular UI Architecture**: Separated upgrade system into focused modules for maintainability
-- **Tooltip System**: Space-efficient hover-based descriptions with smart positioning
-- **Command Mode**: Strategic gameplay with floating draggable upgrade panel
-- **Dual Mode System**: Arcade and Command modes with optimized interfaces
-- **Mobile Optimization**: Landscape-forced layout with touch-friendly controls
+### Recent Updates
+- **Landing Page Redesign**: Command Mode now prominently featured as primary experience
+- **Tooltip System**: Comprehensive Tippy.js integration with proper positioning and overflow handling
+- **Science Research**: Three research branches (Ammo, Scrap, Science) with tiered upgrades
+- **UI Polish**: Modular architecture with space-efficient design and visual improvements
+- **Production Systems**: City-based resource generation with productivity upgrades
+
+### Development Status
+
+For current development priorities, active todo list, and technical implementation details, see **[CLAUDE.md](CLAUDE.md)**.
+
+Key priorities:
+- 🔴 **High Priority**: Research roadmap display, city production fixes
+- 🟡 **Medium Priority**: Tech tree expansion, auto-fire systems, visual improvements  
+- 🟢 **Low Priority**: Code organization, advanced features
 
 ## Contributing
 
-Feel free to submit issues or pull requests. The codebase is well-documented and modular for easy modification.
+Feel free to submit issues or pull requests. The codebase uses TypeScript with modern tooling and is well-documented for easy modification. See [CLAUDE.md](CLAUDE.md) for detailed development information.
 
 ## License
 

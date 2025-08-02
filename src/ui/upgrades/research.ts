@@ -43,7 +43,9 @@ export const researchBranches: ResearchBranch[] = [
     maxLevel: 1,
     baseCost: 20,
     color: COLORS.scienceTree
-  },
+  }
+  // Population research temporarily disabled - will be implemented in future update
+  /*
   { 
     id: 'populationResearch', 
     name: 'Population',
@@ -53,6 +55,7 @@ export const researchBranches: ResearchBranch[] = [
     baseCost: 25,
     color: COLORS.populationTree
   }
+  */
 ];
 
 // Branch upgrades configuration
