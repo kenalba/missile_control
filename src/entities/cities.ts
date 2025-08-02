@@ -31,12 +31,7 @@ export function destroyCity(cityIndex: number): void {
     }
 }
 
-export function repairCity(cityIndex: number): void {
-    const index = destroyedCities.indexOf(cityIndex);
-    if (index > -1) {
-        destroyedCities.splice(index, 1);
-    }
-}
+// repairCity moved to core/cities.ts for complete implementation with cost handling
 
 export function isCityDestroyed(cityIndex: number): boolean {
     return destroyedCities.includes(cityIndex);

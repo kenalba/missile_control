@@ -24,6 +24,13 @@ function handleUpgradePanelActions(event: Event): void {
   // Only handle clicks within the sidebar (either regular content or expanded content)
   if (!sidebar || !sidebar.contains(button)) return;
   
+  // Check if button is disabled (using our custom data-disabled attribute)
+  if (button.getAttribute('data-disabled') === 'true') {
+    event.preventDefault();
+    event.stopPropagation();
+    return; // Don't execute action on disabled buttons
+  }
+  
   event.preventDefault();
   event.stopPropagation();
   
@@ -246,6 +253,13 @@ export function markPanelDirty(): void {
   if (typeof updateUI === 'function') {
     updateUI();
   }
+  
+  // Refresh tooltips after content changes
+  setTimeout(() => {
+    if ((window as any).refreshTooltips) {
+      (window as any).refreshTooltips();
+    }
+  }, 50); // Small delay to let DOM settle
 }
 
 // Update Command panel content (simplified with observable state)
@@ -263,6 +277,11 @@ export function updateCommandPanel(): void {
   
   // Always rebuild content when explicitly requested
   updatePanelTabbedContent();
+  
+  // Refresh tooltips after updating command panel
+  if ((window as any).refreshTooltips) {
+    (window as any).refreshTooltips();
+  }
 }
 
 

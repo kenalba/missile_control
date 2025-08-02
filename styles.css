@@ -16,6 +16,7 @@ body {
     width: 100vw;
     gap: 0;
     box-sizing: border-box;
+    overflow: visible; /* Allow tooltips to extend beyond game area */
 }
 
 #gameContainer {
@@ -235,20 +236,19 @@ body {
 
 #upgradePanel {
     background: rgba(0, 0, 0, 0.9);
-    padding: 20px; /* Add margin matching game area */
-    border-radius: 5px 0 0 5px; /* Rounded left side only */
-    border: 1px solid #0f0;
-    border-right: none; /* No right border since it's at screen edge */
-    width: 350px; /* Fixed width - larger than minimum to use available space */
-    height: 100vh; /* Full height */
+    padding: 20px; /* Consistent padding on all sides */
+    border-radius: 5px; /* Rounded on all sides */
+    border: 1px solid #0f0; /* Border on all sides */
+    width: 350px; /* Fixed width */
+    height: calc(100vh - 40px); /* Full height minus margins */
     overflow-y: auto; /* Vertical scrolling only */
+    overflow-x: visible; /* Allow tooltips to extend horizontally */
     flex-shrink: 0;
-    position: relative; /* Needed for absolute positioning of toggle button */
+    position: relative;
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
-    margin: 20px 0; /* Top and bottom margin matching game container */
-    height: calc(100vh - 40px); /* Adjust for margin */
+    margin: 20px; /* Consistent margin on all sides */
 }
 
 /* Override overflow for tooltip containers */
@@ -298,7 +298,7 @@ body {
 /* Sidebar Toggle Button (attached to left edge) */
 .sidebar-toggle-btn {
     position: absolute;
-    left: -40px; /* Position to the left of sidebar */
+    left: -41px; /* Position to the left of sidebar (adjusted for new border) */
     top: 50%;
     transform: translateY(-50%);
     background: #004400;
@@ -495,6 +495,7 @@ body.command-mode .global-upgrades {
     border-color: #555;
     cursor: not-allowed;
     opacity: 0.6;
+    pointer-events: auto; /* Keep pointer events for tooltips */
 }
 
 .upgrade-row {
@@ -533,6 +534,7 @@ body.command-mode .global-upgrades {
     border-color: #555;
     cursor: not-allowed;
     opacity: 0.6;
+    pointer-events: auto; /* Keep pointer events for tooltips */
 }
 
 /* High Scores Section */
@@ -1218,95 +1220,13 @@ body.command-mode .global-upgrades {
     box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
 }
 
-/* Tooltip System */
+/* Tooltip System - Using Tippy.js */
 .tooltip {
     position: relative;
     cursor: help;
 }
 
-.tooltip::after {
-    content: attr(data-tooltip);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.95) !important;
-    background-color: rgba(0, 0, 0, 0.95) !important;
-    color: #0f0 !important;
-    padding: 10px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    z-index: 99999; /* Higher z-index to appear above everything */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
-    pointer-events: none;
-    border: 2px solid #0f0;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
-    min-width: 180px;
-    max-width: 320px;
-    white-space: normal;
-    text-align: left;
-    line-height: 1.4;
-    font-weight: normal;
-    word-wrap: break-word;
-    margin-bottom: 8px;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-}
-
-/* Tooltip positioning adjustments for edge cases */
-.tooltip:hover::after {
-    opacity: 1 !important;
-    visibility: visible;
-}
-
-/* For tooltips on the right edge, shift left */
-.compact-grid-2 .tooltip:nth-child(even)::after,
-.compact-grid-3 .tooltip:nth-child(3n)::after,
-.compact-grid-4 .tooltip:nth-child(4n)::after {
-    left: auto;
-    right: 0;
-    transform: none;
-}
-
-/* For tooltips on the left edge, shift right */
-.compact-grid-2 .tooltip:nth-child(odd)::after,
-.compact-grid-3 .tooltip:nth-child(3n-2)::after,
-.compact-grid-4 .tooltip:nth-child(4n-3)::after {
-    left: 0;
-    transform: none;
-}
-
-/* For middle tooltips in 3-column grid */
-.compact-grid-3 .tooltip:nth-child(3n-1)::after {
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.tooltip:hover::after {
-    opacity: 1 !important;
-    visibility: visible;
-}
-
-/* Fix opacity inheritance from disabled buttons */
-.upgrade-btn-compact:disabled.tooltip:hover::after,
-button:disabled.tooltip:hover::after {
-    opacity: 1 !important;
-    background: rgba(0, 0, 0, 0.95) !important;
-    background-color: rgba(0, 0, 0, 0.95) !important;
-    color: #0f0 !important;
-    filter: none !important; /* Override filter: opacity() from disabled buttons */
-}
-
-/* Ensure disabled tooltip elements themselves don't inherit parent opacity */
-.upgrade-btn-compact:disabled.tooltip::after,
-button:disabled.tooltip::after {
-    filter: none !important; /* Override filter: opacity() from disabled buttons */
-}
-
-
-/* JavaScript will position the tooltip dynamically to prevent clipping */
+/* Tippy.js handles all tooltip positioning and styling */
 
 /* Command Center content overflow handling */
 #commandCenterContent {
@@ -1343,9 +1263,16 @@ button:disabled.tooltip::after {
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
+    pointer-events: auto; /* Keep pointer events for tooltips */
 }
 
 /* Grid layouts for compact design */
+.compact-grid-1 {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+}
+
 .compact-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -1362,6 +1289,15 @@ button:disabled.tooltip::after {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     gap: 6px;
+}
+
+/* Ensure buttons fill their grid space */
+.compact-grid-1 .upgrade-btn-compact,
+.compact-grid-2 .upgrade-btn-compact,
+.compact-grid-3 .upgrade-btn-compact,
+.compact-grid-4 .upgrade-btn-compact {
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Panel animations */

@@ -189,7 +189,7 @@ export class ModeManager {
             population: 100,
             maxPopulation: 100,
             productionMode: 'ammo' as 'scrap' | 'ammo' | 'science', // All cities start producing ammo
-            baseProduction: 0.5, // Lower initial production - research upgrades increase this
+            baseProduction: 1.0, // Balanced base production for better progression
             ammoStockpile: 0,
             maxAmmoStockpile: 5,
             maxTrucks: 1

@@ -2,6 +2,7 @@
 
 // Import styles first for Vite development server
 import '../styles.css';
+import 'tippy.js/dist/tippy.css'; // Import Tippy.js CSS
 
 // Import TypeScript modules and type definitions
 import './legacy';
@@ -18,6 +19,7 @@ import '@/systems/upgrades'; // Upgrade system
 import '@/systems/upgradeLogic'; // Legacy upgrade support
 import '@/ui/uiUtils'; // UI utilities
 import '@/ui/panelManager'; // Panel management
+import '@/ui/tooltipManager'; // Tippy.js tooltip system
 import '@/ui/upgrades/modes/command'; // Command mode upgrade content
 import '@/ui/upgrades/modes/arcade'; // Arcade mode upgrade content
 import '@/ui/sidebarManager'; // Sidebar state management

@@ -36,11 +36,8 @@ export let globalUpgrades: GlobalUpgrades = {
     efficiency: { level: 0, cost: 90 },
     research: { level: 0, cost: 50 }, // Unlocks science production
     // Science-based unlock upgrades (unlocks advanced city improvements)
-    civilianIndustry: { level: 0, cost: 10 }, // Unlocks specialized city production tech (science cost)
+    // Note: Legacy tech unlocks (arsenalTech, miningTech, researchTech) replaced by research branches
     populationTech: { level: 0, cost: 50 }, // Unlocks population improvements (science cost)
-    arsenalTech: { level: 0, cost: 15 }, // Unlocks arsenal improvements (science cost)
-    miningTech: { level: 0, cost: 15 }, // Unlocks scrap mining improvements (science cost)
-    researchTech: { level: 0, cost: 15 }, // Unlocks research lab improvements (science cost)
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
     truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
@@ -127,11 +124,7 @@ export function resetUpgrades(): void {
         salvage: { level: 0, cost: 60 },
         efficiency: { level: 0, cost: 90 },
         research: { level: 0, cost: 50 },
-        civilianIndustry: { level: 0, cost: 35 },
         populationTech: { level: 0, cost: 25 },
-        arsenalTech: { level: 0, cost: 15 },
-        miningTech: { level: 0, cost: 10 },
-        researchTech: { level: 0, cost: 30 },
         ammoRecycling: { level: 0, cost: 30 },
         truckFleet: { level: 0, cost: 20 },
         ammoHotkey: { level: 0, cost: 20 },
@@ -225,7 +218,7 @@ export function purchaseGlobalUpgrade(upgradeType: keyof GlobalUpgrades): boolea
     
     // Determine currency type - science-based upgrades use science, others use scrap
     const scienceBasedUpgrades = [
-        'civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech',
+        'populationTech',
         'ammoRecycling', 'truckFleet', 'ammoHotkey',
         // New tech tree upgrades - Research branches and sub-upgrades
         'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',

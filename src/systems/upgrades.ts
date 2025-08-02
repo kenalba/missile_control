@@ -9,11 +9,8 @@ import { updateUI } from '@/systems/ui';
 
 // Type definitions for upgrade system
 
-// Get actual upgrade cost after applying efficiency discount
-function getActualUpgradeCost(baseCost: number): number {
-  const efficiencyDiscount = globalUpgrades.efficiency?.level > 0 ? 0.85 : 1.0;
-  return Math.floor(baseCost * efficiencyDiscount);
-}
+// Import centralized cost calculation
+import { getActualUpgradeCost } from '@/core/economy';
 
 // Create visual upgrade effect
 export function createUpgradeEffect(x: number, y: number, text: string, color: string = '#0f0'): void {
@@ -73,7 +70,7 @@ export function purchaseGlobalUpgrade(upgradeType: string): void {
   
   // Science-based upgrades (must match the list in core/upgrades.ts)
   const scienceUpgrades = [
-    'civilianIndustry', 'populationTech', 'arsenalTech', 'miningTech', 'researchTech',
+    'populationTech',
     'ammoRecycling', 'truckFleet', 'ammoHotkey',
     // New tech tree upgrades - Research branches and sub-upgrades
     'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',
@@ -272,35 +269,7 @@ export function upgradeGlobal(upgradeType: string): void {
   purchaseGlobalUpgrade(upgradeType);
 }
 
-// Repair city function
-export function repairCity(cityIndex: number): void {
-  if (!destroyedCities.includes(cityIndex)) return;
-  
-  const cost = 50;
-  if (gameState.scrap < cost) return;
-  
-  gameState.scrap -= cost;
-  
-  // Remove from destroyed cities list
-  const index = destroyedCities.indexOf(cityIndex);
-  if (index > -1) {
-    destroyedCities.splice(index, 1);
-    gameState.cities++;
-    
-    // Restore city to base population when repaired
-    if (cityData[cityIndex]) {
-      cityData[cityIndex].population = Math.floor(cityData[cityIndex].maxPopulation * 0.3); // Start with 30% population
-    }
-  }
-  
-  // Visual feedback
-  createUpgradeEffect(cityPositions[cityIndex], 750, 'CITY REPAIRED!', '#0f0');
-  
-  updateUI();
-  if (gameState.currentMode === 'command') {
-    (window as any).updateCommandPanel?.();
-  }
-}
+// Repair city function moved to core/cities.ts for consistency
 
 // Get next available predefined city position
 function getNextCityPosition(): number | null {
@@ -366,10 +335,13 @@ export function buildCity(): void {
   
   // Add new city to cityData (same for both modes)
   const newCity = {
-    population: 50, // Start with partial population
+    population: 100, // Start with full population like initial cities
     maxPopulation: 100,
-    productionMode: 'scrap' as const, // Default production mode
-    baseProduction: 1.5 // Slightly higher production for built cities
+    productionMode: 'ammo' as const, // Start with ammo production like initial cities
+    baseProduction: 1.0, // Same base production as initial cities
+    ammoStockpile: 0,
+    maxAmmoStockpile: 5,
+    maxTrucks: 1
   };
   
   cityData.push(newCity);
@@ -381,9 +353,9 @@ export function buildCity(): void {
   cityBunkerUpgrades.push(0);
   
   // Initialize productivity upgrades for new city
-  if (cityProductivityUpgrades.scrap) cityProductivityUpgrades.scrap.push(0);
-  if (cityProductivityUpgrades.science) cityProductivityUpgrades.science.push(0);
-  if (cityProductivityUpgrades.ammo) cityProductivityUpgrades.ammo.push(0);
+  cityProductivityUpgrades.scrap.push(0);
+  cityProductivityUpgrades.science.push(0);
+  cityProductivityUpgrades.ammo.push(0);
   
   // CRITICAL: Initialize accumulator arrays for new city to prevent production bugs
   ammoAccumulators.push(0);
@@ -491,29 +463,7 @@ export function upgradeCityPopulation(cityIndex: number): void {
 }
 
 // Upgrade city productivity for specific resource type
-export function upgradeCityProductivity(cityIndex: number, productionType: 'scrap' | 'science' | 'ammo'): void {
-  if (cityIndex < 0 || cityIndex >= cityData.length) return;
-  if (destroyedCities.includes(cityIndex)) return;
-  if (!cityProductivityUpgrades[productionType]) return;
-  
-  const currentLevel = cityProductivityUpgrades[productionType][cityIndex];
-  const cost = 25 + (currentLevel * 20);
-  
-  if (gameState.scrap < cost) return;
-  
-  gameState.scrap -= cost;
-  cityProductivityUpgrades[productionType][cityIndex]++;
-  
-  // Visual feedback
-  const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
-  const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
-  createUpgradeEffect(cityPositions[cityIndex], 750, `${modeIcons[productionType]} +25% EFFICIENCY!`, modeColors[productionType]);
-  
-  updateUI();
-  if (gameState.currentMode === 'command') {
-    (window as any).updateCommandPanel?.();
-  }
-}
+// upgradeCityProductivity moved to core/cities.ts for consistency with currency system
 
 // Upgrade city bunker system
 export function upgradeCityBunker(cityIndex: number): void {
@@ -581,11 +531,11 @@ export function initializeUpgradeSystem(): void {
 (window as any).upgrade = upgrade;
 (window as any).upgradeCity = upgradeCity;
 (window as any).upgradeGlobal = upgradeGlobal;
-(window as any).repairCity = repairCity;
+// repairCity now exported from core/cities.ts
 (window as any).buildCity = buildCity;
 (window as any).buildTurret = buildTurret;
 (window as any).upgradeCityPopulation = upgradeCityPopulation;
-(window as any).upgradeCityProductivity = upgradeCityProductivity;
+// upgradeCityProductivity now exported from core/cities.ts
 (window as any).upgradeCityBunker = upgradeCityBunker;
 (window as any).unlockUpgradePath = unlockUpgradePath;
 (window as any).createUpgradeEffect = createUpgradeEffect;

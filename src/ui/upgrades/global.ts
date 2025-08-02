@@ -34,34 +34,7 @@ export function getGlobalUpgradesHTML(): string {
     html += '</div></div>';
   }
   
-  // Show Civilian Industry if science is unlocked
-  if (researchUnlocked) {
-    const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
-    
-    if (!civilianIndustryUnlocked) {
-      html += `
-        <div style="margin-bottom: 15px;">
-            ${createSectionHeader('Scientific', `rgb(${COLORS.scienceBlue})`)}
-            <div class="compact-grid-1">
-      `;
-      
-      const civilianIndustryCost = globalUpgrades.civilianIndustry?.cost || 10;
-      const canAffordCivilianIndustry = gameState.science >= civilianIndustryCost;
-      
-      html += createCompactUpgradeButton({
-        name: 'Civilian Industry',
-        description: 'Unlock specialized production facilities for cities. Required for advanced city improvements.',
-        cost: civilianIndustryCost,
-        canAfford: canAffordCivilianIndustry,
-        color: COLORS.scienceBlue,
-        action: 'purchase-global',
-        actionData: 'civilianIndustry',
-        currencyIcon: '🔬'
-      });
-      
-      html += '</div></div>';
-    }
-  }
+  // Civilian Industry has been removed - functionality now directly accessible through research branches
   
   // Economic Upgrades - Compact 3-column grid
   html += `

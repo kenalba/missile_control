@@ -6,16 +6,16 @@ import { destroyedCities, cityPositions } from '@/entities/cities';
 import { createUpgradeEffect } from '@/entities/particles';
 import { createAmmoTruck } from '@/entities/trucks';
 
-// Command Mode city system
+// Command Mode city system - default 6-city setup (gets resized by mode manager)
 export let cityData: CityData[] = [
     // Each city has: population, maxPopulation, productionMode, baseProduction
-    // Ammo stockpiles are added dynamically for backward compatibility
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any
+    // All cities start with ammo production to match game design
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any
 ];
 
 // City upgrade levels (legacy system for Arcade Mode)
@@ -30,6 +30,13 @@ export let cityProductivityUpgrades: CityProductivityUpgrades = {
     science: [0, 0, 0, 0, 0, 0],
     ammo: [0, 0, 0, 0, 0, 0]
 };
+
+// Calculate city productivity upgrade cost
+export function getCityProductivityUpgradeCost(cityIndex: number, productionType: 'scrap' | 'science' | 'ammo'): number {
+    const currentLevel = cityProductivityUpgrades[productionType][cityIndex];
+    const baseCost = 25;
+    return baseCost + (currentLevel * 20);
+}
 
 // Resource accumulators for precise fractional production (per-city)
 export let ammoAccumulators: number[] = [0, 0, 0, 0, 0, 0];
@@ -50,7 +57,7 @@ export function calculateCityProductionRate(cityIndex: number): string {
     const baseProduction = city.baseProduction * populationMultiplier;
     
     const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
-    const productivityMultiplier = 1 + (productivityLevel * 0.25);
+    const productivityMultiplier = 1 + (productivityLevel * 0.5); // +50% per level for more substantial impact
     const researchMultiplier = getResearchMultiplier(city.productionMode);
     let finalProduction = baseProduction * productivityMultiplier * researchMultiplier;
     
@@ -161,7 +168,7 @@ export function generateCityResources(): void {
         const baseProduction = city.baseProduction * populationMultiplier;
         
         const productivityLevel = cityProductivityUpgrades[city.productionMode][i];
-        const productivityMultiplier = 1 + (productivityLevel * 0.25);
+        const productivityMultiplier = 1 + (productivityLevel * 0.5); // +50% per level for more substantial impact
         const researchMultiplier = getResearchMultiplier(city.productionMode);
         const finalProduction = baseProduction * productivityMultiplier * researchMultiplier;
         
@@ -346,8 +353,7 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
         return false;
     }
     
-    const currentLevel = cityProductivityUpgrades[productionType][cityIndex];
-    const cost = 30 + (currentLevel * 20);
+    const cost = getCityProductivityUpgradeCost(cityIndex, productionType);
     
     if (!(window as any).canAfford?.(cost)) {
         return false;
@@ -358,6 +364,21 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
     }
     
     cityProductivityUpgrades[productionType][cityIndex]++;
+    
+    // Visual feedback
+    const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
+    const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
+    if ((window as any).createUpgradeEffect) {
+        (window as any).createUpgradeEffect(cityPositions[cityIndex], 750, `${modeIcons[productionType]} +50% EFFICIENCY!`, modeColors[productionType]);
+    }
+    
+    // Update UI
+    if ((window as any).updateUI) {
+        (window as any).updateUI();
+    }
+    if (gameState.currentMode === 'command' && (window as any).updateCommandPanel) {
+        (window as any).updateCommandPanel();
+    }
     
     console.log(`Upgraded city ${cityIndex} ${productionType} productivity (level ${cityProductivityUpgrades[productionType][cityIndex]})`);
     return true;
@@ -398,12 +419,12 @@ export function repairCity(cityIndex: number): boolean {
 // Reset all city data
 export function resetCityData(): void {
     cityData = [
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.5 } as any
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.0 } as any
     ];
     
     cityUpgrades = [0, 0, 0, 0, 0, 0];
@@ -432,6 +453,7 @@ export function resetCityData(): void {
 (window as any).setCityProductionMode = setCityProductionMode;
 (window as any).upgradeCityPopulation = upgradeCityPopulation;
 (window as any).upgradeCityProductivity = upgradeCityProductivity;
+(window as any).getCityProductivityUpgradeCost = getCityProductivityUpgradeCost;
 (window as any).repairCity = repairCity;
 (window as any).resetCityData = resetCityData;
 (window as any).applyResearchUpgradesToCities = applyResearchUpgradesToCities;

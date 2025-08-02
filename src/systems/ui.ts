@@ -9,6 +9,9 @@ export function updateUI(): void {
     updateUpgradeButtons();
     // Note: updateUpgradeUI() removed - only call when mode actually changes
     updateMobileUpgradeToggle();
+    
+    // Note: Removed excessive tooltip refresh from main UI loop
+    // Tooltips are refreshed when panels are updated or content changes
 }
 
 function updateBasicStats(): void {

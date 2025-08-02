@@ -187,11 +187,9 @@ export interface GlobalUpgrades {
   salvage: UpgradeLevel;
   efficiency: UpgradeLevel;
   research: UpgradeLevel;
-  civilianIndustry: UpgradeLevel;
+  // Legacy upgrades removed - functionality now directly accessible through research branches
+  // civilianIndustry, arsenalTech, miningTech, researchTech replaced by research branch system
   populationTech: UpgradeLevel;
-  arsenalTech: UpgradeLevel;
-  miningTech: UpgradeLevel;
-  researchTech: UpgradeLevel;
   ammoRecycling: UpgradeLevel;
   truckFleet: UpgradeLevel;
   [key: string]: UpgradeLevel;

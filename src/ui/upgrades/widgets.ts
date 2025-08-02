@@ -4,10 +4,8 @@ import { globalUpgrades } from '@/core/upgrades';
 import type { ResearchUpgradeConfig } from './types';
 
 // Utility function to get actual upgrade cost after efficiency discount
-export function getActualUpgradeCost(baseCost: number): number {
-  const efficiencyDiscount = globalUpgrades.efficiency?.level > 0 ? 0.85 : 1.0;
-  return Math.floor(baseCost * efficiencyDiscount);
-}
+// Import centralized cost calculation
+import { getActualUpgradeCost } from '@/core/economy';
 
 // Create FTL-style research upgrade widget
 export function createResearchUpgradeWidget(config: ResearchUpgradeConfig): string {
@@ -133,6 +131,101 @@ export function createTurretUpgradeWidget(upgradeType: any, turretUpgrades: any,
                 data-action-data="${upgradeType.key},${selectedTurret}"
                 style="width: 100%; padding: 4px 8px; background: ${canAfford ? 'rgba(0, 255, 255, 0.2)' : 'rgba(102, 102, 102, 0.2)'}; 
                        border: 1px solid ${canAfford ? '#0ff' : '#666'}; color: ${canAfford ? '#0ff' : '#666'}; 
+                       border-radius: 2px; font-size: 11px; cursor: ${canAfford ? 'pointer' : 'default'};"
+                ${canAfford ? '' : 'disabled'}>
+            ${scrapCost} 💰
+        </button>
+    </div>
+  `;
+}
+
+// Create FTL-style city productivity upgrade widget
+export function createCityProductivityWidget(cityIndex: number, productionType: 'scrap' | 'science' | 'ammo'): string {
+  const cityProductivityUpgrades = (window as any).cityProductivityUpgrades;
+  const getCityProductivityUpgradeCost = (window as any).getCityProductivityUpgradeCost;
+  if (!cityProductivityUpgrades || !getCityProductivityUpgradeCost) return '';
+  
+  const currentLevel = cityProductivityUpgrades[productionType][cityIndex];
+  const scrapCost = getCityProductivityUpgradeCost(cityIndex, productionType);
+  const canAfford = gameState.scrap >= scrapCost;
+  
+  // Calculate tier and visual properties based on level
+  let tier: number, tierColor: string, tierName: string, barsInTier: number, levelInTier: number;
+  
+  if (currentLevel <= 3) {
+    tier = 1; tierColor = '#0ff'; tierName = 'BASIC'; barsInTier = 3; levelInTier = currentLevel;
+  } else if (currentLevel <= 6) {
+    tier = 2; tierColor = '#0f0'; tierName = 'ADVANCED'; barsInTier = 3; levelInTier = currentLevel - 3;
+  } else if (currentLevel <= 10) {
+    tier = 3; tierColor = '#ff0'; tierName = 'EXPERT'; barsInTier = 4; levelInTier = currentLevel - 6;
+  } else {
+    tier = 4; tierColor = '#f80'; tierName = 'MASTER'; barsInTier = 10; levelInTier = currentLevel - 10;
+  }
+  
+  // Progress bars
+  const progressBars = [];
+  const actualBars = Math.min(barsInTier, 5); // Visual limit for clean display
+  for (let i = 1; i <= actualBars; i++) {
+    const isFilled = i <= levelInTier;
+    const color = isFilled ? tierColor : '#333';
+    progressBars.push(`<div style="flex: 1; background: ${color}; border-radius: 1px; min-width: 2px; height: 8px;"></div>`);
+  }
+  
+  // Mode-specific styling with flavor
+  const modeIcons = { scrap: '⛏️', science: '🧪', ammo: '🏭' };
+  const modeNames = { 
+    scrap: 'Scrap Mine', 
+    science: 'Science Lab', 
+    ammo: 'Ammo Factory' 
+  };
+  const modeDescriptions = {
+    scrap: 'Deep excavation operations extracting critical materials from the battlefield',
+    science: 'Advanced research laboratories developing military technology',
+    ammo: 'Automated ammunition production facilities for rapid resupply'
+  };
+  const modeColors = { 
+    scrap: '0, 255, 0',      // Green
+    science: '100, 200, 255', // Blue  
+    ammo: '255, 255, 0'      // Yellow
+  };
+  const modeBorderColors = {
+    scrap: '#0f0',           // Green border
+    science: '#64c8ff',      // Blue border
+    ammo: '#ff0'             // Yellow border
+  };
+  
+  const currentEfficiency = 100 + (currentLevel * 50); // Show total efficiency %
+  const nextEfficiency = 100 + ((currentLevel + 1) * 50);
+  
+  return `
+    <div style="border: 1px solid ${modeBorderColors[productionType]}; border-radius: 3px; padding: 8px; background: rgba(${modeColors[productionType]}, 0.05);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <span style="color: ${modeBorderColors[productionType]}; font-weight: bold; font-size: 12px;">
+                ${modeIcons[productionType]} ${modeNames[productionType].toUpperCase()}
+            </span>
+            <span style="color: #aaa; font-size: 10px;">LV ${currentLevel} ${tierName}</span>
+        </div>
+        
+        <!-- Progress bar showing current tier progress -->
+        <div style="display: flex; gap: 1px; margin-bottom: 5px;">
+            ${progressBars.join('')}
+        </div>
+        
+        <!-- Facility description -->
+        <div style="font-size: 9px; color: #999; margin-bottom: 4px; line-height: 1.2;">
+            ${modeDescriptions[productionType]}
+        </div>
+        
+        <!-- Efficiency info -->
+        <div style="font-size: 10px; color: #aaa; margin-bottom: 5px;">
+            ${currentEfficiency}% → ${nextEfficiency}% efficiency
+        </div>
+        
+        <!-- Upgrade button -->
+        <button data-action="upgrade-city-productivity" 
+                data-action-data="${cityIndex},${productionType}"
+                style="width: 100%; padding: 4px 8px; background: ${canAfford ? `rgba(${modeColors[productionType]}, 0.2)` : 'rgba(102, 102, 102, 0.2)'}; 
+                       border: 1px solid ${canAfford ? modeBorderColors[productionType] : '#666'}; color: ${canAfford ? modeBorderColors[productionType] : '#666'}; 
                        border-radius: 2px; font-size: 11px; cursor: ${canAfford ? 'pointer' : 'default'};"
                 ${canAfford ? '' : 'disabled'}>
             ${scrapCost} 💰

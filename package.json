@@ -26,5 +26,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/kenalba/missile_control.git"
+  },
+  "dependencies": {
+    "tippy.js": "^6.3.7"
   }
 }

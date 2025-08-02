@@ -81,11 +81,14 @@ export function createUpgradeButton(config: UpgradeButtonConfig): string {
   const tooltip = compact ? `data-tooltip="${tooltipText}"` : '';
 
   if (compact) {
+    const opacity = canAfford ? '1' : '0.5';
+    const cursor = canAfford ? 'pointer' : 'not-allowed';
+    
     return `
       <button ${actionAttrs} 
-              class="upgrade-btn-compact tooltip"
-              style="color: rgb(${color}); border-color: rgb(${color}); background: rgba(${color}, 0.2);"
-              ${disabled}
+              class="upgrade-btn-compact tooltip ${!canAfford ? 'disabled-style' : ''}"
+              style="color: rgb(${color}); border-color: rgb(${color}); background: rgba(${color}, 0.2); opacity: ${opacity}; cursor: ${cursor};"
+              ${canAfford ? '' : 'data-disabled="true"'}
               ${tooltip}>
           <strong>${name}</strong><br>
           <small>${cost}${currencyIcon}</small>
