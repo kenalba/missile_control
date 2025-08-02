@@ -223,7 +223,7 @@ export class ModeManager {
         if (typeof updateLauncherSelection === 'function') {
             updateLauncherSelection();
         }
-        updateUpgradeUI();
+        updateUpgradeUI(true); // Force update since mode is actually changing
     }
     
     // Get current mode configuration

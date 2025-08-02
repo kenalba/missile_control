@@ -7,7 +7,7 @@ export function updateUI(): void {
     updateBasicStats();
     updateModeSpecificUI();
     updateUpgradeButtons();
-    updateUpgradeUI();
+    // Note: updateUpgradeUI() removed - only call when mode actually changes
     updateMobileUpgradeToggle();
 }
 
@@ -65,8 +65,19 @@ function updateEconomicUpgradeButton(buttonId: string, upgrade: { cost: number; 
     button.style.opacity = (!canAfford || alreadyPurchased) ? '0.6' : '1';
 }
 
-export function updateUpgradeUI(): void {
+// Throttle upgrade UI updates to prevent excessive calls
+let lastUpgradeUIUpdate = 0;
+const UPGRADE_UI_THROTTLE_MS = 1000; // 1 second throttle
+
+export function updateUpgradeUI(forceUpdate: boolean = false): void {
+    const now = Date.now();
+    if (!forceUpdate && now - lastUpgradeUIUpdate < UPGRADE_UI_THROTTLE_MS) {
+        return; // Skip update if called too frequently
+    }
+    
+    lastUpgradeUIUpdate = now;
     console.log('🎮 Updating upgrade UI for mode:', gameState.currentMode);
+    
     if (gameState.currentMode === 'command') {
         showCommandModeUI();
     } else {
@@ -206,7 +217,7 @@ export function initializeUpgrades(): void {
     }
     
     // Update UI to reflect current mode
-    updateUpgradeUI();
+    updateUpgradeUI(true); // Force update during initialization
 }
 
 export function completeWave(): void {
