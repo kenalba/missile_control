@@ -238,7 +238,7 @@ export function markPanelDirty(): void {
   // Update sidebar content instead of panel content
   const updateSidebarContent = (window as any).updateSidebarContent;
   if (typeof updateSidebarContent === 'function') {
-    updateSidebarContent();
+    updateSidebarContent(true); // Force immediate update for user actions
   }
   
   // Also update main UI to refresh resource displays

@@ -36,7 +36,7 @@ export function expandSidebar(): void {
   
   // Update sidebar content with small delay to ensure DOM is ready
   setTimeout(() => {
-    updateSidebarContent();
+    updateSidebarContent(true); // Force update during initialization
   }, 10);
   
   // Adjust game layout
@@ -156,7 +156,7 @@ export function getSidebarState(): SidebarState {
 // Set current tab for Command mode
 export function setSidebarTab(tab: string): void {
   sidebarState.currentTab = tab;
-  updateSidebarContent();
+  updateSidebarContent(true); // Force update for tab changes
 }
 
 // Get current tab
@@ -186,8 +186,18 @@ function getVisibleTabs(): Array<{id: string, label: string}> {
   return tabs;
 }
 
+// Throttle sidebar updates to prevent excessive calls
+let lastSidebarUpdate = 0;
+const SIDEBAR_UPDATE_THROTTLE_MS = 100; // 100ms throttle (10fps max)
+
 // Update sidebar content - show tabbed interface only in Command Mode
-export function updateSidebarContent(): void {
+export function updateSidebarContent(forceUpdate: boolean = false): void {
+  const now = Date.now();
+  if (!forceUpdate && now - lastSidebarUpdate < SIDEBAR_UPDATE_THROTTLE_MS) {
+    return; // Skip update if called too frequently
+  }
+  
+  lastSidebarUpdate = now;
   console.log('🎮 Updating sidebar content...');
   
   const commandCenterContent = document.getElementById('commandCenterContent');
@@ -289,7 +299,7 @@ export function initializeSidebar(): void {
   updateExpandButton();
   
   // Initialize sidebar content
-  updateSidebarContent();
+  updateSidebarContent(true); // Force update during initialization
   
   // Set initial layout with a slight delay to ensure DOM is ready
   setTimeout(() => {
@@ -327,7 +337,7 @@ export function handleModeChange(newMode: string): void {
   updateExpandButton();
   
   // Update sidebar content
-  updateSidebarContent();
+  updateSidebarContent(true); // Force update for mode changes
 }
 
 // Make functions globally accessible

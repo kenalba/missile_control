@@ -12,7 +12,7 @@ let selectedResearchBranch: string | null = null;
 export function selectResearchBranch(branchId: string): void {
   selectedResearchBranch = branchId;
   // Update the science tab content
-  (window as any).updateSidebarContent?.();
+  (window as any).updateSidebarContent?.(true); // Force immediate update
 }
 
 // Research branches configuration
