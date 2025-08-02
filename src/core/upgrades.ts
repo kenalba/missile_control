@@ -43,7 +43,8 @@ export let globalUpgrades: GlobalUpgrades = {
     researchTech: { level: 0, cost: 15 }, // Unlocks research lab improvements (science cost)
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
-    truckFleet: { level: 0, cost: 20 } // +1 truck per city (science cost)
+    truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
+    ammoHotkey: { level: 0, cost: 20 } // Enables 'A' key for emergency ammo purchase (science cost)
 };
 
 // Unlocked turret upgrade paths (spent science to unlock)
@@ -68,11 +69,11 @@ export function getUpgradeMultiplier(launcherIndex: number, upgradeType: keyof L
         case 'speed':
             return Math.pow(1.3, level - 1); // 1.3x per level
         case 'explosion':
-            return Math.pow(1.4, level - 1); // 1.4x per level
+            return Math.pow(1.2, level - 1); // 1.2x per level
         case 'rate':
             return Math.pow(1.5, level - 1); // 1.5x per level
         case 'capacity':
-            return Math.pow(1.2, level - 1); // 1.2x per level
+            return Math.pow(1.5, level - 1); // 1.5x per level
         case 'autopilot':
             return level > 0 ? 1.0 : 0.0; // Binary upgrade
         default:
@@ -102,7 +103,8 @@ export function resetUpgrades(): void {
         miningTech: { level: 0, cost: 10 },
         researchTech: { level: 0, cost: 30 },
         ammoRecycling: { level: 0, cost: 30 },
-        truckFleet: { level: 0, cost: 20 }
+        truckFleet: { level: 0, cost: 20 },
+        ammoHotkey: { level: 0, cost: 20 }
     };
     
     unlockedUpgradePaths = {

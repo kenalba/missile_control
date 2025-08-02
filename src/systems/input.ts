@@ -13,6 +13,10 @@ export let mouseX = 0;
 export let mouseY = 0;
 export let selectedLauncher = 0; // Default to left launcher for mobile
 
+// Emergency ammo hotkey cooldown
+let lastEmergencyAmmoTime = 0;
+const EMERGENCY_AMMO_COOLDOWN = 3000; // 3 seconds in milliseconds
+
 // Entity selection system for Command Mode
 export function selectEntity(type: 'city' | 'turret', index: number): void {
     if (gameState.currentMode !== 'command') {
@@ -183,6 +187,49 @@ export function initializeInput(): void {
         // Cheat code: [ key gives 100 science (works anytime)
         if (e.key === '[') {
             gameState.science += 100;
+            return;
+        }
+        
+        // Emergency Ammo Hotkey: A key (requires upgrade)
+        if (e.key.toLowerCase() === 'a') {
+            const globalUpgrades = (window as any).globalUpgrades;
+            if (globalUpgrades?.ammoHotkey?.level > 0) {
+                const currentTime = Date.now();
+                
+                // Check cooldown
+                if (currentTime - lastEmergencyAmmoTime < EMERGENCY_AMMO_COOLDOWN) {
+                    audioSystem.playCooldown();
+                    return;
+                }
+                
+                // Check if can afford emergency ammo (2 scrap)
+                if (gameState.scrap >= 2) {
+                    // Find first available turret
+                    let targetLauncher = null;
+                    for (let i = 0; i < launchers.length; i++) {
+                        if (launchers[i].missiles < launchers[i].maxMissiles) {
+                            targetLauncher = launchers[i];
+                            break;
+                        }
+                    }
+                    
+                    if (targetLauncher) {
+                        gameState.scrap -= 2;
+                        targetLauncher.missiles++;
+                        lastEmergencyAmmoTime = currentTime; // Set cooldown
+                        audioSystem.playTone(800, 100, 'sine', 0.3); // Purchase confirmation sound
+                        
+                        // Visual feedback
+                        createUpgradeEffect(targetLauncher.x, targetLauncher.y - 30, '+1 AMMO', '#ff0');
+                    } else {
+                        // All turrets full
+                        audioSystem.playEmptyAmmo();
+                    }
+                } else {
+                    // Can't afford
+                    audioSystem.playEmptyAmmo();
+                }
+            }
             return;
         }
         

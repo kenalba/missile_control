@@ -175,11 +175,11 @@ export function getGlobalUpgradesHTML(): string {
   `;
   
   // Emergency Ammo Purchase Button
-  const ammoExchangeRate = 3;
+  const ammoExchangeRate = 2;
   const canAffordAmmo = gameState.scrap >= ammoExchangeRate;
   html += createCompactUpgradeButton({
     name: 'Emergency Ammo',
-    description: 'Buy 1 ammo for 3 scrap. Adds ammunition to first available turret.',
+    description: 'Buy 1 ammo for 2 scrap. Adds ammunition to first available turret.',
     cost: ammoExchangeRate,
     canAfford: canAffordAmmo,
     color: COLORS.yellow,
@@ -514,7 +514,8 @@ Plan  `;
       
       const cityScienceUpgrades = [
         { id: 'ammoRecycling', name: 'Salvage Ops', description: 'Convert excess ammunition to scrap materials. Efficiency through wartime rationing.' },
-        { id: 'truckFleet', name: 'Motor Pool', description: 'Expand military transport capacity with additional convoy trucks' }
+        { id: 'truckFleet', name: 'Motor Pool', description: 'Expand military transport capacity with additional convoy trucks' },
+        { id: 'ammoHotkey', name: 'Rapid Procurement', description: 'Enable \'A\' key hotkey for emergency ammo purchases (2 scrap, 3-second cooldown)' }
       ];
       
       cityScienceUpgrades.forEach(upgrade => {
@@ -594,7 +595,7 @@ Plan  `;
     const maxCities = (config && config.availableCityPositions) ? config.availableCityPositions.length : 6;
     const currentCities = cityData.length;
     if (currentCities < maxCities) {
-      const buildCost = 100 + (currentCities * 50); // Increasing cost per city
+      const buildCost = currentCities === 2 ? 100 : currentCities === 3 ? 150 : 200; // 100/150/200 progression
       const canAffordBuild = gameState.scrap >= buildCost;
       
       html += `
@@ -831,7 +832,7 @@ Plan  `;
     const maxCities = (config && config.availableCityPositions) ? config.availableCityPositions.length : 6;
     const currentCities = cityData.length;
     if (currentCities < maxCities) {
-      const buildCost = 100 + (currentCities * 50); // Increasing cost per city
+      const buildCost = currentCities === 2 ? 100 : currentCities === 3 ? 150 : 200; // 100/150/200 progression
       const canAffordBuild = gameState.scrap >= buildCost;
       
       html += `

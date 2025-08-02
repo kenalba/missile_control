@@ -88,7 +88,9 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
   
   // Reuse the returning truck for immediate dispatch
   const target = turretsNeedingAmmo[0];
-  const ammoToSend = 1; // Always send exactly 1 ammo per truck
+  const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
+  const ammoAvailable = Math.min(city.ammoStockpile, 2); // Trucks can carry up to 2 ammo
+  const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
   
   // Calculate delivery parameters
   const cityX = cityPositions[cityIndex];

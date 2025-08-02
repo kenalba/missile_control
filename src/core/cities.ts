@@ -10,12 +10,12 @@ import { createAmmoTruck } from '@/entities/trucks';
 export let cityData: CityData[] = [
     // Each city has: population, maxPopulation, productionMode, baseProduction
     // Ammo stockpiles are added dynamically for backward compatibility
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.8 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.8 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.8 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.8 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.8 } as any,
-    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.8 } as any
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
+    { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any
 ];
 
 // City upgrade levels (legacy system for Arcade Mode)
@@ -174,9 +174,11 @@ export function generateCityResources(): void {
                             .sort((a, b) => a.launcher.missiles - b.launcher.missiles); // Prioritize emptiest turrets
                         
                         if (turretsNeedingAmmo.length > 0) {
-                            // Dispatch truck to neediest turret (1 ammo per truck for balance)
+                            // Dispatch truck to neediest turret (up to 2 ammo per truck)
                             const target = turretsNeedingAmmo[0];
-                            const ammoToSend = 1; // Always send exactly 1 ammo per truck
+                            const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
+                            const ammoAvailable = Math.min((city as any).ammoStockpile, 2); // Trucks can carry up to 2 ammo
+                            const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
                             
                             if (ammoToSend > 0 && (city as any).ammoStockpile >= ammoToSend) {
                                 const truck = createAmmoTruck(i, target.index, ammoToSend);
@@ -321,12 +323,12 @@ export function repairCity(cityIndex: number): boolean {
 // Reset all city data
 export function resetCityData(): void {
     cityData = [
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.8 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.8 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.8 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 0.8 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 0.8 } as any,
-        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 0.8 } as any
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'scrap', baseProduction: 1.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'science', baseProduction: 1.5 } as any,
+        { population: 100, maxPopulation: 100, productionMode: 'ammo', baseProduction: 1.5 } as any
     ];
     
     cityUpgrades = [0, 0, 0, 0, 0, 0];
