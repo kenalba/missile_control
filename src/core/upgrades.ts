@@ -44,7 +44,37 @@ export let globalUpgrades: GlobalUpgrades = {
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
     truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
-    ammoHotkey: { level: 0, cost: 20 } // Enables 'A' key for emergency ammo purchase (science cost)
+    ammoHotkey: { level: 0, cost: 20 }, // Enables 'A' key for emergency ammo purchase (science cost)
+    // Progressive disclosure tech tree - Research Branches
+    ammoResearch: { level: 0, cost: 20 }, // Unlocks ammo-related upgrades (science cost)
+    scrapResearch: { level: 0, cost: 25 }, // Unlocks scrap-related upgrades (science cost)
+    scienceResearch: { level: 0, cost: 20 }, // Unlocks science-related upgrades (science cost)
+    populationResearch: { level: 0, cost: 25 }, // Unlocks population-related upgrades (science cost)
+    
+    // Ammo Research Branch
+    unlockTurretUpgrades: { level: 0, cost: 15 }, // Enables Turrets tab (science cost)
+    enhancedAmmoProduction: { level: 0, cost: 20 }, // Unlocks per-city ammo production upgrades (science cost)
+    rapidProcurement: { level: 0, cost: 15 }, // 'A' key emergency ammo hotkey (science cost)
+    advancedLogistics: { level: 0, cost: 30 }, // Truck improvements (science cost)
+    ammunitionStockpiles: { level: 0, cost: 35 }, // Unlocks per-city ammo storage upgrades (science cost)
+    
+    // Scrap Research Branch
+    enhancedScrapMining: { level: 0, cost: 20 }, // Unlocks per-city scrap production upgrades (science cost)
+    resourceEfficiency: { level: 0, cost: 25 }, // 15% discount on city upgrades (science cost)
+    salvageOperations: { level: 0, cost: 15 }, // Auto-convert excess ammo to scrap (science cost)
+    
+    // Science Research Branch
+    viewTechTree: { level: 0, cost: 10 }, // Show complete technology roadmap (science cost)
+    enhancedResearch: { level: 0, cost: 20 }, // Unlocks per-city science production upgrades (science cost)
+    researchAnalytics: { level: 0, cost: 25 }, // Show upgrade statistics (science cost)
+    
+    // Population Research Branch
+    urbanPlanning1: { level: 0, cost: 30 }, // Unlock 3rd city slot (science cost)
+    urbanPlanning2: { level: 0, cost: 40 }, // Unlock 4th city slot (science cost)
+    urbanPlanning3: { level: 0, cost: 50 }, // Unlock 5th city slot (science cost)
+    urbanPlanning4: { level: 0, cost: 60 }, // Unlock 6th city slot (science cost)
+    populationGrowth: { level: 0, cost: 20 }, // Unlocks per-city population growth upgrades (science cost)
+    civilDefense: { level: 0, cost: 25 } // Unlocks per-city bunker construction (science cost)
 };
 
 // Unlocked turret upgrade paths (spent science to unlock)
@@ -104,7 +134,33 @@ export function resetUpgrades(): void {
         researchTech: { level: 0, cost: 30 },
         ammoRecycling: { level: 0, cost: 30 },
         truckFleet: { level: 0, cost: 20 },
-        ammoHotkey: { level: 0, cost: 20 }
+        ammoHotkey: { level: 0, cost: 20 },
+        // Progressive disclosure tech tree - Research Branches
+        ammoResearch: { level: 0, cost: 20 },
+        scrapResearch: { level: 0, cost: 25 },
+        scienceResearch: { level: 0, cost: 20 },
+        populationResearch: { level: 0, cost: 25 },
+        // Ammo Research Branch
+        unlockTurretUpgrades: { level: 0, cost: 15 },
+        enhancedAmmoProduction: { level: 0, cost: 20 },
+        rapidProcurement: { level: 0, cost: 15 },
+        advancedLogistics: { level: 0, cost: 30 },
+        ammunitionStockpiles: { level: 0, cost: 35 },
+        // Scrap Research Branch
+        enhancedScrapMining: { level: 0, cost: 20 },
+        resourceEfficiency: { level: 0, cost: 25 },
+        salvageOperations: { level: 0, cost: 15 },
+        // Science Research Branch
+        viewTechTree: { level: 0, cost: 10 },
+        enhancedResearch: { level: 0, cost: 20 },
+        researchAnalytics: { level: 0, cost: 25 },
+        // Population Research Branch
+        urbanPlanning1: { level: 0, cost: 30 },
+        urbanPlanning2: { level: 0, cost: 40 },
+        urbanPlanning3: { level: 0, cost: 50 },
+        urbanPlanning4: { level: 0, cost: 60 },
+        populationGrowth: { level: 0, cost: 20 },
+        civilDefense: { level: 0, cost: 25 }
     };
     
     unlockedUpgradePaths = {

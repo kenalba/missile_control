@@ -8,7 +8,7 @@ interface SidebarState {
 
 const sidebarState: SidebarState = {
   isExpanded: true, // Start expanded by default
-  currentTab: 'global',
+  currentTab: 'cities', // Start with Cities tab for progressive disclosure
 };
 
 
@@ -164,6 +164,27 @@ export function getSidebarTab(): string {
   return sidebarState.currentTab;
 }
 
+// Check which tabs should be visible based on unlock conditions
+function getVisibleTabs(): Array<{id: string, label: string}> {
+  const tabs = [
+    { id: 'cities', label: 'CITIES' } // Always visible
+  ];
+  
+  const globalUpgrades = (window as any).globalUpgrades;
+  
+  // Science tab unlocked by "research" upgrade (Unlock Science)
+  if (globalUpgrades?.research?.level > 0) {
+    tabs.push({ id: 'science', label: 'SCIENCE' });
+  }
+  
+  // Turrets tab unlocked by "unlockTurretUpgrades" upgrade
+  if (globalUpgrades?.unlockTurretUpgrades?.level > 0) {
+    tabs.push({ id: 'turrets', label: 'TURRETS' });
+  }
+  
+  return tabs;
+}
+
 // Update sidebar content - show tabbed interface only in Command Mode
 export function updateSidebarContent(): void {
   console.log('🎮 Updating sidebar content...');
@@ -184,54 +205,58 @@ export function updateSidebarContent(): void {
   
   // Generate tabbed interface for Command Mode only
   const currentTab = sidebarState.currentTab;
+  const visibleTabs = getVisibleTabs();
   
-  // Create tab buttons directly in command center (no extra container)
-  let contentHtml = `
-    <div class="sidebar-tab-buttons" style="display: flex; border-bottom: 1px solid #0f0; background: rgba(0, 255, 0, 0.05); margin-bottom: 15px;">
-  `;
+  // If current tab is not visible anymore, switch to first visible tab
+  if (!visibleTabs.find(tab => tab.id === currentTab)) {
+    sidebarState.currentTab = visibleTabs[0]?.id || 'cities';
+  }
   
-  // Create individual tab buttons
-  const tabs = [
-    { id: 'global', label: 'GLOBAL' },
-    { id: 'turrets', label: 'TURRETS' }, 
-    { id: 'cities', label: 'CITIES' }
-  ];
+  let contentHtml = '';
   
-  tabs.forEach(tabInfo => {
-    const isActive = currentTab === tabInfo.id;
+  // Only show tab buttons if there are multiple tabs
+  if (visibleTabs.length > 1) {
     contentHtml += `
-      <button 
-        onclick="setSidebarTab('${tabInfo.id}')"
-        style="
-          flex: 1; 
-          padding: 10px; 
-          background: ${isActive ? '#0f0' : 'transparent'}; 
-          color: ${isActive ? '#000' : '#0f0'}; 
-          border: none; 
-          cursor: pointer;
-          border-radius: 0;
-          font-weight: bold; 
-          font-size: 12px; 
-          transition: all 0.2s ease;
-          text-transform: uppercase;
-        "
-        onmouseenter="if (this.style.background === 'transparent') this.style.background = 'rgba(0, 255, 0, 0.1)'"
-        onmouseleave="if (this.style.color === 'rgb(0, 255, 0)') this.style.background = 'transparent'"
-      >
-        ${tabInfo.label}
-      </button>
+      <div class="sidebar-tab-buttons" style="display: flex; border-bottom: 1px solid #0f0; background: rgba(0, 255, 0, 0.05); margin-bottom: 15px;">
     `;
-  });
-  
-  contentHtml += `</div>`;
+    
+    // Create individual tab buttons for visible tabs only
+    visibleTabs.forEach(tabInfo => {
+      const isActive = sidebarState.currentTab === tabInfo.id;
+      contentHtml += `
+        <button 
+          onclick="setSidebarTab('${tabInfo.id}')"
+          style="
+            flex: 1; 
+            padding: 10px; 
+            background: ${isActive ? '#0f0' : 'transparent'}; 
+            color: ${isActive ? '#000' : '#0f0'}; 
+            border: none; 
+            cursor: pointer;
+            border-radius: 0;
+            font-weight: bold; 
+            font-size: 12px; 
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+          "
+          onmouseenter="if (this.style.background === 'transparent') this.style.background = 'rgba(0, 255, 0, 0.1)'"
+          onmouseleave="if (this.style.color === 'rgb(0, 255, 0)') this.style.background = 'transparent'"
+        >
+          ${tabInfo.label}
+        </button>
+      `;
+    });
+    
+    contentHtml += `</div>`;
+  }
   
   // Add tab content directly without extra container
-  if (currentTab === 'global') {
-    contentHtml += (window as any).getGlobalUpgradesHTML();
-  } else if (currentTab === 'turrets') {
-    contentHtml += (window as any).getTurretsUpgradesHTML();
-  } else if (currentTab === 'cities') {
+  if (sidebarState.currentTab === 'cities') {
     contentHtml += (window as any).getCitiesUpgradesHTML();
+  } else if (sidebarState.currentTab === 'science') {
+    contentHtml += (window as any).getScienceUpgradesHTML();
+  } else if (sidebarState.currentTab === 'turrets') {
+    contentHtml += (window as any).getTurretsUpgradesHTML();
   }
   
   // Set all content directly in command center

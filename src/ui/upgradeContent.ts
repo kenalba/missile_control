@@ -458,10 +458,55 @@ export function getTurretsUpgradesHTML(): string {
 export function getCitiesUpgradesHTML(): string {
   let html = `
     <div>
-Plan  `;
+  `;
+  
+  // Show "Unlock Science" if not yet unlocked (progressive disclosure gateway)
+  const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
+  if (!researchUnlocked) {
+    html += `
+      <div style="margin-bottom: 20px;">
+        ${createSectionHeader('Research Division', `rgb(${COLORS.scienceBlue})`)}
+        <div class="compact-grid-1">
+    `;
+    
+    const researchCost = globalUpgrades.research.cost;
+    const canAffordResearch = gameState.scrap >= researchCost;
+    
+    html += createCompactUpgradeButton({
+      name: 'Unlock Science',
+      description: 'Establish research capabilities and unlock the Science tab. Opens access to advanced technologies and specialized upgrades.',
+      cost: researchCost,
+      canAfford: canAffordResearch,
+      color: COLORS.scienceBlue,
+      action: 'purchase-global',
+      actionData: 'research'
+    });
+    
+    html += '</div></div>';
+  }
+  
+  // Emergency Actions - always visible
+  html += `
+    <div style="margin-bottom: 15px;">
+        ${createSectionHeader('Emergency', '#ff0')}
+        <div class="compact-grid-1">
+  `;
+  
+  // Emergency Ammo Purchase Button
+  const ammoExchangeRate = 2;
+  const canAffordAmmo = gameState.scrap >= ammoExchangeRate;
+  html += createCompactUpgradeButton({
+    name: 'Emergency Ammo',
+    description: 'Buy 1 ammo for 2 scrap. Adds ammunition to first available turret.',
+    cost: ammoExchangeRate,
+    canAfford: canAffordAmmo,
+    color: COLORS.yellow,
+    action: 'emergency-ammo'
+  });
+  
+  html += '</div></div>';
   
   // Science upgrades section - only show if research is unlocked and civilian industry is unlocked
-  const researchUnlocked = globalUpgrades.research && globalUpgrades.research.level > 0;
   const civilianIndustryUnlocked = globalUpgrades.civilianIndustry?.level > 0;
   
   if (researchUnlocked && civilianIndustryUnlocked) {
@@ -861,10 +906,247 @@ Plan  `;
   return html;
 }
 
+// Science upgrades tab content (unlocked after "Unlock Science")
+export function getScienceUpgradesHTML(): string {
+  let html = `
+    <div>
+  `;
+  
+  // Four Research Branches
+  html += `
+    <div style="margin-bottom: 20px;">
+      ${createSectionHeader('Research Branches', `rgb(${COLORS.scienceBlue})`)}
+      <div class="compact-grid-2" style="gap: 12px;">
+  `;
+  
+  const researchBranches = [
+    { 
+      id: 'ammoResearch', 
+      name: '🎯 Ammo Research', 
+      description: 'Military logistics and combat systems. Unlocks turret upgrades, emergency hotkeys, and ammunition improvements.',
+      cost: 20
+    },
+    { 
+      id: 'scrapResearch', 
+      name: '💰 Scrap Research', 
+      description: 'Economic systems and resource efficiency. Unlocks mining improvements, discounts, and resource conversion.',
+      cost: 25
+    },
+    { 
+      id: 'scienceResearch', 
+      name: '🔬 Science Research', 
+      description: 'Advanced research capabilities. Unlocks tech tree visualization, research improvements, and analytics.',
+      cost: 20
+    },
+    { 
+      id: 'populationResearch', 
+      name: '🏘️ Population Research', 
+      description: 'City expansion and civilian protection. Unlocks additional city slots, population growth, and defense systems.',
+      cost: 25
+    }
+  ];
+  
+  researchBranches.forEach(branch => {
+    const branchData = globalUpgrades[branch.id];
+    const isOwned = branchData && branchData.level > 0;
+    
+    if (!isOwned) {
+      const cost = branchData?.cost || branch.cost;
+      const canAfford = gameState.science >= cost;
+      
+      html += createCompactUpgradeButton({
+        name: branch.name,
+        description: branch.description,
+        cost: cost,
+        canAfford: canAfford,
+        color: COLORS.scienceBlue,
+        action: 'purchase-global',
+        actionData: branch.id,
+        currencyIcon: '🔬'
+      });
+    }
+  });
+  
+  html += '</div></div>';
+  
+  // Branch-specific upgrades (shown after respective branches are unlocked)
+  const ammoUnlocked = globalUpgrades.ammoResearch?.level > 0;
+  const scrapUnlocked = globalUpgrades.scrapResearch?.level > 0;
+  const scienceUnlocked = globalUpgrades.scienceResearch?.level > 0;
+  const populationUnlocked = globalUpgrades.populationResearch?.level > 0;
+  
+  // Ammo Research Branch
+  if (ammoUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+        ${createSectionHeader('Ammo Research', `rgb(${COLORS.scienceBlue})`)}
+        <div class="compact-grid-2">
+    `;
+    
+    const ammoUpgrades = [
+      { id: 'unlockTurretUpgrades', name: 'Unlock Turret Upgrades', description: 'Enable the Turrets tab and all turret improvement systems.' },
+      { id: 'enhancedAmmoProduction', name: 'Enhanced Ammo Production', description: 'Unlock per-city ammo production efficiency upgrades (scrap-based).' },
+      { id: 'rapidProcurement', name: 'Rapid Procurement', description: 'Enable \'A\' key hotkey for emergency ammo purchases (2 scrap, 3-second cooldown).' },
+      { id: 'advancedLogistics', name: 'Advanced Logistics', description: 'Trucks carry +1 ammo and move 25% faster. Improved delivery efficiency.' },
+      { id: 'ammunitionStockpiles', name: 'Ammunition Stockpiles', description: 'Unlock per-city ammo storage capacity upgrades (scrap-based).' }
+    ];
+    
+    ammoUpgrades.forEach(upgrade => {
+      const upgradeData = globalUpgrades[upgrade.id];
+      const isOwned = upgradeData && upgradeData.level > 0;
+      
+      if (!isOwned) {
+        const cost = upgradeData?.cost || 20;
+        const canAfford = gameState.science >= cost;
+        
+        html += createCompactUpgradeButton({
+          name: upgrade.name,
+          description: upgrade.description,
+          cost: cost,
+          canAfford: canAfford,
+          color: COLORS.scienceBlue,
+          action: 'purchase-global',
+          actionData: upgrade.id,
+          currencyIcon: '🔬'
+        });
+      }
+    });
+    
+    html += '</div></div>';
+  }
+  
+  // Scrap Research Branch
+  if (scrapUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+        ${createSectionHeader('Scrap Research', `rgb(${COLORS.scienceBlue})`)}
+        <div class="compact-grid-2">
+    `;
+    
+    const scrapUpgrades = [
+      { id: 'enhancedScrapMining', name: 'Enhanced Scrap Mining', description: 'Unlock per-city scrap production efficiency upgrades (scrap-based).' },
+      { id: 'resourceEfficiency', name: 'Resource Efficiency', description: '15% discount on all city upgrades. Improved procurement contracts.' },
+      { id: 'salvageOperations', name: 'Salvage Operations', description: 'Automatically convert excess ammunition to scrap materials.' }
+    ];
+    
+    scrapUpgrades.forEach(upgrade => {
+      const upgradeData = globalUpgrades[upgrade.id];
+      const isOwned = upgradeData && upgradeData.level > 0;
+      
+      if (!isOwned) {
+        const cost = upgradeData?.cost || 20;
+        const canAfford = gameState.science >= cost;
+        
+        html += createCompactUpgradeButton({
+          name: upgrade.name,
+          description: upgrade.description,
+          cost: cost,
+          canAfford: canAfford,
+          color: COLORS.scienceBlue,
+          action: 'purchase-global',
+          actionData: upgrade.id,
+          currencyIcon: '🔬'
+        });
+      }
+    });
+    
+    html += '</div></div>';
+  }
+  
+  // Science Research Branch
+  if (scienceUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+        ${createSectionHeader('Science Research', `rgb(${COLORS.scienceBlue})`)}
+        <div class="compact-grid-2">
+    `;
+    
+    const scienceUpgrades = [
+      { id: 'viewTechTree', name: 'View Tech Tree', description: 'Display complete technology roadmap with dependencies and prerequisites.' },
+      { id: 'enhancedResearch', name: 'Enhanced Research', description: 'Unlock per-city science production efficiency upgrades (scrap-based).' },
+      { id: 'researchAnalytics', name: 'Research Analytics', description: 'Show detailed upgrade statistics, effectiveness ratings, and optimization suggestions.' }
+    ];
+    
+    scienceUpgrades.forEach(upgrade => {
+      const upgradeData = globalUpgrades[upgrade.id];
+      const isOwned = upgradeData && upgradeData.level > 0;
+      
+      if (!isOwned) {
+        const cost = upgradeData?.cost || 20;
+        const canAfford = gameState.science >= cost;
+        
+        html += createCompactUpgradeButton({
+          name: upgrade.name,
+          description: upgrade.description,
+          cost: cost,
+          canAfford: canAfford,
+          color: COLORS.scienceBlue,
+          action: 'purchase-global',
+          actionData: upgrade.id,
+          currencyIcon: '🔬'
+        });
+      }
+    });
+    
+    html += '</div></div>';
+  }
+  
+  // Population Research Branch
+  if (populationUnlocked) {
+    html += `
+      <div style="margin-bottom: 15px;">
+        ${createSectionHeader('Population Research', `rgb(${COLORS.scienceBlue})`)}
+        <div class="compact-grid-2">
+    `;
+    
+    const populationUpgrades = [
+      { id: 'urbanPlanning1', name: 'Urban Planning I', description: 'Unlock 3rd city construction slot. Expand territorial control.' },
+      { id: 'urbanPlanning2', name: 'Urban Planning II', description: 'Unlock 4th city construction slot. Requires Urban Planning I.' },
+      { id: 'urbanPlanning3', name: 'Urban Planning III', description: 'Unlock 5th city construction slot. Requires Urban Planning II.' },
+      { id: 'urbanPlanning4', name: 'Urban Planning IV', description: 'Unlock 6th city construction slot. Maximum territorial expansion.' },
+      { id: 'populationGrowth', name: 'Population Growth', description: 'Unlock per-city population growth rate upgrades (scrap-based).' },
+      { id: 'civilDefense', name: 'Civil Defense', description: 'Unlock per-city bunker construction for damage reduction (scrap-based).' }
+    ];
+    
+    populationUpgrades.forEach(upgrade => {
+      const upgradeData = globalUpgrades[upgrade.id];
+      const isOwned = upgradeData && upgradeData.level > 0;
+      
+      // Check prerequisites for Urban Planning upgrades
+      let canShow = true;
+      if (upgrade.id === 'urbanPlanning2' && !globalUpgrades.urbanPlanning1?.level) canShow = false;
+      if (upgrade.id === 'urbanPlanning3' && !globalUpgrades.urbanPlanning2?.level) canShow = false;
+      if (upgrade.id === 'urbanPlanning4' && !globalUpgrades.urbanPlanning3?.level) canShow = false;
+      
+      if (!isOwned && canShow) {
+        const cost = upgradeData?.cost || 30;
+        const canAfford = gameState.science >= cost;
+        
+        html += createCompactUpgradeButton({
+          name: upgrade.name,
+          description: upgrade.description,
+          cost: cost,
+          canAfford: canAfford,
+          color: COLORS.scienceBlue,
+          action: 'purchase-global',
+          actionData: upgrade.id,
+          currencyIcon: '🔬'
+        });
+      }
+    });
+    
+    html += '</div></div>';
+  }
+  
+  html += '</div>';
+  return html;
+}
+
 // Make functions globally available for compatibility
 (window as any).getGlobalUpgradesHTML = getGlobalUpgradesHTML;
 (window as any).getTurretsUpgradesHTML = getTurretsUpgradesHTML;
 (window as any).getCitiesUpgradesHTML = getCitiesUpgradesHTML;
+(window as any).getScienceUpgradesHTML = getScienceUpgradesHTML;
 (window as any).calculateCityProductionRate = calculateCityProductionRate;
 
 // Functions are already exported individually above

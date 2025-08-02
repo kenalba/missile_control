@@ -193,7 +193,7 @@ export function initializeInput(): void {
         // Emergency Ammo Hotkey: A key (requires upgrade)
         if (e.key.toLowerCase() === 'a') {
             const globalUpgrades = (window as any).globalUpgrades;
-            if (globalUpgrades?.ammoHotkey?.level > 0) {
+            if (globalUpgrades?.rapidProcurement?.level > 0) {
                 const currentTime = Date.now();
                 
                 // Check cooldown
