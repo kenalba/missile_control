@@ -3,6 +3,7 @@ import { gameState } from '@/systems/observableState';
 import { destroyedCities, cityUpgrades, cityPositions } from '@/entities/cities';
 import { cityData } from '@/core/cities';
 import { launchers, destroyedLaunchers, resetLauncherTimestamps } from '@/entities/launchers';
+import { calculateFireRate } from '@/config/constants';
 import { launcherUpgrades } from '@/core/upgrades';
 import { updateUpgradeUI } from '@/systems/ui';
 import { handleModeChange } from '@/ui/sidebarManager';
@@ -51,9 +52,9 @@ export class ModeManager {
             initialLaunchers: 3,
             cityPositions: [270, 390, 510, 690, 810, 930],
             launcherPositions: [
-                { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-                { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 }, // Middle turret starts upgraded
-                { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+                { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: calculateFireRate(1) },
+                { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: calculateFireRate(2) }, // Middle turret starts upgraded
+                { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: calculateFireRate(1) }
             ],
             initialUpgrades: [
                 { speed: { level: 1, cost: 10 }, explosion: { level: 1, cost: 15 }, rate: { level: 1, cost: 20 }, capacity: { level: 1, cost: 25 }, autopilot: { level: 0, cost: 40 } },
@@ -69,7 +70,7 @@ export class ModeManager {
             initialLaunchers: 1,
             cityPositions: [400, 800],
             launcherPositions: [
-                { x: 600, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+                { x: 600, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: calculateFireRate(1) }
             ],
             // Predefined positions where turrets can be built (max 3 total)
             availableTurretPositions: [

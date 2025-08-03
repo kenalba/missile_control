@@ -198,7 +198,6 @@ export function updateSidebarContent(forceUpdate: boolean = false): void {
   }
   
   lastSidebarUpdate = now;
-  console.log('🎮 Updating sidebar content...');
   
   const commandCenterContent = document.getElementById('commandCenterContent');
   if (!commandCenterContent) {

@@ -33,7 +33,7 @@ export function createAmmoTruck(
 ): AmmoTruck | null {
   // Check if city has available trucks
   if (getAvailableTruckCount(cityIndex) <= 0) {
-    console.log(`🚚 No available trucks in city ${cityIndex}`);
+    // No available trucks
     return null;
   }
   
@@ -64,7 +64,7 @@ export function createAmmoTruck(
   };
   
   ammoTrucks.push(truck);
-  console.log(`🚚 Truck dispatched: ${ammoAmount} ammo from city ${cityIndex} to turret ${turretIndex} (${deliveryTime}ms)`);
+  // Truck dispatched silently
   return truck;
 }
 
@@ -116,7 +116,7 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
   
   // Deduct ammo from stockpile
   city.ammoStockpile -= ammoToSend;
-  console.log(`🔄 Auto-redispatch: ${ammoToSend} ammo from city ${cityIndex} to turret ${target.index}`);
+  // Auto-redispatch silently
   return true;
 }
 
@@ -152,10 +152,10 @@ export function updateTrucks(): void {
         undeliveredAmmo = truck.ammoAmount - actualDelivery;
         
         if (actualDelivery > 0) {
-          console.log(`📦 Ammo delivered: ${actualDelivery} to turret ${truck.targetTurretIndex} (${turret.missiles}/${turret.maxMissiles})`);
+          // Ammo delivered silently
         }
         if (undeliveredAmmo > 0) {
-          console.log(`🔄 Returning ${undeliveredAmmo} undelivered ammo to city ${truck.cityIndex} (turret was full)`);
+          // Returning undelivered ammo silently
         }
       } else {
         // Turret doesn't exist - return all ammo
@@ -236,7 +236,7 @@ export function updateTrucks(): void {
         
         if (shouldRedispatch) {
           // Truck gets immediately redispatched - don't remove it
-          console.log(`🔄 Truck ${truck.id} immediately redispatched from city ${cityIndex}`);
+          // Truck redispatched silently
         } else {
           // No immediate work - remove truck (it becomes available again)
           truck.status = 'idle';

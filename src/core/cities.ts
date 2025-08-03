@@ -5,6 +5,7 @@ import { launchers } from '@/entities/launchers';
 import { destroyedCities, cityPositions } from '@/entities/cities';
 import { createUpgradeEffect } from '@/entities/particles';
 import { createAmmoTruck } from '@/entities/trucks';
+import { PRODUCTION_CONFIG } from '@/config/constants';
 
 // Command Mode city system - default 6-city setup (gets resized by mode manager)
 export let cityData: CityData[] = [
@@ -54,7 +55,8 @@ export function calculateCityProductionRate(cityIndex: number): string {
     
     // Use floating-point calculation for better precision
     const populationMultiplier = city.population / city.maxPopulation;
-    const baseProduction = city.baseProduction * populationMultiplier;
+    const resourceBaseRate = PRODUCTION_CONFIG.baseRates[city.productionMode];
+    const baseProduction = city.baseProduction * populationMultiplier * resourceBaseRate;
     
     const productivityLevel = cityProductivityUpgrades[city.productionMode][cityIndex];
     const productivityMultiplier = 1 + (productivityLevel * 0.5); // +50% per level for more substantial impact
@@ -66,8 +68,8 @@ export function calculateCityProductionRate(cityIndex: number): string {
         finalProduction *= 2;
     }
     
-    // Convert from per-3-seconds to per-second
-    return (finalProduction / 3).toFixed(1);
+    // Convert from per-tick to per-second (now that ticks are 1 second)
+    return finalProduction.toFixed(1);
 }
 
 // Ensure city has ammo stockpile and truck properties (backward compatibility)
@@ -135,7 +137,7 @@ export function applyResearchUpgradesToCities(): void {
         }
     }
     
-    console.log(`Applied research upgrades: max population updated to ${newMaxPopulation}`);
+    // Research upgrades applied silently
 }
 
 // Generate resources from cities based on population and production mode
@@ -165,7 +167,8 @@ export function generateCityResources(): void {
         }
         
         const populationMultiplier = city.population / city.maxPopulation;
-        const baseProduction = city.baseProduction * populationMultiplier;
+        const resourceBaseRate = PRODUCTION_CONFIG.baseRates[city.productionMode];
+        const baseProduction = city.baseProduction * populationMultiplier * resourceBaseRate;
         
         const productivityLevel = cityProductivityUpgrades[city.productionMode][i];
         const productivityMultiplier = 1 + (productivityLevel * 0.5); // +50% per level for more substantial impact
@@ -234,7 +237,7 @@ export function generateCityResources(): void {
                     const stockpileSpace = (city as any).maxAmmoStockpile - (city as any).ammoStockpile;
                     const toStockpile = Math.min(ammoToDistribute, stockpileSpace);
                     
-                    console.log(`City ${i + 1}: Generated ${ammoToDistribute} ammo, stockpile space: ${stockpileSpace}, storing: ${toStockpile}, current stockpile: ${(city as any).ammoStockpile}`);
+                    // Ammo stockpiled silently
                     
                     if (toStockpile > 0) {
                         (city as any).ammoStockpile += toStockpile;
@@ -288,10 +291,7 @@ export function generateCityResources(): void {
         }
     }
     
-    // Output production log if any cities are producing
-    if (productionLog.length > 0) {
-        console.log(`PRODUCTION: ${productionLog.join(' \\ ')}`);
-    }
+    // Production tracking available in productionLog if needed for debugging
 }
 
 // Update city population (gradual growth)
@@ -320,7 +320,7 @@ export function setCityProductionMode(cityIndex: number, mode: 'scrap' | 'scienc
     }
     
     cityData[cityIndex].productionMode = mode;
-    console.log(`City ${cityIndex} production mode set to ${mode}`);
+    // Production mode changed silently
     return true;
 }
 
@@ -343,7 +343,7 @@ export function upgradeCityPopulation(cityIndex: number): boolean {
     cityPopulationUpgrades[cityIndex]++;
     cityData[cityIndex].maxPopulation += 50; // Increase max population
     
-    console.log(`Upgraded city ${cityIndex} population capacity (level ${cityPopulationUpgrades[cityIndex]})`);
+    // Population capacity upgraded silently
     return true;
 }
 
@@ -380,7 +380,7 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
         (window as any).updateCommandPanel();
     }
     
-    console.log(`Upgraded city ${cityIndex} ${productionType} productivity (level ${cityProductivityUpgrades[productionType][cityIndex]})`);
+    // Productivity upgraded silently
     return true;
 }
 
@@ -412,7 +412,7 @@ export function repairCity(cityIndex: number): boolean {
     // Increase city count
     gameState.cities++;
     
-    console.log(`Repaired city ${cityIndex}`);
+    // City repaired silently
     return true;
 }
 

@@ -34,14 +34,16 @@ export let globalUpgrades: GlobalUpgrades = {
     scrapMultiplier: { level: 0, cost: 80 },
     salvage: { level: 0, cost: 60 },
     efficiency: { level: 0, cost: 90 },
-    research: { level: 0, cost: 50 }, // Unlocks science production
+    research: { level: 0, cost: 25 }, // Unlocks science production
+
     // Science-based unlock upgrades (unlocks advanced city improvements)
-    // Note: Legacy tech unlocks (arsenalTech, miningTech, researchTech) replaced by research branches
     populationTech: { level: 0, cost: 50 }, // Unlocks population improvements (science cost)
+
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
     truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
     ammoHotkey: { level: 0, cost: 20 }, // Enables 'A' key for emergency ammo purchase (science cost)
+
     // Progressive disclosure tech tree - Research Branches (Single-level unlocks)
     ammoResearch: { level: 0, cost: 20 }, // +50% ammo production + unlocks Turrets tab (science cost)
     scrapResearch: { level: 0, cost: 25 }, // Enables scrap production + 50% scrap production (science cost)

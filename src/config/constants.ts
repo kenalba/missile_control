@@ -4,7 +4,7 @@ export const GAME_CONFIG = {
   CANVAS_WIDTH: 1200,
   CANVAS_HEIGHT: 900,
   GROUND_LEVEL: 800,
-  MISSILE_SPEED_BASE: 5,
+  MISSILE_SPEED_BASE: 4,
   EXPLOSION_DURATION: 1000,
   MAX_TRAIL_LENGTH: 8,
   AUTOPILOT_RANGE: 400,
@@ -51,6 +51,26 @@ export const UPGRADE_COSTS = {
   autopilotPath: 100,
 } as const;
 
+export const LAUNCHER_CONFIG = {
+  baseFireRate: 2000, // 2 seconds base fire rate
+  fireRateMultiplier: 1.2, // Fire rate improvement per upgrade level
+} as const;
+
+// Calculate fire rate based on upgrade level
+export function calculateFireRate(upgradeLevel: number): number {
+  return Math.floor(LAUNCHER_CONFIG.baseFireRate / Math.pow(LAUNCHER_CONFIG.fireRateMultiplier, upgradeLevel - 1));
+}
+
+export const PRODUCTION_CONFIG = {
+  // Base production rates per resource type (per tick)
+  baseRates: {
+    ammo: 0.15,    // Slower ammo production 
+    scrap: 1.0,   // Standard rate  
+    science: 1.0, // Standard rate
+  },
+  tickInterval: 1000, // 1 second per tick
+} as const;
+
 export const MULTIPLIERS = {
   speed: 1.3,
   explosion: 1.4,
@@ -70,7 +90,7 @@ export const WAVE_CONFIG = {
 } as const;
 
 export const COMMAND_MODE_CONFIG = {
-  resourceTickInterval: 3000, // 3 seconds
+  resourceTickInterval: 1000, // 1 second (was 3 seconds)
   enemySpawnInterval: 4000, // 4 seconds base (was 2s - much slower start)
   difficultyIncreaseInterval: 45000, // 45 seconds (was 30s - slower ramp)
   difficultyIncrement: 0.15, // smaller increment (was 0.2)

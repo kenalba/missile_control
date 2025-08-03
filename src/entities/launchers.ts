@@ -1,20 +1,21 @@
 import type { Launcher } from '@/types/gameTypes';
 import { audioSystem } from '@/systems/audio';
 import { timeManager } from '@/systems/timeManager';
+import { LAUNCHER_CONFIG } from '@/config/constants';
 
 export let launchers: Launcher[] = [
-    { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 2000 },
-    { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 2000 }, // All turrets start with same base rate
-    { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 2000 }
+    { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate },
+    { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate },
+    { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate }
 ];
 
 export let destroyedLaunchers: number[] = [];
 
 export function resetLaunchers(): void {
     launchers = [
-        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 2000 },
-        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 2000 },
-        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 2000 }
+        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate },
+        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate },
+        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: LAUNCHER_CONFIG.baseFireRate }
     ];
     resetLauncherTimestamps();
 }

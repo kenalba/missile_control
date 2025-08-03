@@ -1,6 +1,7 @@
 // Unified Upgrade System - TypeScript Implementation
 import { gameState } from '@/systems/observableState';
 import { launchers } from '@/entities/launchers';
+import { calculateFireRate, LAUNCHER_CONFIG } from '@/config/constants';
 import { cityPositions, destroyedCities, cityUpgrades, cityPopulationUpgrades, cityBunkerUpgrades, cityProductivityUpgrades } from '@/entities/cities';
 import { cityData, ammoAccumulators, scrapAccumulators, scienceAccumulators } from '@/core/cities';
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
@@ -183,7 +184,7 @@ function applyUpgradeToLauncher(type: string, launcherIndex: number): void {
       // Explosion size handled in explosion creation
       break;
     case 'rate':
-      launcher.fireRate = Math.floor(1000 / Math.pow(1.5, upgrade.level - 1));
+      launcher.fireRate = calculateFireRate(upgrade.level);
       break;
     case 'capacity':
       const oldMax = launcher.maxMissiles;
@@ -410,7 +411,7 @@ export function buildTurret(): void {
     missiles: 10,
     maxMissiles: 10,
     lastFire: 0,
-    fireRate: 1000
+    fireRate: LAUNCHER_CONFIG.baseFireRate
   };
   
   launchers.push(newTurret);

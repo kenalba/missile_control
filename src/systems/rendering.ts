@@ -123,10 +123,10 @@ export function render(): void {
     // Draw ground
     drawGround();
     
-    // Draw city info panels on top of ground
-    if (gameState.currentMode === 'command') {
-        drawCityInfoPanels();
-    }
+    // Draw city basements after ground (so they're visible)
+    drawCityBasements();
+    
+    // City production info is now integrated into basement architecture
     
     // Draw launchers
     drawLaunchers();
@@ -224,6 +224,8 @@ function drawBasicCity(x: number): void {
     ctx.fillRect(x - 15, 770, 8, 10);
     ctx.fillRect(x + 7, 770, 8, 10);
     ctx.fillRect(x - 3, 775, 6, 5);
+    
+    // Underground basement will be drawn separately after ground
 }
 
 function drawLevel1City(x: number): void {
@@ -245,6 +247,8 @@ function drawLevel1City(x: number): void {
     ctx.fillRect(x - 12, 762, 2, 2);
     ctx.fillRect(x + 10, 762, 2, 2);
     ctx.fillRect(x, 757, 2, 2);
+    
+    // Underground basement will be drawn separately after ground
 }
 
 function drawLevel2City(x: number): void {
@@ -266,6 +270,8 @@ function drawLevel2City(x: number): void {
     ctx.fillRect(x - 13, 760, 2, 10);
     ctx.fillRect(x + 11, 760, 2, 10);
     ctx.fillRect(x - 1, 755, 2, 8);
+    
+    // Underground basement will be drawn separately after ground
 }
 
 function drawLevel3City(x: number): void {
@@ -298,6 +304,148 @@ function drawLevel3City(x: number): void {
     ctx.fillRect(x - 13, 745, 1, 5);
     ctx.fillRect(x + 12, 745, 1, 5);
     ctx.fillRect(x, 740, 1, 5);
+    
+    // Underground basement will be drawn separately after ground
+}
+
+function drawCityBasement(x: number): void {
+    // Only draw basements in Command Mode
+    if (gameState.currentMode !== 'command') return;
+    
+    // Find which city this is to get production mode
+    let cityIndex = -1;
+    for (let i = 0; i < cityPositions.length; i++) {
+        if (Math.abs(cityPositions[i] - x) < 5) {
+            cityIndex = i;
+            break;
+        }
+    }
+    
+    if (cityIndex === -1 || destroyedCities.includes(cityIndex) || !cityData[cityIndex]) return;
+    
+    const city = cityData[cityIndex];
+    
+    // Basement width matches city upgrade level
+    const upgradeLevel = cityUpgrades[cityIndex];
+    let basementWidth;
+    if (upgradeLevel === 0) basementWidth = 50; // Basic city
+    else if (upgradeLevel === 1) basementWidth = 56; // Level 1
+    else if (upgradeLevel === 2) basementWidth = 60; // Level 2
+    else basementWidth = 64; // Level 3+
+    
+    const basementDepth = 30;
+    const basementX = x - basementWidth/2;
+    const basementY = 800; // Start at ground level
+    
+    // Basement structure - darker background to stand out
+    ctx.fillStyle = '#222'; // Darker gray basement walls
+    ctx.fillRect(basementX, basementY, basementWidth, basementDepth);
+    
+    // Basement outline - use city color (yellow)
+    ctx.strokeStyle = '#ff0'; // City yellow color for outline
+    ctx.lineWidth = 2;
+    ctx.strokeRect(basementX, basementY, basementWidth, basementDepth);
+    
+    // ASCII visualization for production
+    if (city.productionMode === 'ammo') {
+        drawAmmoBasementASCII(x, basementX, basementY, basementWidth, basementDepth, cityIndex, city);
+    } else {
+        // Simple production indicator for non-ammo modes
+        drawSimpleProductionIndicator(x, basementY, city.productionMode);
+    }
+}
+
+// Draw all city basements (called after ground is drawn)
+function drawCityBasements(): void {
+    if (gameState.currentMode !== 'command') return;
+    
+    cityPositions.forEach((x, i) => {
+        if (!destroyedCities.includes(i)) {
+            drawCityBasement(x);
+        }
+    });
+}
+
+// Draw ASCII ammo visualization in basement
+function drawAmmoBasementASCII(centerX: number, basementX: number, basementY: number, basementWidth: number, basementDepth: number, cityIndex: number, city: any): void {
+    const ammoAccumulators = (window as any).ammoAccumulators || [];
+    const stockpiledAmmo = city.ammoStockpile || 0;
+    const productionProgress = ammoAccumulators[cityIndex] || 0;
+    
+    // Left side: Stockpiled missiles (smaller) - ensure they stay inside basement
+    if (stockpiledAmmo > 0) {
+        ctx.font = 'bold 14px monospace'; // Smaller for stockpiled
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#f80'; // Orange color for ammo
+        
+        // Draw stockpiled missiles in triangular stacking pattern (2-1 style)
+        let missiles = Math.min(stockpiledAmmo, 3); // Cap display at 3 missiles
+        let row = 0;
+        let missilesDrawn = 0;
+        
+        while (missilesDrawn < missiles && row < 2) {
+            const missilesInRow = Math.min(2 - row, missiles - missilesDrawn); // 2-1 pattern
+            // Ensure we stay within basement bounds
+            const leftEdge = basementX + 5; // 5px margin from left wall
+            const startX = leftEdge + (missilesInRow - 1) * 5; // Tighter spacing
+            
+            for (let i = 0; i < missilesInRow; i++) {
+                const missileX = startX + i * 10;
+                const missileY = basementY + basementDepth - 2 - row * 10; // Touch the ground (bottom of basement)
+                ctx.fillText('^', missileX, missileY);
+                missilesDrawn++;
+            }
+            row++;
+        }
+        
+        // Removed count display - just show visual stacking
+    }
+    
+    // Right side: Current missile being produced (much more visible)
+    if (city.productionMode === 'ammo') {
+        ctx.font = 'bold 28px monospace'; // Even larger for visibility
+        ctx.textAlign = 'center';
+        
+        // Production progress determines visibility/opacity
+        const alpha = Math.max(0.5, productionProgress); // Higher minimum visibility
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#f80'; // Orange
+        
+        // Position on right side, well within basement bounds
+        const rightX = basementX + basementWidth - 15; // 15px from right wall
+        const rightY = basementY + basementDepth - 2; // Touch the ground (bottom of basement)
+        ctx.fillText('^', rightX, rightY);
+        
+        ctx.globalAlpha = 1.0; // Reset alpha
+    }
+}
+
+// Simple production indicator for non-ammo modes
+function drawSimpleProductionIndicator(centerX: number, basementY: number, productionMode: string): void {
+    const shapeSize = 12;
+    const shapeX = centerX - shapeSize/2;
+    const shapeY = basementY + 8;
+    
+    // Production mode colors and shapes
+    const modeData = {
+        scrap: { color: '#00ff00', shape: 'square' }, // Green square
+        science: { color: '#00ffff', shape: 'diamond' } // Cyan diamond
+    };
+    const mode = modeData[productionMode] || { color: '#ffffff', shape: 'square' };
+    
+    ctx.fillStyle = mode.color;
+    
+    if (mode.shape === 'square') {
+        ctx.fillRect(shapeX, shapeY, shapeSize, shapeSize);
+    } else if (mode.shape === 'diamond') {
+        ctx.beginPath();
+        ctx.moveTo(centerX, shapeY); // Top
+        ctx.lineTo(shapeX + shapeSize, shapeY + shapeSize/2); // Right
+        ctx.lineTo(centerX, shapeY + shapeSize); // Bottom
+        ctx.lineTo(shapeX, shapeY + shapeSize/2); // Left
+        ctx.closePath();
+        ctx.fill();
+    }
 }
 
 function drawCommandModeCityInfo(): void {
@@ -351,85 +499,6 @@ function drawCommandModeCityInfo(): void {
 }
 
 
-function drawCityInfoPanels(): void {
-    cityPositions.forEach((x, i) => {
-        if (!destroyedCities.includes(i) && cityData[i]) {
-            const city = cityData[i];
-            
-            // Compact icon-based city info panel
-            const panelWidth = 85;
-            const panelHeight = city.productionMode === 'ammo' ? 60 : 50; // Taller for ammo cities with truck row
-            const panelX = x - panelWidth/2;
-            const panelY = city.productionMode === 'ammo' ? 803 : 808;
-            
-            // Production mode colors and icons
-            const modeData = {
-                scrap: { color: '#0f0', icon: '⚒️' },
-                science: { color: '#0ff', icon: '🔬' }, // Using lighter cyan for better readability
-                ammo: { color: '#ff0', icon: '📦' }
-            };
-            const mode = modeData[city.productionMode] || { color: '#fff', icon: '?' };
-            
-            // Background with colored border
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-            ctx.fillRect(panelX, panelY, panelWidth, panelHeight);
-            ctx.strokeStyle = mode.color;
-            ctx.lineWidth = 2;
-            ctx.strokeRect(panelX, panelY, panelWidth, panelHeight);
-            
-            // Row 1: Production icon + rate (more spacing between rows)
-            ctx.font = 'bold 12px monospace'; // Increased font size
-            ctx.textAlign = 'left';
-            ctx.fillStyle = mode.color;
-            const productionRate = (window as any).calculateCityProductionRate ? 
-                (window as any).calculateCityProductionRate(i) : '0.0';
-            ctx.fillText(`${mode.icon} ${productionRate}/s`, panelX + 4, panelY + 13);
-            
-            // Row 2: Population with icon (more spacing)
-            const popPercent = Math.floor((city.population / city.maxPopulation) * 100);
-            const popColor = popPercent > 75 ? '#0f0' : popPercent > 50 ? '#ff0' : '#f80';
-            ctx.fillStyle = popColor;
-            ctx.fillText(`👥 ${Math.floor(city.population)}/${city.maxPopulation}`, panelX + 4, panelY + 27);
-            
-            // Row 3: Mode-specific compact info (more spacing)
-            if (city.productionMode === 'ammo') {
-                // Ammo stockpile (rounded down for display, but actual value preserved)
-                const displayStockpile = Math.floor(city.ammoStockpile || 0);
-                const stockpilePercent = displayStockpile / (city.maxAmmoStockpile || 5);
-                const stockpileColor = stockpilePercent > 0.8 ? '#0f0' : stockpilePercent > 0.4 ? '#ff0' : '#f80';
-                ctx.fillStyle = stockpileColor;
-                ctx.fillText(`📦 ${displayStockpile}/${city.maxAmmoStockpile || 5}`, panelX + 4, panelY + 41);
-                
-                // Row 4: Truck availability on separate row for better spacing
-                const activeTrucks = ammoTrucks.filter(truck => truck.cityIndex === i).length;
-                const maxTrucks = (city.maxTrucks || 1) + (globalUpgrades?.truckFleet?.level || 0);
-                const availableTrucks = maxTrucks - activeTrucks; // Available = total - busy
-                const truckColor = availableTrucks > 0 ? '#0f0' : '#f80'; // Green if available, orange if all busy
-                ctx.fillStyle = truckColor;
-                ctx.textAlign = 'left'; // Left-align the truck info
-                ctx.fillText(`🚚 ${availableTrucks}/${maxTrucks}`, panelX + 4, panelY + 53);
-            } else if (city.productionMode === 'scrap') {
-                // Simple mining facility indicator
-                ctx.fillStyle = '#888';
-                ctx.fillText(`⚡ MINING`, panelX + 4, panelY + 41);
-            } else if (city.productionMode === 'science') {
-                // Research status
-                const researchUnlocked = globalUpgrades?.research?.level > 0;
-                ctx.fillStyle = researchUnlocked ? '#0f0' : '#f00';
-                ctx.fillText(`${researchUnlocked ? '✅' : '🔒'} ${researchUnlocked ? 'ON' : 'OFF'}`, panelX + 4, panelY + 41);
-            }
-            
-            // Efficiency level indicator (small number in top-right)
-            const efficiencyLevel = (window as any).cityProductivityUpgrades?.[city.productionMode]?.[i] || 0;
-            if (efficiencyLevel > 0) {
-                ctx.fillStyle = '#0ff';
-                ctx.font = 'bold 9px monospace';
-                ctx.textAlign = 'right';
-                ctx.fillText(`+${efficiencyLevel}`, panelX + panelWidth - 2, panelY + 10);
-            }
-        }
-    });
-}
 
 function drawArcadeModeCityInfo(): void {
     ctx.font = '12px monospace';
@@ -517,20 +586,20 @@ function drawCityUpgradeButton(x: number, cityIndex: number): void {
 }
 
 function drawGround(): void {
-    // Draw ground with retro colors
-    ctx.fillStyle = '#8B4513'; // Solid brown ground
+    // Draw ground with darker colors for better contrast
+    ctx.fillStyle = '#4A2C1A'; // Darker brown ground
     ctx.fillRect(0, 800, canvas.width, 100);
     
     // Add surface detail line
-    ctx.strokeStyle = '#DAA520';
+    ctx.strokeStyle = '#8B6914';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, 800);
     ctx.lineTo(canvas.width, 800);
     ctx.stroke();
     
-    // Add geometric pattern for texture
-    ctx.fillStyle = '#A0522D';
+    // Add geometric pattern for texture with darker colors
+    ctx.fillStyle = '#5D3317';
     for (let i = 0; i < canvas.width; i += 40) {
         for (let j = 0; j < 4; j++) {
             const y = 810 + (j * 20);

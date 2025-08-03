@@ -36,7 +36,7 @@ export let gameState: GameState = {
         gameTime: 0,
         difficulty: 1,
         lastResourceTick: 0,
-        resourceTickInterval: 3000,
+        resourceTickInterval: 1000,
         lastEnemySpawn: 0,
         enemySpawnInterval: 2000,
         selectedEntity: null,
@@ -145,7 +145,7 @@ export function resetGameState(): void {
         gameTime: 0,
         difficulty: 1,
         lastResourceTick: 0,
-        resourceTickInterval: 3000,
+        resourceTickInterval: 1000,
         lastEnemySpawn: 0,
         enemySpawnInterval: 2000,
         selectedEntity: null,
@@ -202,9 +202,9 @@ export function restartGame(): void {
     
     // Reset launchers to initial state
     (window as any).launchers = [
-        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 },
-        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 667 }, // Middle turret starts upgraded
-        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 1000 }
+        { x: 150, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 4000 }, // Level 1: 4000ms
+        { x: 600, y: 770, missiles: 12, maxMissiles: 12, lastFire: 0, fireRate: 2667 }, // Level 2: ~2667ms (middle turret starts upgraded)
+        { x: 1050, y: 770, missiles: 10, maxMissiles: 10, lastFire: 0, fireRate: 4000 } // Level 1: 4000ms
     ];
     
     // Hide game over and wave break screens

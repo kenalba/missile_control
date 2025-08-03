@@ -44,7 +44,7 @@ The upgrade system features a progressive research tree with Cold War-era milita
 #### Global Upgrades
 
 - **Emergency Ammo** (3 scrap): Purchase single ammo for first available turret
-- **Science Unlock** (50 scrap): Enable science production in cities (Command Mode)
+- **Science Research** (50 scrap): Enable science production in cities (Command Mode)
 
 **Economic Upgrades**
 
@@ -118,20 +118,24 @@ Research paths must be unlocked with science before purchasing upgrades:
 - `src/utils/collision.ts` - Collision detection utilities with type safety
 - `src/utils/index.ts` - Clean utility exports and convenience functions
 
-#### Legacy JavaScript Modules (Phase 2 - Pending Migration)
+#### TypeScript Modules (Complete ✅)
 
-- `js/main.js` - Core game loop and initialization
-- `js/modeManager.js` - Game mode switching and configuration
-- `js/gameState.js` - Game state management and UI updates
-- `js/entities.js` - Game entities (missiles, launchers, planes)
-- `js/input.js` - Input handling with entity selection support
-- `js/rendering.js` - Canvas rendering system with visual effects
-- `js/upgrades.js` - Main upgrade system controller
-- `js/upgradeLogic.js` - Core upgrade mechanics and calculations
-- `js/ui/uiUtils.js` - UI component utilities and styling constants
-- `js/ui/panelManager.js` - Floating panel management with drag functionality
-- `js/ui/upgradeContent.js` - HTML generation for upgrade interfaces
-- `js/utils.js` - Legacy utility functions (being replaced by TypeScript versions)
+**Core Systems**:
+- `src/core/gameState.ts` - Core game state management and UI updates
+- `src/systems/gameLoop.ts` - Main game loop and update logic
+- `src/systems/rendering.ts` - Canvas rendering system with visual effects
+- `src/systems/input.ts` - Input handling with entity selection support
+
+**Game Systems**:
+- `src/entities/` - Complete game entities (missiles, launchers, planes, cities, particles)
+- `src/systems/modeManager.ts` - Game mode switching and configuration
+- `src/systems/upgrades.ts` - Main upgrade system controller
+- `src/systems/upgradeLogic.ts` - Core upgrade mechanics and calculations
+
+**UI & Management**:
+- `src/ui/` - Complete UI system (panelManager, tooltipManager, uiUtils, sidebarManager)
+- `src/systems/observableState.ts` - State management with reactive updates
+- `src/systems/timeManager.ts` - Time and pause management
 
 #### Build & Deployment
 
@@ -199,20 +203,20 @@ Research paths must be unlocked with science before purchasing upgrades:
 
 ### Current Known Issues
 
-1. **BUG: Tooltip Opacity Inheritance**: Tooltips on disabled buttons inherit 50% opacity making text hard to read
+1. **Population Research System**: Population research branch temporarily disabled pending comprehensive urban planning implementation
 
 ### Medium Priority
 
 2. **Visual Polish**: Better explosion variety, missile trail improvements, impact flashes
-3. **Seekers**: Enemy missiles that actively track and follow player missiles
-4. **Smart Bomb AI**: Implement true smart bombs (seekers) that track player missiles and evade explosions
+3. **Enhanced Seekers**: Enemy missiles already track and follow player missiles - can be improved further
+4. **Advanced Smart Bomb AI**: Seekers currently implemented with evasion behavior - can be enhanced
 5. **Bunker Damage Reduction**: Implement actual damage reduction mechanics for bunker upgrades
 
 ### Low Priority
 
 6. **Celebration Effects**: Visual rewards for wave milestones and achievements
 7. **Mobile Haptics**: Haptic feedback on explosions and firing
-8. **Code Cleanup**: Remove old modal code and legacy upgrade system remnants
+8. **Code Cleanup**: Remove remaining legacy compatibility layers
 
 ## Completed Issues
 
@@ -279,34 +283,35 @@ npm run preview
 ### TypeScript Migration Status
 
 - ✅ **Phase 1 Complete**: Build system, types, audio, save system, utilities
-- 🚧 **Phase 2 Next**: Game state, entities, input system with event bus
-- 📋 **Phase 3 Planned**: UI components, rendering system, main game loop
+- ✅ **Phase 2 Complete**: Game state, entities, input system with event bus  
+- ✅ **Phase 3 Complete**: UI components, rendering system, main game loop
+- 🎉 **Migration Complete**: Full TypeScript conversion achieved!
 
 ## Current Development Status
 
 ### Active Todo List
 
 #### High Priority
-- **Fix research roadmap not showing after purchase** - Research Roadmap upgrade not displaying purchased state
-- **Fix production stopping when third city is built** - Cities stop producing resources when expanding beyond 2 cities
+- **Population Research Implementation** - Complete urban planning system with residential zones and city expansion
+- **Advanced Seeker AI** - Enhanced missile tracking and evasion behaviors
+- **Bunker Damage System** - Implement actual damage reduction mechanics
 
 #### Medium Priority  
-- **Separate ammo production from turret upgrades into its own tech tree** - Create dedicated ammo production tech branch
-- **Implement comprehensive population research system** - Urban planning, residential efficiency, bunkers with proper science costs
-- **Implement auto-fire system for turrets with excess ammo** - Automatic defensive firing when ammo stockpiled
-- **Autofire improvements** - Faster firing, radar-based targeting, priority system for automated defense
-- **Visual improvements** - City facility representations, cleaner UI, better visual feedback
+- **Auto-fire Turret System** - Automatic defensive firing when ammo stockpiled
+- **Visual Polish** - Explosion variety, missile trails, impact effects
+- **Performance Optimization** - Frame rate improvements and memory management
+- **Mobile Experience** - Touch controls and responsive design improvements
 
 #### Low Priority
-- **Add toggle for showing purchased upgrades on science tabs** - Option to show/hide completed research
-- **Abstract CSS from inline styles to dedicated CSS files** - Better code organization and maintainability
-- **Add alternative weapon types** - Laser weapons with wall-like trail effects
-- **Multi-city collaboration system** - Truck-based resource sharing between cities
+- **Research Toggle** - Option to show/hide completed research items
+- **CSS Organization** - Move inline styles to dedicated CSS files
+- **Alternative Weapons** - Laser weapons with unique visual effects
+- **Multi-city Systems** - Advanced resource sharing and collaboration
 
 ### Recently Completed
-- ✅ **Fix tooltips not showing at all** - Implemented Tippy.js tooltip system with proper positioning
-- ✅ **Fix Arcade Mode auto-highlight on landing page** - Redesigned landing page to focus on Command Mode
-- ✅ **Landing page redesign** - Made Command Mode the primary game experience
+- ✅ **Full TypeScript Migration** - Complete conversion from JavaScript to TypeScript
+- ✅ **Comprehensive Tooltip System** - Tippy.js integration with smart positioning
+- ✅ **Modern Architecture** - Modular system design with proper separation of concerns
 
 ### Development Priorities
 1. **Core Functionality** - Fix game-breaking issues first

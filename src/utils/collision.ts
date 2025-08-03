@@ -66,13 +66,12 @@ export function checkLauncherHit(
          missilePosition.y >= launcher.y - 20;
 }
 
-// Check if explosion can destroy missile
+// Check if explosion can destroy missile (allows enemy chain reactions)
 export function checkExplosionMissileCollision(
   explosion: Explosion,
   missile: Missile
 ): boolean {
-  if (!explosion.isPlayer) return false;
-  
+  // Allow any explosion to destroy missiles - enables chain reactions!
   const distance = calculateDistance(
     { x: explosion.x, y: explosion.y },
     { x: missile.x, y: missile.y }
@@ -166,24 +165,30 @@ export function checkCollisions(
     }
   }
   
-  // Check explosions destroying enemy missiles
+  // Check explosions destroying enemy missiles (both player and enemy explosions)
   explosions.forEach(explosion => {
-    if (!explosion.isPlayer) return;
-    
     for (let i = enemyMissiles.length - 1; i >= 0; i--) {
       const missile = enemyMissiles[i];
       
       if (checkExplosionMissileCollision(explosion, missile)) {
-        handleMissileDestroyed(
-          missile,
-          enemyMissiles,
-          i,
-          gameState,
-          applyScrapBonus,
-          createExplosion,
-          checkAchievements,
-          addScreenShake
-        );
+        if (explosion.isPlayer) {
+          // Player explosion - award points and scrap
+          handleMissileDestroyed(
+            missile,
+            enemyMissiles,
+            i,
+            gameState,
+            applyScrapBonus,
+            createExplosion,
+            checkAchievements,
+            addScreenShake
+          );
+        } else {
+          // Enemy explosion (chain reaction) - no points, just destruction
+          createExplosion(missile.x, missile.y, false);
+          enemyMissiles.splice(i, 1);
+          addScreenShake(1, 100); // Smaller shake for chain reactions
+        }
       }
     }
     
