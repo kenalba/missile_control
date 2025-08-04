@@ -22,7 +22,7 @@ export function getGlobalUpgradesHTML(): string {
     `;
     
     html += createCompactUpgradeButton({
-      name: 'Unlock Science',
+      name: 'Science Production',
       description: 'Enable science production in cities. Required for advanced research.',
       cost: researchCost,
       canAfford: canAffordResearch,

@@ -65,8 +65,8 @@ export const PRODUCTION_CONFIG = {
   // Base production rates per resource type (per tick)
   baseRates: {
     ammo: 0.15,    // Slower ammo production 
-    scrap: 1.0,   // Standard rate  
-    science: 1.0, // Standard rate
+    scrap: 0.2,   // Standard rate  
+    science: 0.2, // Standard rate
   },
   tickInterval: 1000, // 1 second per tick
 } as const;

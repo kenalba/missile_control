@@ -9,6 +9,7 @@ export const BUTTON_STYLES = {
 };
 
 export const COLORS = {
+  // Base colors
   green: '0, 255, 0',
   blue: '100, 200, 255', // Lighter blue for better readability
   scienceBlue: '64, 128, 255', // Distinct science blue - darker and more saturated for better readability
@@ -16,11 +17,18 @@ export const COLORS = {
   cyan: '0, 255, 255',
   orange: '255, 128, 0',
   red: '255, 0, 0',
-  // Upgrade tree colors
-  ammoTree: '255, 140, 0',    // 🎯 Ammo Research - Orange/amber for targeting
+  
+  // Semantic colors for consistent theming
+  ammo: '0, 255, 0',        // Green - consistent with fired missiles
+  scrap: '255, 215, 0',     // Gold - materials/resources
+  science: '100, 200, 255', // Light blue - research/knowledge
+  population: '255, 140, 0', // Orange - people/growth
+  
+  // Upgrade tree colors (using semantic colors)
+  ammoTree: '0, 255, 0',      // 🎯 Ammo Research - Green (consistent with fired missiles)
   scrapTree: '255, 215, 0',   // 💰 Scrap Research - Gold for wealth/materials  
-  scienceTree: '100, 200, 255', // 🔬 Science Research - Light blue for research
-  populationTree: '144, 238, 144' // 🏘️ Population Research - Light green for growth
+  scienceTree: '100, 200, 255', // 🧪 Science Research - Light blue for research
+  populationTree: '255, 140, 0' // 🏘️ Population Research - Orange (moved from ammo)
 };
 
 // Configuration interface for upgrade buttons
@@ -87,11 +95,10 @@ export function createUpgradeButton(config: UpgradeButtonConfig): string {
     return `
       <button ${actionAttrs} 
               class="upgrade-btn-compact tooltip ${!canAfford ? 'disabled-style' : ''}"
-              style="color: rgb(${color}); border-color: rgb(${color}); background: rgba(${color}, 0.2); opacity: ${opacity}; cursor: ${cursor};"
+              style="color: rgb(${color}); border-color: rgb(${color}); background: rgba(${color}, 0.2); opacity: ${opacity}; cursor: ${cursor}; font-size: 13px;"
               ${canAfford ? '' : 'data-disabled="true"'}
               ${tooltip}>
-          <strong>${name}</strong><br>
-          <small>${cost}${currencyIcon}</small>
+          <strong>${name} • ${cost}${currencyIcon}</strong>
       </button>
     `;
   }

@@ -7,6 +7,7 @@ import { cityData, ammoAccumulators, scrapAccumulators, scienceAccumulators } fr
 import { launcherUpgrades, globalUpgrades, unlockedUpgradePaths } from '@/core/upgrades';
 import { upgradeEffects } from '@/entities/particles';
 import { updateUI } from '@/systems/ui';
+import { COLORS } from '@/ui/uiUtils';
 
 // Type definitions for upgrade system
 
@@ -39,7 +40,7 @@ export function emergencyAmmoPurchase(): void {
       launchers[i].missiles = Math.min(launchers[i].missiles + 1, launchers[i].maxMissiles);
       
       // Visual feedback
-      createUpgradeEffect(launchers[i].x, launchers[i].y - 30, '+1 AMMO', '#ff0');
+      createUpgradeEffect(launchers[i].x, launchers[i].y - 30, '+1 AMMO', `rgb(${COLORS.ammo})`);
       break;
     }
   }
@@ -139,7 +140,7 @@ export function setCityProductionMode(cityIndex: number, mode: 'scrap' | 'scienc
   cityData[cityIndex].productionMode = mode;
   
   // Visual feedback
-  const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
+  const modeColors = { scrap: `rgb(${COLORS.scrap})`, science: `rgb(${COLORS.science})`, ammo: `rgb(${COLORS.ammo})` };
   createUpgradeEffect(cityPositions[cityIndex], 750, `${mode.toUpperCase()} MODE`, modeColors[mode]);
   
   if (gameState.currentMode === 'command') {
@@ -455,7 +456,7 @@ export function upgradeCityPopulation(cityIndex: number): void {
   city.maxPopulation += populationIncrease;
   
   // Visual feedback
-  createUpgradeEffect(cityPositions[cityIndex], 750, `+${populationIncrease} POPULATION!`, '#0f0');
+  createUpgradeEffect(cityPositions[cityIndex], 750, `+${populationIncrease} POPULATION!`, `rgb(${COLORS.population})`);
   
   updateUI();
   if (gameState.currentMode === 'command') {

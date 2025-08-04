@@ -21,7 +21,7 @@ export function getCitiesUpgradesHTML(): string {
   if (!researchUnlocked) {
     html += `
       <div style="margin-bottom: 20px;">
-        ${createSectionHeader('Research Division', `rgb(${COLORS.scienceBlue})`)}
+        ${createSectionHeader('Research Division', `rgb(${COLORS.scienceTree})`)}
         <div class="compact-grid-1">
     `;
     
@@ -29,11 +29,11 @@ export function getCitiesUpgradesHTML(): string {
     const canAffordResearch = gameState.scrap >= researchCost;
     
     html += createCompactUpgradeButton({
-      name: 'Unlock Science',
+      name: 'Science Production',
       description: 'Establish research capabilities and unlock the Science tab. Opens access to advanced technologies and specialized upgrades.',
       cost: researchCost,
       canAfford: canAffordResearch,
-      color: COLORS.scienceBlue,
+      color: COLORS.scienceTree,
       action: 'purchase-global',
       actionData: 'research'
     });
@@ -56,7 +56,7 @@ export function getCitiesUpgradesHTML(): string {
     description: 'Buy 1 ammo for 2 scrap. Adds ammunition to first available turret.',
     cost: ammoExchangeRate,
     canAfford: canAffordAmmo,
-    color: COLORS.yellow,
+    color: COLORS.ammo,
     action: 'emergency-ammo'
   });
   
@@ -95,7 +95,7 @@ export function getCitiesUpgradesHTML(): string {
       const isCityDestroyed = destroyedCities.includes(i);
       const isSelected = i === selectedCity;
       const statusColor = isCityDestroyed ? '#f00' : '#0f0';
-      const productionIcon = cityInfo.productionMode === 'scrap' ? '💰' : cityInfo.productionMode === 'science' ? '🔬' : '📦';
+      const productionIcon = cityInfo.productionMode === 'scrap' ? '💰' : cityInfo.productionMode === 'science' ? '🧪' : '📦';
       
       const tooltipText = isCityDestroyed 
         ? 'City destroyed - requires 50 scrap to repair'
@@ -208,7 +208,7 @@ function getCityManagementHTML(selectedCity: number, city: any, windowGlobalUpgr
   // Show science production if basic research is unlocked (allows users to start producing science)
   const basicResearchUnlocked = windowGlobalUpgrades.research && windowGlobalUpgrades.research.level > 0;
   if (basicResearchUnlocked) {
-    productionModes.push({ id: 'science', name: 'Science', icon: '🔬', description: 'Produces science for purchasing turret upgrades' });
+    productionModes.push({ id: 'science', name: 'Science', icon: '🧪', description: 'Produces science for purchasing turret upgrades' });
   }
   
   // Get current city's production upgrade levels for preview
@@ -225,9 +225,9 @@ function getCityManagementHTML(selectedCity: number, city: any, windowGlobalUpgr
     let clickHandler = '';
     
     if (isActive) {
-      buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}, 0.3); border-width: 2px;`;
+      buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}, 0.3); border-width: 2px;`;
     } else {
-      buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'green' : mode.id === 'science' ? 'blue' : 'yellow']}, 0.1);`;
+      buttonStyle = `color: rgb(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}); border-color: rgb(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}); background: rgba(${COLORS[mode.id === 'scrap' ? 'scrap' : mode.id === 'science' ? 'science' : 'ammo']}, 0.1);`;
       clickHandler = `data-action="set-production" data-action-data="${selectedCity},${mode.id}"`;
     }
     
@@ -258,7 +258,6 @@ function getCityManagementHTML(selectedCity: number, city: any, windowGlobalUpgr
 function getCityUpgradesHTML(selectedCity: number, windowGlobalUpgrades: any): string {
   let html = `
     <div>
-        ${createSectionHeader('City Upgrades', '#ff0')}
         <div class="compact-grid-3">
   `;
   
@@ -317,9 +316,9 @@ function getCityUpgradesHTML(selectedCity: number, windowGlobalUpgrades: any): s
   if (techUnlocked) {
     // Mode-specific colors and names for section header
     const modeBorderColors = {
-      scrap: '#0f0',           // Green border
-      science: '#64c8ff',      // Blue border  
-      ammo: '#ff0'             // Yellow border
+      scrap: `rgb(${COLORS.scrap})`,     // Green border
+      science: `rgb(${COLORS.science})`, // Blue border  
+      ammo: `rgb(${COLORS.ammo})`        // Green border (consistent with ammo color scheme)
     };
     const facilityNames = {
       scrap: 'Scrap Mining Operations',
@@ -361,7 +360,7 @@ function getCityOverviewHTML(): string {
     const city = cityData[i];
     const isDestroyed = destroyedCities.includes(i);
     const statusColor = isDestroyed ? '#f00' : '#0f0';
-    const productionIcon = city.productionMode === 'scrap' ? '💰' : city.productionMode === 'science' ? '🔬' : '📦';
+    const productionIcon = city.productionMode === 'scrap' ? '💰' : city.productionMode === 'science' ? '🧪' : '📦';
     
     const tooltipText = isDestroyed 
       ? 'City destroyed - requires 50 scrap to repair'

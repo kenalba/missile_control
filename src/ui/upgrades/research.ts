@@ -38,7 +38,7 @@ export const researchBranches: ResearchBranch[] = [
   { 
     id: 'scienceResearch', 
     name: 'Science',
-    icon: '🔬',
+    icon: '🧪',
     description: '+50% science production. Single unlock enables science research tree.',
     maxLevel: 1,
     baseCost: 20,
@@ -234,7 +234,7 @@ export function renderBranchUpgrades(branchId: string, windowGlobalUpgrades: any
         description: upgrade.description,
         maxLevel: upgrade.maxLevel || 3,
         baseCost: upgradeData?.cost || 20,
-        icon: branchId === 'ammoResearch' ? '📦' : branchId === 'scrapResearch' ? '⚒️' : branchId === 'scienceResearch' ? '🔬' : '🏠',
+        icon: branchId === 'ammoResearch' ? '📦' : branchId === 'scrapResearch' ? '⚒️' : branchId === 'scienceResearch' ? '🧪' : '🏠',
         color: branchId === 'ammoResearch' ? COLORS.ammoTree : branchId === 'scrapResearch' ? COLORS.scrapTree : branchId === 'scienceResearch' ? COLORS.scienceTree : COLORS.populationTree
       });
     } else {
@@ -245,7 +245,7 @@ export function renderBranchUpgrades(branchId: string, windowGlobalUpgrades: any
         canAfford: canAfford && currentLevel === 0,
         isOwned: currentLevel > 0,
         color: branchId === 'ammoResearch' ? COLORS.ammoTree : branchId === 'scrapResearch' ? COLORS.scrapTree : branchId === 'scienceResearch' ? COLORS.scienceTree : COLORS.populationTree,
-        currencyIcon: '🔬',
+        currencyIcon: '🧪',
         action: 'purchase-global',
         actionData: upgrade.id
       });

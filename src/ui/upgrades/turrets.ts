@@ -42,14 +42,14 @@ export function getTurretsUpgradesHTML(): string {
       const canAfford = gameState.science >= path.cost;
       
       html += createCompactUpgradeButton({
-        name: `🔬 ${path.name}`,
+        name: `🧪 ${path.name}`,
         description: `${path.description}. Spend ${path.cost} science to unlock this upgrade path permanently.`,
         cost: path.cost,
         canAfford: canAfford,
         color: COLORS.scienceBlue,
         action: 'unlock-upgrade-path',
         actionData: `${path.key},${path.cost}`,
-        currencyIcon: '🔬'
+        currencyIcon: '🧪'
       });
     });
     

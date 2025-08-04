@@ -6,6 +6,7 @@ import { destroyedCities, cityPositions } from '@/entities/cities';
 import { createUpgradeEffect } from '@/entities/particles';
 import { createAmmoTruck } from '@/entities/trucks';
 import { PRODUCTION_CONFIG } from '@/config/constants';
+import { COLORS } from '@/ui/uiUtils';
 
 // Command Mode city system - default 6-city setup (gets resized by mode manager)
 export let cityData: CityData[] = [
@@ -193,7 +194,7 @@ export function generateCityResources(): void {
                     
                     // Visual feedback for scrap production
                     const cityX = cityPositions[i];
-                    createUpgradeEffect(cityX, 750, `+${scrapToAward} SCRAP`, '#0f0');
+                    createUpgradeEffect(cityX, 750, `+${scrapToAward} SCRAP`, `rgb(${COLORS.scrap})`);
                     
                     if ((window as any).awardScrap) {
                         (window as any).awardScrap(scrapToAward, `city ${i}`);
@@ -214,7 +215,7 @@ export function generateCityResources(): void {
                     
                     // Visual feedback for science production
                     const cityX = cityPositions[i];
-                    createUpgradeEffect(cityX, 750, `+${scienceToAward} RESEARCH`, '#00f');
+                    createUpgradeEffect(cityX, 750, `+${scienceToAward} RESEARCH`, `rgb(${COLORS.science})`);
                     
                     if ((window as any).awardScience) {
                         (window as any).awardScience(scienceToAward);
@@ -242,7 +243,7 @@ export function generateCityResources(): void {
                     if (toStockpile > 0) {
                         (city as any).ammoStockpile += toStockpile;
                         const cityX = cityPositions[i];
-                        createUpgradeEffect(cityX, 750, `+${toStockpile} AMMO (STORED)`, '#ff0');
+                        createUpgradeEffect(cityX, 750, `+${toStockpile} AMMO (STORED)`, `rgb(${COLORS.ammo})`);
                     }
                     
                     // Try to dispatch trucks if stockpile has ammo
@@ -366,8 +367,8 @@ export function upgradeCityProductivity(cityIndex: number, productionType: 'scra
     cityProductivityUpgrades[productionType][cityIndex]++;
     
     // Visual feedback
-    const modeColors = { scrap: '#0f0', science: '#00f', ammo: '#ff0' };
-    const modeIcons = { scrap: '💰', science: '🔬', ammo: '📦' };
+    const modeColors = { scrap: `rgb(${COLORS.scrap})`, science: `rgb(${COLORS.science})`, ammo: `rgb(${COLORS.ammo})` };
+    const modeIcons = { scrap: '💰', science: '🧪', ammo: '📦' };
     if ((window as any).createUpgradeEffect) {
         (window as any).createUpgradeEffect(cityPositions[cityIndex], 750, `${modeIcons[productionType]} +50% EFFICIENCY!`, modeColors[productionType]);
     }

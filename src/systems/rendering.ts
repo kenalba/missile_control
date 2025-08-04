@@ -8,9 +8,10 @@ import { launchers } from '@/entities/launchers';
 import { cityPositions, destroyedCities, cityUpgrades } from '@/entities/cities';
 import { cityData } from '@/core/cities';
 import { particles, upgradeEffects } from '@/entities/particles';
-import { launcherUpgrades, globalUpgrades } from '@/core/upgrades';
+import { launcherUpgrades } from '@/core/upgrades';
 import { ammoTrucks } from '@/entities/trucks';
 import { timeManager } from '@/systems/timeManager';
+import { cityBasementRenderer } from '@/ui/compactInfo/CityBasementRenderer';
 
 let canvas: HTMLCanvasElement;
 let ctx: CanvasRenderingContext2D;
@@ -124,7 +125,7 @@ export function render(): void {
     drawGround();
     
     // Draw city basements after ground (so they're visible)
-    drawCityBasements();
+    cityBasementRenderer.renderAllBasements(ctx, cityPositions, destroyedCities);
     
     // City production info is now integrated into basement architecture
     
@@ -308,145 +309,9 @@ function drawLevel3City(x: number): void {
     // Underground basement will be drawn separately after ground
 }
 
-function drawCityBasement(x: number): void {
-    // Only draw basements in Command Mode
-    if (gameState.currentMode !== 'command') return;
-    
-    // Find which city this is to get production mode
-    let cityIndex = -1;
-    for (let i = 0; i < cityPositions.length; i++) {
-        if (Math.abs(cityPositions[i] - x) < 5) {
-            cityIndex = i;
-            break;
-        }
-    }
-    
-    if (cityIndex === -1 || destroyedCities.includes(cityIndex) || !cityData[cityIndex]) return;
-    
-    const city = cityData[cityIndex];
-    
-    // Basement width matches city upgrade level
-    const upgradeLevel = cityUpgrades[cityIndex];
-    let basementWidth;
-    if (upgradeLevel === 0) basementWidth = 50; // Basic city
-    else if (upgradeLevel === 1) basementWidth = 56; // Level 1
-    else if (upgradeLevel === 2) basementWidth = 60; // Level 2
-    else basementWidth = 64; // Level 3+
-    
-    const basementDepth = 30;
-    const basementX = x - basementWidth/2;
-    const basementY = 800; // Start at ground level
-    
-    // Basement structure - darker background to stand out
-    ctx.fillStyle = '#222'; // Darker gray basement walls
-    ctx.fillRect(basementX, basementY, basementWidth, basementDepth);
-    
-    // Basement outline - use city color (yellow)
-    ctx.strokeStyle = '#ff0'; // City yellow color for outline
-    ctx.lineWidth = 2;
-    ctx.strokeRect(basementX, basementY, basementWidth, basementDepth);
-    
-    // ASCII visualization for production
-    if (city.productionMode === 'ammo') {
-        drawAmmoBasementASCII(x, basementX, basementY, basementWidth, basementDepth, cityIndex, city);
-    } else {
-        // Simple production indicator for non-ammo modes
-        drawSimpleProductionIndicator(x, basementY, city.productionMode);
-    }
-}
 
-// Draw all city basements (called after ground is drawn)
-function drawCityBasements(): void {
-    if (gameState.currentMode !== 'command') return;
-    
-    cityPositions.forEach((x, i) => {
-        if (!destroyedCities.includes(i)) {
-            drawCityBasement(x);
-        }
-    });
-}
 
-// Draw ASCII ammo visualization in basement
-function drawAmmoBasementASCII(centerX: number, basementX: number, basementY: number, basementWidth: number, basementDepth: number, cityIndex: number, city: any): void {
-    const ammoAccumulators = (window as any).ammoAccumulators || [];
-    const stockpiledAmmo = city.ammoStockpile || 0;
-    const productionProgress = ammoAccumulators[cityIndex] || 0;
-    
-    // Left side: Stockpiled missiles (smaller) - ensure they stay inside basement
-    if (stockpiledAmmo > 0) {
-        ctx.font = 'bold 14px monospace'; // Smaller for stockpiled
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#f80'; // Orange color for ammo
-        
-        // Draw stockpiled missiles in triangular stacking pattern (2-1 style)
-        let missiles = Math.min(stockpiledAmmo, 3); // Cap display at 3 missiles
-        let row = 0;
-        let missilesDrawn = 0;
-        
-        while (missilesDrawn < missiles && row < 2) {
-            const missilesInRow = Math.min(2 - row, missiles - missilesDrawn); // 2-1 pattern
-            // Ensure we stay within basement bounds
-            const leftEdge = basementX + 5; // 5px margin from left wall
-            const startX = leftEdge + (missilesInRow - 1) * 5; // Tighter spacing
-            
-            for (let i = 0; i < missilesInRow; i++) {
-                const missileX = startX + i * 10;
-                const missileY = basementY + basementDepth - 2 - row * 10; // Touch the ground (bottom of basement)
-                ctx.fillText('^', missileX, missileY);
-                missilesDrawn++;
-            }
-            row++;
-        }
-        
-        // Removed count display - just show visual stacking
-    }
-    
-    // Right side: Current missile being produced (much more visible)
-    if (city.productionMode === 'ammo') {
-        ctx.font = 'bold 28px monospace'; // Even larger for visibility
-        ctx.textAlign = 'center';
-        
-        // Production progress determines visibility/opacity
-        const alpha = Math.max(0.5, productionProgress); // Higher minimum visibility
-        ctx.globalAlpha = alpha;
-        ctx.fillStyle = '#f80'; // Orange
-        
-        // Position on right side, well within basement bounds
-        const rightX = basementX + basementWidth - 15; // 15px from right wall
-        const rightY = basementY + basementDepth - 2; // Touch the ground (bottom of basement)
-        ctx.fillText('^', rightX, rightY);
-        
-        ctx.globalAlpha = 1.0; // Reset alpha
-    }
-}
 
-// Simple production indicator for non-ammo modes
-function drawSimpleProductionIndicator(centerX: number, basementY: number, productionMode: string): void {
-    const shapeSize = 12;
-    const shapeX = centerX - shapeSize/2;
-    const shapeY = basementY + 8;
-    
-    // Production mode colors and shapes
-    const modeData = {
-        scrap: { color: '#00ff00', shape: 'square' }, // Green square
-        science: { color: '#00ffff', shape: 'diamond' } // Cyan diamond
-    };
-    const mode = modeData[productionMode] || { color: '#ffffff', shape: 'square' };
-    
-    ctx.fillStyle = mode.color;
-    
-    if (mode.shape === 'square') {
-        ctx.fillRect(shapeX, shapeY, shapeSize, shapeSize);
-    } else if (mode.shape === 'diamond') {
-        ctx.beginPath();
-        ctx.moveTo(centerX, shapeY); // Top
-        ctx.lineTo(shapeX + shapeSize, shapeY + shapeSize/2); // Right
-        ctx.lineTo(centerX, shapeY + shapeSize); // Bottom
-        ctx.lineTo(shapeX, shapeY + shapeSize/2); // Left
-        ctx.closePath();
-        ctx.fill();
-    }
-}
 
 function drawCommandModeCityInfo(): void {
     ctx.font = '12px monospace';

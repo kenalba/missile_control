@@ -23,6 +23,7 @@ import '@/ui/tooltipManager'; // Tippy.js tooltip system
 import '@/ui/upgrades/modes/command'; // Command mode upgrade content
 import '@/ui/upgrades/modes/arcade'; // Arcade mode upgrade content
 import '@/ui/sidebarManager'; // Sidebar state management
+import '@/ui/compactInfo'; // Compact information display system
 import { observableGameState, uiUpdateSystem } from '@/systems/observableState'; // Observable state system
 import { timeManager } from '@/systems/timeManager'; // Time management system
 

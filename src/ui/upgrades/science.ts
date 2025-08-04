@@ -50,7 +50,7 @@ export function getScienceUpgradesHTML(): string {
       clickAction = `onclick="selectResearchBranch('${branch.id}')"`;
     }
     
-    const statusText = !isUnlocked ? `<br><small>${cost}🔬</small>` : isSelected ? '<br><small>SELECTED</small>' : '<br><small>CLICK TO SELECT</small>';
+    const statusText = !isUnlocked ? `<br><small>${cost}🧪</small>` : isSelected ? '<br><small>SELECTED</small>' : '<br><small>CLICK TO SELECT</small>';
     
     html += `
       <button ${clickAction}

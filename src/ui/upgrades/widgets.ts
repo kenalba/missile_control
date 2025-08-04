@@ -1,6 +1,7 @@
 // Reusable UI Widgets for Upgrade System
 import { gameState } from '@/systems/observableState';
 import { globalUpgrades } from '@/core/upgrades';
+import { COLORS } from '@/ui/uiUtils';
 import type { ResearchUpgradeConfig } from './types';
 
 // Utility function to get actual upgrade cost after efficiency discount
@@ -66,7 +67,7 @@ export function createResearchUpgradeWidget(config: ResearchUpgradeConfig): stri
                        border: 1px solid ${canAfford ? tierColor : '#666'}; color: ${canAfford ? tierColor : '#666'}; 
                        border-radius: 2px; font-size: 11px; cursor: ${canAfford ? 'pointer' : 'default'};"
                 ${canAfford ? '' : 'disabled'}>
-            ${cost} 🔬
+            ${cost} 🧪
         </button>
     </div>
   `;
@@ -184,14 +185,14 @@ export function createCityProductivityWidget(cityIndex: number, productionType: 
     ammo: 'Automated ammunition production facilities for rapid resupply'
   };
   const modeColors = { 
-    scrap: '0, 255, 0',      // Green
-    science: '100, 200, 255', // Blue  
-    ammo: '255, 255, 0'      // Yellow
+    scrap: COLORS.scrap,     // Gold
+    science: COLORS.science, // Blue  
+    ammo: COLORS.ammo        // Green
   };
   const modeBorderColors = {
-    scrap: '#0f0',           // Green border
-    science: '#64c8ff',      // Blue border
-    ammo: '#ff0'             // Yellow border
+    scrap: `rgb(${COLORS.scrap})`,        // Gold border
+    science: `rgb(${COLORS.science})`,    // Blue border
+    ammo: `rgb(${COLORS.ammo})`           // Green border (consistent with ammo color scheme)
   };
   
   const currentEfficiency = 100 + (currentLevel * 50); // Show total efficiency %
