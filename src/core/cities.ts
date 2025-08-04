@@ -258,7 +258,13 @@ export function generateCityResources(): void {
                             // Dispatch truck to neediest turret (starts at 1 ammo per truck)
                             const target = turretsNeedingAmmo[0];
                             const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
-                            const ammoAvailable = Math.min((city as any).ammoStockpile, 1); // Trucks start carrying 1 ammo
+                            // Calculate truck capacity based on upgrades
+                            const globalUpgrades = (window as any).globalUpgrades;
+                            const baseTruckCapacity = 2; // Base capacity is now 2
+                            const capacityUpgrade = globalUpgrades?.truckCapacity?.level || 0;
+                            const truckCapacity = baseTruckCapacity + capacityUpgrade;
+                            
+                            const ammoAvailable = Math.min((city as any).ammoStockpile, truckCapacity);
                             const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
                             
                             if (ammoToSend > 0 && (city as any).ammoStockpile >= ammoToSend) {

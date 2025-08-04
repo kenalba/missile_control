@@ -79,7 +79,7 @@ Research paths must be unlocked with science before purchasing upgrades:
 **City Science Upgrades**:
 
 - **Salvage Ops** (30 science): Convert excess ammunition to scrap materials
-- **Motor Pool** (20 science): Add +1 truck to all cities for faster delivery
+- **Truck Capacity** (20 science, tiered): Each level increases truck ammo capacity by +1 (trucks start with 2 capacity)
 
 **City Upgrades** (requires Civilian Industry + specific tech):
 
@@ -292,11 +292,18 @@ npm run preview
 ### Active Todo List
 
 #### High Priority
-- **Population Research Implementation** - Complete urban planning system with residential zones and city expansion
-- **Advanced Seeker AI** - Enhanced missile tracking and evasion behaviors
-- **Bunker Damage System** - Implement actual damage reduction mechanics
+- **Full-screen Tech Tree Display** - Pause game and show complete technology roadmap with dependencies
+- **Missing Research Tech Branches** - Implement remaining research tree functionality
+- **Radar Tech Integration** - Re-add radar as Science option to highlight missiles with real targets
+- **Turret Blast Balance** - Decrease blast improvement rate from upgrades (currently too powerful)
+- **Full-width Tiered Upgrades** - Make all tiered upgrades full-width including production upgrades
+- **City Management UI Refactor** - Reduce redundancy in sidebar city management interface
 
-#### Medium Priority  
+#### Medium Priority (Population System Group)
+- **Population Tech Tree** - Re-add population research branch for purchasing additional cities
+- **Population Debug Fix** - Resolve issues with population tech not improving actual city population size
+
+#### Lower Priority  
 - **Auto-fire Turret System** - Automatic defensive firing when ammo stockpiled
 - **Visual Polish** - Explosion variety, missile trails, impact effects
 - **Performance Optimization** - Frame rate improvements and memory management
@@ -312,6 +319,9 @@ npm run preview
 - ✅ **Full TypeScript Migration** - Complete conversion from JavaScript to TypeScript
 - ✅ **Comprehensive Tooltip System** - Tippy.js integration with smart positioning
 - ✅ **Modern Architecture** - Modular system design with proper separation of concerns
+- ✅ **Truck System Overhaul** - Tiered capacity upgrades with base capacity of 2, replacing fleet system
+- ✅ **UI Readability Enhancement** - Increased sidebar font sizes to 14px minimum with proper visual hierarchy
+- ✅ **Color Scheme Unification** - Semantic color constants throughout application with gold scrap theming
 
 ### Development Priorities
 1. **Core Functionality** - Fix game-breaking issues first

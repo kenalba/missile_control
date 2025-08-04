@@ -191,7 +191,7 @@ export interface GlobalUpgrades {
   // civilianIndustry, arsenalTech, miningTech, researchTech replaced by research branch system
   populationTech: UpgradeLevel;
   ammoRecycling: UpgradeLevel;
-  truckFleet: UpgradeLevel;
+  truckCapacity: UpgradeLevel;
   [key: string]: UpgradeLevel;
 }
 

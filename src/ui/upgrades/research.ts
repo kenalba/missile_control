@@ -77,18 +77,19 @@ export const branchUpgrades: Record<string, BranchUpgrade[]> = {
       prerequisite: 'enhancedAmmoProduction'
     },
     { 
-      id: 'advancedLogistics', 
-      name: 'Advanced Logistics', 
-      description: 'Trucks carry +1 ammo and move 25% faster. Unlocks after Rapid Procurement.',
-      isMultiLevel: false,
+      id: 'truckCapacity', 
+      name: 'Truck Capacity', 
+      description: 'Level 1-3: Each level increases truck capacity by +1 ammo. Unlocks after Rapid Procurement.',
+      isMultiLevel: true,
+      maxLevel: 3,
       prerequisite: 'rapidProcurement'
     },
     { 
       id: 'ammunitionStockpiles', 
       name: 'Ammunition Stockpiles', 
-      description: 'Unlock per-city ammo storage capacity upgrades. Unlocks after Advanced Logistics.',
+      description: 'Unlock per-city ammo storage capacity upgrades. Unlocks after Truck Capacity.',
       isMultiLevel: false,
-      prerequisite: 'advancedLogistics'
+      prerequisite: 'truckCapacity'
     }
   ],
   scrapResearch: [

@@ -13,10 +13,9 @@ export function getAvailableTruckCount(cityIndex: number): number {
   if (!cityData || !cityData[cityIndex]) return 0;
   
   const city = cityData[cityIndex] as any;
-  const globalUpgrades = (window as any).globalUpgrades;
   const baseTrucks = city.maxTrucks || 1; // Default to 1 truck per city
-  const fleetUpgrade = globalUpgrades?.truckFleet?.level || 0;
-  const maxTrucks = baseTrucks + fleetUpgrade; // Global upgrade adds trucks
+  // For now, keep truck count simple - can add fleet upgrades later if needed
+  const maxTrucks = baseTrucks;
   
   const busyTrucks = ammoTrucks.filter(truck => 
     truck.cityIndex === cityIndex && truck.status !== 'idle'
@@ -89,7 +88,13 @@ function tryRedispatchTruck(cityIndex: number, returningTruck: AmmoTruck): boole
   // Reuse the returning truck for immediate dispatch
   const target = turretsNeedingAmmo[0];
   const ammoNeeded = target.launcher.maxMissiles - target.launcher.missiles;
-  const ammoAvailable = Math.min(city.ammoStockpile, 1); // Trucks start carrying 1 ammo
+  // Calculate truck capacity based on upgrades
+  const globalUpgrades = (window as any).globalUpgrades;
+  const baseTruckCapacity = 2; // Base capacity is now 2
+  const capacityUpgrade = globalUpgrades?.truckCapacity?.level || 0;
+  const truckCapacity = baseTruckCapacity + capacityUpgrade;
+  
+  const ammoAvailable = Math.min(city.ammoStockpile, truckCapacity);
   const ammoToSend = Math.min(ammoNeeded, ammoAvailable);
   
   // Calculate delivery parameters

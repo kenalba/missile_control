@@ -41,7 +41,7 @@ export let globalUpgrades: GlobalUpgrades = {
 
     // City-based science upgrades (moved from global economic)
     ammoRecycling: { level: 0, cost: 30 }, // Converts excess ammo to scrap (science cost)
-    truckFleet: { level: 0, cost: 20 }, // +1 truck per city (science cost)
+    truckCapacity: { level: 0, cost: 20 }, // +1 ammo capacity per truck (science cost, tiered upgrade)
     ammoHotkey: { level: 0, cost: 20 }, // Enables 'A' key for emergency ammo purchase (science cost)
 
     // Progressive disclosure tech tree - Research Branches (Single-level unlocks)
@@ -128,7 +128,7 @@ export function resetUpgrades(): void {
         research: { level: 0, cost: 50 },
         populationTech: { level: 0, cost: 25 },
         ammoRecycling: { level: 0, cost: 30 },
-        truckFleet: { level: 0, cost: 20 },
+        truckCapacity: { level: 0, cost: 20 },
         ammoHotkey: { level: 0, cost: 20 },
         // Progressive disclosure tech tree - Research Branches
         ammoResearch: { level: 0, cost: 20 },
@@ -221,7 +221,7 @@ export function purchaseGlobalUpgrade(upgradeType: keyof GlobalUpgrades): boolea
     // Determine currency type - science-based upgrades use science, others use scrap
     const scienceBasedUpgrades = [
         'populationTech',
-        'ammoRecycling', 'truckFleet', 'ammoHotkey',
+        'ammoRecycling', 'truckCapacity', 'ammoHotkey',
         // New tech tree upgrades - Research branches and sub-upgrades
         'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',
         'enhancedAmmoProduction', 'rapidProcurement', 'advancedLogistics', 'ammunitionStockpiles',

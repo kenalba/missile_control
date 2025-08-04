@@ -396,7 +396,7 @@ body.command-mode .global-upgrades {
 }
 
 .stat-label {
-    font-size: 10px;
+    font-size: 12px;
     color: #888;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -413,7 +413,7 @@ body.command-mode .global-upgrades {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
-    font-size: 11px;
+    font-size: 14px;
 }
 
 .upgrade-table th {
@@ -422,7 +422,7 @@ body.command-mode .global-upgrades {
     padding: 8px 4px;
     border: 1px solid #333;
     text-align: center;
-    font-size: 12px;
+    font-size: 14px;
 }
 
 .upgrade-table td {
@@ -447,7 +447,7 @@ body.command-mode .global-upgrades {
 .upgrade-info {
     color: #0f0;
     margin-bottom: 4px;
-    font-size: 10px;
+    font-size: 14px;
 }
 
 .upgrade-type-row:nth-child(even) {
@@ -480,7 +480,7 @@ body.command-mode .global-upgrades {
     padding: 4px 6px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 10px;
+    font-size: 14px;
     flex: 1;
     text-align: center;
 }
@@ -507,7 +507,7 @@ body.command-mode .global-upgrades {
 }
 
 .upgrade-name {
-    font-size: 11px;
+    font-size: 14px;
     color: #0f0;
     flex: 1;
 }
@@ -519,7 +519,7 @@ body.command-mode .global-upgrades {
     padding: 4px 8px;
     cursor: pointer;
     font-family: inherit;
-    font-size: 11px;
+    font-size: 14px;
     min-width: 40px;
     text-align: center;
 }
@@ -560,7 +560,7 @@ body.command-mode .global-upgrades {
 }
 
 .high-score-item {
-    font-size: 11px;
+    font-size: 14px;
     color: #0f0;
     background: rgba(0, 255, 0, 0.1);
     padding: 3px 8px;
@@ -577,7 +577,7 @@ body.command-mode .global-upgrades {
 
 .high-score-rank {
     color: #888;
-    font-size: 10px;
+    font-size: 12px;
     margin-right: 5px;
 }
 
@@ -593,7 +593,7 @@ body.command-mode .global-upgrades {
 }
 
 .high-score-wave {
-    font-size: 10px;
+    font-size: 12px;
     color: #aaa;
 }
 
@@ -846,7 +846,7 @@ body.command-mode .global-upgrades {
     right: -8px;
     background: currentColor;
     color: #000;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: bold;
     padding: 2px 6px;
     border-radius: 3px;
@@ -1105,7 +1105,7 @@ body.command-mode .global-upgrades {
     }
     
     .upgrade-type {
-        font-size: 13px;
+        font-size: 14px;
         padding: 12px;
     }
     
@@ -1267,7 +1267,7 @@ body.command-mode .global-upgrades {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 11px;
+    font-size: 14px;
     transition: all 0.2s ease;
     user-select: none;
     text-transform: uppercase;
@@ -1305,7 +1305,7 @@ body.command-mode .global-upgrades {
     padding: 8px 12px;
     border-radius: 3px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 14More todos.px;
     cursor: pointer;
     transition: all 0.2s ease;
     border: 1px solid;

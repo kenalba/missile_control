@@ -153,7 +153,7 @@ export function createTabButton(tabInfo: TabInfo, currentTab: string, onClickHan
     cursor: pointer;
     border-radius: 0;
     font-weight: bold; 
-    font-size: 13px; 
+    font-size: 14px; 
     transition: all 0.2s ease;
     text-transform: uppercase;
   `;

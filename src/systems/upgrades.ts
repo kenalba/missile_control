@@ -73,7 +73,7 @@ export function purchaseGlobalUpgrade(upgradeType: string): void {
   // Science-based upgrades (must match the list in core/upgrades.ts)
   const scienceUpgrades = [
     'populationTech',
-    'ammoRecycling', 'truckFleet', 'ammoHotkey',
+    'ammoRecycling', 'truckCapacity', 'ammoHotkey',
     // New tech tree upgrades - Research branches and sub-upgrades
     'ammoResearch', 'scrapResearch', 'scienceResearch', 'populationResearch',
     'enhancedAmmoProduction', 'rapidProcurement', 'advancedLogistics', 'ammunitionStockpiles',
